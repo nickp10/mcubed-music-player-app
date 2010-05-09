@@ -1,0 +1,78 @@
+﻿<Window x:Class="mCubed.mCubedWindow"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:controls="clr-namespace:mCubed.Controls"
+	xmlns:core="clr-namespace:mCubed.Core"
+	xmlns:local="clr-namespace:mCubed"
+	DataContext="{x:Static core:Utilities.MainSettings}" Topmost="{Binding Path=ShowMini}"
+	Title="{controls:Formula Type=Title, File={Binding Path=LibraryCurrent.MediaFileCurrent}}"
+	Background="#E9F9FDFF" WindowState="Maximized" Height="800" Width="1000">
+	<Window.Resources>
+		<ResourceDictionary Source="Resources/Resources.xaml"/>
+	</Window.Resources>
+	<Grid>
+		<Grid>
+			<Grid.Style>
+				<Style TargetType="{x:Type Grid}">
+					<Setter Property="Visibility" Value="Collapsed"/>
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding Path=ShowMini}" Value="True">
+							<Setter Property="Visibility" Value="Visible"/>
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</Grid.Style>
+			<controls:PlayerControls/>
+		</Grid>
+		<Grid Margin="10">
+			<Grid.Style>
+				<Style TargetType="{x:Type Grid}">
+					<Setter Property="Visibility" Value="Visible"/>
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding Path=ShowMini}" Value="True">
+							<Setter Property="Visibility" Value="Collapsed"/>
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</Grid.Style>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			<ComboBox Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200"
+					ItemsSource="{Binding Path=Libraries}" SelectedItem="{Binding Path=LibrarySelected, Mode=TwoWay}">
+				<ComboBox.ItemTemplate>
+					<DataTemplate>
+						<WrapPanel Margin="2">
+							<Path HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 0 7 L 3.5 3.5 Z" Fill="Black">
+								<Path.Style>
+									<Style TargetType="{x:Type Path}">
+										<Setter Property="Visibility" Value="Hidden"/>
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding IsLoaded}" Value="True">
+												<Setter Property="Visibility" Value="Visible"/>
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</Path.Style>
+							</Path>
+							<TextBlock Margin="5,0,0,0" Text="{Binding DisplayName}"/>
+						</WrapPanel>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+			</ComboBox>
+			<WrapPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+				<Button Content="Help/Settings" Click="OnShowSecondary" Padding="10,5"/>
+				<Button Content="Exit" Click="OnClose" Padding="10,5" Margin="10,0,0,0"/>
+			</WrapPanel>
+			<controls:LibraryViewer Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="3" Library="{Binding Path=LibrarySelected}"/>
+			<controls:PlayerControls Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" VerticalAlignment="Center"/>
+		</Grid>
+	</Grid>
+</Window>

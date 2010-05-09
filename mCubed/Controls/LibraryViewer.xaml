@@ -1,0 +1,122 @@
+﻿<UserControl x:Class="mCubed.Controls.LibraryViewer"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:controls="clr-namespace:mCubed.Controls"
+	xmlns:md="clr-namespace:mCubed.MetaData"
+	xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase">
+	<UserControl.Resources>
+		<ResourceDictionary Source="../Resources/Resources.xaml"/>
+	</UserControl.Resources>
+	<Border DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" BorderThickness="2" Background="Transparent">
+		<Border.Resources>
+			<CollectionViewSource Source="{Binding Path=Library.MediaFiles}" x:Key="CollectionItems">
+				<!--<CollectionViewSource.GroupDescriptions>
+					<PropertyGroupDescription PropertyName="MetaData.FirstAlbumArtist"/>
+					<PropertyGroupDescription PropertyName="MetaData.Album"/>
+				</CollectionViewSource.GroupDescriptions>
+				<CollectionViewSource.SortDescriptions>
+					<scm:SortDescription PropertyName="MetaData.FirstAlbumArtist" Direction="Ascending"/>
+					<scm:SortDescription PropertyName="MetaData.Album" Direction="Ascending"/>
+					<scm:SortDescription PropertyName="MetaData.Track" Direction="Ascending"/>
+				</CollectionViewSource.SortDescriptions>-->
+			</CollectionViewSource>
+		</Border.Resources>
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="40"/>
+				<RowDefinition Height=".6*"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height=".4*" x:Name="MDIRow"/>
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>
+			<ListView Grid.Row="1" ItemsSource="{Binding Source={StaticResource CollectionItems}}" x:Name="SelectedMedia"
+					GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler" SelectionChanged="OnSelectedMediaChanged">
+				<ListView.Resources>
+					<ContextMenu x:Key="ListView_ContextMenu">
+						<MenuItem Header="Play Media" Click="OnMediaFilePlay"/>
+						<Separator/>
+						<MenuItem Header="Load Selected Meta-data" Click="OnMediaLoaded"/>
+						<MenuItem Header="Remove Selected Media" Click="OnMediaRemove"/>
+						<Separator/>
+						<MenuItem Header="Add Media" Click="OnMediaAdd"/>
+					</ContextMenu>
+				</ListView.Resources>
+				<!--<ListView.GroupStyle>
+					<GroupStyle>
+						<GroupStyle.ContainerStyle>
+							<Style TargetType="{x:Type GroupItem}">
+								<Setter Property="Template">
+									<Setter.Value>
+										<ControlTemplate>
+											<HeaderedContentControl Header="{Binding Name}">
+												<ItemsPresenter/>
+											</HeaderedContentControl>
+										</ControlTemplate>
+									</Setter.Value>
+								</Setter>
+							</Style>
+						</GroupStyle.ContainerStyle>
+					</GroupStyle>
+				</ListView.GroupStyle>-->
+				<ListView.ItemContainerStyle>
+					<Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
+						<EventSetter Event="MouseDoubleClick" Handler="OnMediaFilePlay"/>
+						<Setter Property="ContextMenu" Value="{StaticResource ListView_ContextMenu}"/>
+					</Style>
+				</ListView.ItemContainerStyle>
+				<ListView.View>
+					<GridView AllowsColumnReorder="True">
+						<GridViewColumn>
+							<GridViewColumn.CellTemplate>
+								<DataTemplate>
+									<Path HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 0 7 L 3.5 3.5 Z" Fill="Black">
+										<Path.Style>
+											<Style TargetType="{x:Type Path}">
+												<Setter Property="Visibility" Value="Hidden"/>
+												<Style.Triggers>
+													<DataTrigger Binding="{Binding IsLoaded}" Value="True">
+														<Setter Property="Visibility" Value="Visible"/>
+													</DataTrigger>
+												</Style.Triggers>
+											</Style>
+										</Path.Style>
+									</Path>
+								</DataTemplate>
+							</GridViewColumn.CellTemplate>
+						</GridViewColumn>
+						<GridViewColumn DisplayMemberBinding="{Binding OrderKey}">
+							<GridViewColumnHeader Content="##" Tag="OrderKey"/>
+						</GridViewColumn>
+						<GridViewColumn DisplayMemberBinding="{Binding MetaData.Track}">
+							<GridViewColumnHeader Content="#" Tag="MetaData.Track"/>
+						</GridViewColumn>
+						<GridViewColumn DisplayMemberBinding="{Binding MetaData.Title}">
+							<GridViewColumnHeader Content="Title" Tag="MetaData.Title"/>
+						</GridViewColumn>
+						<GridViewColumn DisplayMemberBinding="{Binding MetaData.JoinedPerformers}">
+							<GridViewColumnHeader Content="Artist" Tag="MetaData.JoinedPerformers"/>
+						</GridViewColumn>
+						<GridViewColumn DisplayMemberBinding="{Binding MetaData.Album}">
+							<GridViewColumnHeader Content="Album" Tag="MetaData.Album"/>
+						</GridViewColumn>
+						<GridViewColumn DisplayMemberBinding="{Binding MetaData.AudioBitrate}">
+							<GridViewColumnHeader Content="Bitrate" Tag="MetaData.AudioBitrate"/>
+						</GridViewColumn>
+						<GridViewColumn DisplayMemberBinding="{Binding MetaData.AudioSampleRate}">
+							<GridViewColumnHeader Content="Sample Rate" Tag="MetaData.AudioSampleRate"/>
+						</GridViewColumn>
+						<GridViewColumn DisplayMemberBinding="{Binding MetaData.LengthString}">
+							<GridViewColumnHeader Content="Length" Tag="MetaData.Length"/>
+						</GridViewColumn>
+						<GridViewColumn DisplayMemberBinding="{Binding MetaData.FileName}">
+							<GridViewColumnHeader Content="Filename" Tag="MetaData.FileName"/>
+						</GridViewColumn>
+					</GridView>
+				</ListView.View>
+			</ListView>
+			<GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="10" Background="Transparent" x:Name="MDISplitter"/>
+			<md:MDIManager Grid.Row="3" x:Name="MetaDataManager"/>
+			<controls:ProgressManager Grid.Row="4"/>
+		</Grid>
+	</Border>
+</UserControl>

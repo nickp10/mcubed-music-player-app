@@ -1,0 +1,48 @@
+﻿<UserControl x:Class="mCubed.Controls.ProgressManager"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:core="clr-namespace:mCubed.Core">
+	<UserControl.Resources>
+		<ResourceDictionary Source="../Resources/Resources.xaml"/>
+	</UserControl.Resources>
+	<StatusBar DataContext="{x:Static core:Utilities.MainProcessManager}" Height="25">
+		<StatusBar.ItemsPanel>
+			<ItemsPanelTemplate>
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="20"/>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="*"/>
+					</Grid.ColumnDefinitions>
+				</Grid>
+			</ItemsPanelTemplate>
+		</StatusBar.ItemsPanel>
+		<StatusBar.Resources>
+			<DataTemplate DataType="{x:Type core:Process}">
+				<WrapPanel>
+					<TextBlock Text="{Binding Description}"/>
+					<TextBlock>...(</TextBlock>
+					<TextBlock Text="{Binding CompletedCount}"/>
+					<TextBlock>/</TextBlock>
+					<TextBlock Text="{Binding TotalCount}"/>
+					<TextBlock>)</TextBlock>
+					<ProgressBar Style="{StaticResource {x:Type ProgressBar}}" Margin="10,0,0,0" Width="100" VerticalContentAlignment="Stretch" Minimum="0" Maximum="1" Value="{Binding Path=Progress, Mode=OneWay}"/>
+				</WrapPanel>
+			</DataTemplate>
+		</StatusBar.Resources>
+		<StatusBarItem Grid.Column="0">
+			<StatusBarItem.Style>
+				<Style TargetType="{x:Type StatusBarItem}">
+					<Setter Property="Content" Value="{Binding CurrentProcess}"/>
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding CurrentProcess}" Value="{x:Null}">
+							<Setter Property="Content" Value="No processes currently..."/>
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</StatusBarItem.Style>
+		</StatusBarItem>
+		<StatusBarItem Grid.Column="2" Content="{Binding TotalProcess}"/>
+	</StatusBar>
+</UserControl>

@@ -1,0 +1,128 @@
+﻿<UserControl x:Class="mCubed.MetaData.MDIManager" IsTabStop="False"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:controls="clr-namespace:mCubed.Controls"
+	xmlns:md="clr-namespace:mCubed.MetaData"
+	xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase">
+	<UserControl.Resources>
+		<ResourceDictionary Source="../Resources/Resources.xaml"/>
+	</UserControl.Resources>
+	<Border>
+		<DockPanel DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" Background="{DynamicResource MainBrush}">
+			<DockPanel.Resources>
+				<CollectionViewSource Source="{Binding MetaDataInfo}" x:Key="SortedMDI">
+					<CollectionViewSource.SortDescriptions>
+						<scm:SortDescription PropertyName="FilePath" Direction="Ascending"/>
+					</CollectionViewSource.SortDescriptions>
+				</CollectionViewSource>
+			</DockPanel.Resources>
+			<Grid DockPanel.Dock="Left" Margin="10" Width="200">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="10"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="10"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+				</Grid.RowDefinitions>
+				<ComboBox Grid.Row="0" ItemsSource="{Binding Keys}" SelectedItem="{Binding Path=CurrentKey}"/>
+				<ListView Grid.Row="2" ItemsSource="{Binding Source={StaticResource SortedMDI}}">
+					<ListView.Resources>
+						<md:MDIStatusConverter x:Key="MDIStatusConverter"/>
+					</ListView.Resources>
+					<ListView.View>
+						<GridView>
+							<GridViewColumn>
+								<GridViewColumn.CellTemplate>
+									<DataTemplate>
+										<ToggleButton VerticalContentAlignment="Center" HorizontalContentAlignment="Center" ToolTip="Toggle the marked status on this file"
+												    IsChecked="{Binding Path=Status, Converter={StaticResource MDIStatusConverter}, Mode=TwoWay}" Click="OnMetaDataInfoChanged">
+											<ToggleButton.Template>
+												<ControlTemplate>
+													<Image Cursor="Hand" Source="{controls:Icon Type=Accept}" Height="16">
+														<Image.Style>
+															<Style TargetType="{x:Type Image}">
+																<Setter Property="Opacity" Value=".3"/>
+																<Style.Triggers>
+																	<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}, Path=IsChecked, UpdateSourceTrigger=PropertyChanged}" Value="True">
+																		<Setter Property="Opacity" Value="1"/>
+																	</DataTrigger>
+																</Style.Triggers>
+															</Style>
+														</Image.Style>
+													</Image>
+												</ControlTemplate>
+											</ToggleButton.Template>
+										</ToggleButton>
+									</DataTemplate>
+								</GridViewColumn.CellTemplate>
+							</GridViewColumn>
+							<GridViewColumn Header="File">
+								<GridViewColumn.CellTemplate>
+									<DataTemplate>
+										<TextBlock Text="{controls:Formula Type=MetaDataLoader, File={Binding Path=Parent}}"/>
+									</DataTemplate>
+								</GridViewColumn.CellTemplate>
+							</GridViewColumn>
+						</GridView>
+					</ListView.View>
+				</ListView>
+				<TextBlock Grid.Row="4" TextWrapping="Wrap">
+					<Image Source="{controls:Icon Type=Accept}" Height="16" Opacity=".3"/>
+					<Run>Any changes that are made will NOT be saved to this file.</Run>
+				</TextBlock>
+				<TextBlock Grid.Row="5" TextWrapping="Wrap">
+					<Image Source="{controls:Icon Type=Accept}" Height="16"/>
+					<Run>Any changes that are made WILL be saved to this file.</Run>
+				</TextBlock>
+			</Grid>
+			<TextBlock Margin="0,10" TextWrapping="Wrap" x:Name="ManagerHelp">
+				Select one or more files in the pane above to modify media meta-data information.
+				Also, ensure that at least one file in the pane to the left is marked for changes.
+			</TextBlock>
+			<DockPanel Margin="0,10" Visibility="Collapsed" x:Name="ManagerPanel">
+				<WrapPanel DockPanel.Dock="Bottom" HorizontalAlignment="Center" Margin="0,10,0,0">
+					<Button Content="Save" Click="OnSave" Padding="20,10"/>
+					<Button Content="Cancel" Click="OnCancel" Padding="20,10" Margin="15,0,0,0"/>
+				</WrapPanel>
+				<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False" IsTabStop="False">
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition/>
+							<RowDefinition Height="10"/>
+							<RowDefinition/>
+						</Grid.RowDefinitions>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition/>
+							<ColumnDefinition/>
+						</Grid.ColumnDefinitions>
+						<md:MDPManager Grid.ColumnSpan="2" x:Name="MDPManager"/>
+						<StackPanel Grid.Row="2" Grid.Column="0" Grid.IsSharedSizeScope="True" x:Name="ManagerPanel1">
+							<md:MDIField PropertyName="Track" DisplayName="Track Number"/>
+							<md:MDIField PropertyName="Disc" DisplayName="Disc Number"/>
+							<md:MDIField PropertyName="Year"/>
+							<md:MDIField PropertyName="Title"/>
+							<md:MDIField PropertyName="Performers" DisplayName="Artists/Performers"/>
+							<md:MDIField PropertyName="Album"/>
+							<md:MDIField PropertyName="Genres"/>
+							<md:MDIField PropertyName="Comment"/>
+							<md:MDIField PropertyName="AudioBitrate" DisplayName="Bitrate" IsReadOnly="True"/>
+						</StackPanel>
+						<StackPanel Grid.Row="2" Grid.Column="1" Grid.IsSharedSizeScope="True" x:Name="ManagerPanel2">
+							<md:MDIField PropertyName="TrackCount" DisplayName="Track Count"/>
+							<md:MDIField PropertyName="DiscCount" DisplayName="Disc Count"/>
+							<md:MDIField PropertyName="Copyright"/>
+							<md:MDIField PropertyName="BeatsPerMinute" DisplayName="Beats Per Minute"/>
+							<md:MDIField PropertyName="AlbumArtists" DisplayName="Album Artists/Performers"/>
+							<md:MDIField PropertyName="Conductor"/>
+							<md:MDIField PropertyName="Composers"/>
+							<md:MDIField PropertyName="Lyrics"/>
+							<md:MDIField PropertyName="Grouping" DisplayName="Grouping/Series"/>
+							<md:MDIField PropertyName="AudioSampleRate" DisplayName="Sample Rate" IsReadOnly="True"/>
+						</StackPanel>
+					</Grid>
+				</ScrollViewer>
+			</DockPanel>
+		</DockPanel>
+	</Border>
+</UserControl>

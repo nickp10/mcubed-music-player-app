@@ -1,0 +1,80 @@
+﻿<UserControl x:Class="mCubed.MetaData.MDPField" IsTabStop="False"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:controls="clr-namespace:mCubed.Controls"
+	xmlns:core="clr-namespace:mCubed.Core">
+	<UserControl.Resources>
+		<ResourceDictionary Source="../Resources/Resources.xaml"/>
+	</UserControl.Resources>
+	<Grid DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="10"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="10"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="100"/>
+			<ColumnDefinition Width="10"/>
+			<ColumnDefinition Width="100"/>
+		</Grid.ColumnDefinitions>
+		<Image Grid.RowSpan="5" Source="{Binding Picture.Image}" MaxHeight="100" x:Name="PicThumb"/>
+		<ComboBox Grid.Column="2" ItemsSource="{Binding Picture.PictureTypes}"
+				SelectedItem="{Binding Picture.TypeString}" ToolTip="{Binding Picture.TypeString}"/>
+		<Border Grid.Row="2" Grid.Column="2" BorderThickness="2">
+			<TextBox MinLines="2" MaxLines="5" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto"
+				    Text="{Binding Path=Picture.Description, UpdateSourceTrigger=PropertyChanged}"/>
+		</Border>
+		<Grid Grid.Row="4" Grid.Column="2">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="10"/>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="10"/>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			<Image Grid.Column="1" Source="{controls:Icon Type=Pencil}" Height="16" Cursor="Hand"
+				  ToolTip="Browse for a picture to replace this picture" MouseLeftButtonDown="OnPictureBrowsed"/>
+			<Image Grid.Column="3" Source="{controls:Icon Type=Disk}" Height="16" Cursor="Hand"
+				  ToolTip="Save this picture to a file" MouseLeftButtonDown="OnPictureSaved"/>
+			<Image Grid.Column="5" Source="{controls:Icon Type=Delete}" Height="16" Cursor="Hand"
+				  ToolTip="Delete this picture from the meta-data" MouseLeftButtonDown="OnPictureDeleted"/>
+		</Grid>
+		<Popup AllowsTransparency="True" PlacementTarget="{Binding ElementName=PicThumb}" Placement="Top"
+			  VerticalOffset="5" IsOpen="{Binding IsFullSizeOpen}" MaxWidth="400" x:Name="PicPopup">
+			<Border Padding="10">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="*"/>
+						<RowDefinition Height="10"/>
+						<RowDefinition Height="Auto"/>
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="5"/>
+						<ColumnDefinition Width="*"/>
+					</Grid.ColumnDefinitions>
+					<ScrollViewer Grid.ColumnSpan="3" MaxHeight="350" MaxWidth="350" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+						<Image Source="{Binding ElementName=PicThumb, Path=Source}" MinHeight="50" MinWidth="50"/>
+					</ScrollViewer>
+					<TextBlock Grid.Row="2" Text="{Binding Picture.TypeString}" FontWeight="Bold" VerticalAlignment="Top"/>
+					<TextBlock Grid.Row="2" Grid.Column="2" TextWrapping="Wrap">
+						<TextBlock.Style>
+							<Style TargetType="{x:Type TextBlock}">
+								<Setter Property="Text" Value="{Binding Path=Picture.Description}"/>
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding Path=Picture.Description}" Value="">
+										<Setter Property="Text" Value="(none)"/>
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</TextBlock.Style>
+					</TextBlock>
+				</Grid>
+			</Border>
+		</Popup>
+	</Grid>
+</UserControl>
