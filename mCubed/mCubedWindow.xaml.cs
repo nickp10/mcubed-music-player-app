@@ -21,12 +21,13 @@ namespace mCubed {
 		public mCubedWindow() {
 			// Initialize
 			InitializeComponent();
-
+			
 			// Hook up event handlers
 			Utilities.MainSettings.ShowMiniChanged += new Action(OnShowMiniChanged);
 			Utilities.MainSettings.Failure += new Action<MediaFailure, string>(OnFailure);
 			Closing += new CancelEventHandler(OnClosing);
 			AddHandler(Window.PreviewKeyDownEvent, new KeyEventHandler(OnKeyDown));
+			GlobalKeyboardHook.OnKeyDown += new Action<object, Key>(OnGlobalKeyDown);
 
 			// Finalizations
 			Utilities.MainSettings.InvokeEvents();
@@ -37,6 +38,26 @@ namespace mCubed {
 		#region Event Handlers
 
 		/// <summary>
+		/// Event that handles the global keyboard input
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="key">The event arguments</param>
+		private void OnGlobalKeyDown(object sender, Key key) {
+			MediaAction? action = null;
+			if (key == Key.MediaNextTrack) {
+				action = MediaAction.Next;
+			} else if (key == Key.MediaPreviousTrack) {
+				action = MediaAction.Prev;
+			} else if (key == Key.MediaStop) {
+				action = MediaAction.Stop;
+			} else if (key == Key.MediaPlayPause) {
+				action = MediaAction.PlayPause;
+			}
+			if (action.HasValue)
+				Utilities.MainSettings.PerformAction(action.Value);
+		}
+
+		/// <summary>
 		/// Event that handles the keyboard input
 		/// </summary>
 		/// <param name="sender">The sender object</param>
@@ -45,15 +66,7 @@ namespace mCubed {
 			MediaAction? action = null;
 			bool controlDown = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
 			bool shiftDown = (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
-			if (e.Key == Key.MediaNextTrack) {
-				action = MediaAction.Next;
-			} else if (e.Key == Key.MediaPreviousTrack) {
-				action = MediaAction.Prev;
-			} else if (e.Key == Key.MediaStop) {
-				action = MediaAction.Stop;
-			} else if (e.Key == Key.MediaPlayPause) {
-				action = MediaAction.PlayPause;
-			} else if (controlDown && e.Key == Key.I) {
+			if (controlDown && e.Key == Key.I) {
 				action = MediaAction.ToggleMDI;
 			} else if (controlDown && e.Key == Key.R) {
 				action = MediaAction.Restart;
@@ -79,6 +92,7 @@ namespace mCubed {
 				e.Cancel = true;
 			} else {
 				Utilities.MainSettings.Save();
+				GlobalKeyboardHook.Dispose();
 			}
 		}
 

@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
-namespace mCubed.Core
-{
-	public class ProcessManager : INotifyPropertyChanged
-	{
+namespace mCubed.Core {
+	public class ProcessManager : INotifyPropertyChanged {
 		#region INotifyPropertyChanged Members
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -27,8 +25,7 @@ namespace mCubed.Core
 		/// <summary>
 		/// Get the current process that is active [Bindable]
 		/// </summary>
-		public Process CurrentProcess
-		{
+		public Process CurrentProcess {
 			get { return _currentProcess; }
 			private set { this.SetAndNotify(ref _currentProcess, value, "CurrentProcess"); }
 		}
@@ -36,8 +33,7 @@ namespace mCubed.Core
 		/// <summary>
 		/// Get whether or not at least one process is currently active/in progress [Bindable]
 		/// </summary>
-		public bool IsProcessActive
-		{
+		public bool IsProcessActive {
 			get { return _isProcessActive; }
 			private set { this.SetAndNotify(ref _isProcessActive, value, "IsProcessActive"); }
 		}
@@ -45,8 +41,7 @@ namespace mCubed.Core
 		/// <summary>
 		/// Get the list of processes that are currently operating [Bindable]
 		/// </summary>
-		public IEnumerable<Process> Processes
-		{
+		public IEnumerable<Process> Processes {
 			get { return _processes; }
 			private set { this.SetAndNotify(ref _processes, (value ?? Enumerable.Empty<Process>()).ToArray(), null, OnProgressChanged, "Processes"); }
 		}
@@ -63,8 +58,7 @@ namespace mCubed.Core
 		/// <summary>
 		/// Event that handles when the progress of any of the associated processes has changed
 		/// </summary>
-		private void OnProgressChanged()
-		{
+		private void OnProgressChanged() {
 			TotalProcess.CompletedCount = Processes.Sum(p => p.CompletedCount);
 			TotalProcess.TotalCount = Processes.Sum(p => p.TotalCount);
 		}
@@ -77,8 +71,7 @@ namespace mCubed.Core
 		/// Add a process to the queue of processes
 		/// </summary>
 		/// <param name="handler">The handler to the process to perform</param>
-		public void AddProcess(Action<Process> handler)
-		{
+		public void AddProcess(Action<Process> handler) {
 			AddProcess(handler, null, 0);
 		}
 
@@ -88,8 +81,7 @@ namespace mCubed.Core
 		/// <param name="handler">The handler to the process to perform</param>
 		/// <param name="description">The descriptoin of the process</param>
 		/// <param name="totalCount">The total number of steps within the process</param>
-		public void AddProcess(Action<Process> handler, string description, int totalCount)
-		{
+		public void AddProcess(Action<Process> handler, string description, int totalCount) {
 			// Initialize
 			BackgroundWorker worker = new BackgroundWorker { WorkerReportsProgress = true };
 			Process process = new Process(worker) { Description = description, TotalCount = totalCount };
@@ -110,8 +102,7 @@ namespace mCubed.Core
 		/// <summary>
 		/// Perform the next process in the list similar to a queue
 		/// </summary>
-		private void PerformAvailableProcess()
-		{
+		private void PerformAvailableProcess() {
 			// Grab the next process, queue style
 			Process process = Processes.FirstOrDefault(p => !p.IsCompleted);
 
@@ -129,8 +120,7 @@ namespace mCubed.Core
 		#endregion
 	}
 
-	public class Process : INotifyPropertyChanged
-	{
+	public class Process : INotifyPropertyChanged {
 		#region INotifyPropertyChanged Members
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -152,8 +142,7 @@ namespace mCubed.Core
 		/// <summary>
 		/// Get/set the count of completed steps within the process [Bindable]
 		/// </summary>
-		public int CompletedCount
-		{
+		public int CompletedCount {
 			get { return _completedCount; }
 			set { this.SetAndNotify(ref _completedCount, value, null, OnProgressChanged, "CompletedCount", "Progress", "WorkerProgress"); }
 		}
@@ -161,8 +150,7 @@ namespace mCubed.Core
 		/// <summary>
 		/// Get/set the description for this process [Bindable]
 		/// </summary>
-		public string Description
-		{
+		public string Description {
 			get { return _description; }
 			set { this.SetAndNotify(ref _description, value, "Description"); }
 		}
@@ -170,8 +158,7 @@ namespace mCubed.Core
 		/// <summary>
 		/// Get whether or not this process has completed [Bindable]
 		/// </summary>
-		public bool IsCompleted
-		{
+		public bool IsCompleted {
 			get { return _isCompleted; }
 			private set { this.SetAndNotify(ref _isCompleted, value, "IsCompleted"); }
 		}
@@ -184,8 +171,7 @@ namespace mCubed.Core
 		/// <summary>
 		/// Get/set the count of total steps within the process [Bindable]
 		/// </summary>
-		public int TotalCount
-		{
+		public int TotalCount {
 			get { return _totalCount; }
 			set { this.SetAndNotify(ref _totalCount, value, null, OnProgressChanged, "TotalCount", "Progress", "WorkerProgress"); }
 		}
@@ -203,8 +189,7 @@ namespace mCubed.Core
 		/// Create a process given the background worker
 		/// </summary>
 		/// <param name="worker">The worker that contains the process being performed</param>
-		public Process(BackgroundWorker worker)
-		{
+		public Process(BackgroundWorker worker) {
 			_worker = worker;
 			if (_worker != null)
 				_worker.RunWorkerCompleted += (sender, e) => IsCompleted = true;
@@ -217,9 +202,8 @@ namespace mCubed.Core
 		/// <summary>
 		/// Event that handles when the progress of the process changed
 		/// </summary>
-		private void OnProgressChanged()
-		{
-			if(_worker != null)
+		private void OnProgressChanged() {
+			if (_worker != null)
 				_worker.ReportProgress(WorkerProgress);
 		}
 
@@ -230,9 +214,8 @@ namespace mCubed.Core
 		/// <summary>
 		/// Run the associated process unless the process is already being performed or has been performed already
 		/// </summary>
-		public void Run()
-		{
-			if(_worker != null && !_worker.IsBusy && !IsCompleted)
+		public void Run() {
+			if (_worker != null && !_worker.IsBusy && !IsCompleted)
 				_worker.RunWorkerAsync();
 		}
 
