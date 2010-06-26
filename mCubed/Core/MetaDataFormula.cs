@@ -20,7 +20,14 @@ namespace mCubed.Core {
 		/// <summary>
 		/// Get a collection of all the formula prefixes
 		/// </summary>
-		public static Dictionary<string, string> FormulaPrefixes { get; set; }
+		public static Dictionary<string, string> FormulaPrefixes { get; private set; }
+
+		/// <summary>
+		/// Get a collection of all the formula properties that are for meta-data properties
+		/// </summary>
+		public static IEnumerable<MetaDataAttribute> MetaDataProperties {
+			get { return FormulaProperties.Where(f => f.Priority == 1); }
+		}
 
 		/// <summary>
 		/// Grab all the properties at runtime for the meta-data formulas

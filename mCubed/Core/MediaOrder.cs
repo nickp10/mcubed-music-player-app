@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace mCubed.Core
-{
-	public class MediaOrder : INotifyPropertyChanged
-	{
+namespace mCubed.Core {
+	public class MediaOrder : INotifyPropertyChanged {
 		#region INotifyPropertyChanged Members
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -34,8 +32,7 @@ namespace mCubed.Core
 		/// <summary>
 		/// Get/set the type of media order that is being represented [Bindable]
 		/// </summary>
-		public MediaOrderType Type
-		{
+		public MediaOrderType Type {
 			get { return _type; }
 			set { this.SetAndNotify(ref _type, value, "Type"); }
 		}
@@ -74,8 +71,7 @@ namespace mCubed.Core
 		/// Add a media index to the media order
 		/// </summary>
 		/// <param name="mediaIndex">The media index to add</param>
-		public void AddMediaIndex(int mediaIndex)
-		{
+		public void AddMediaIndex(int mediaIndex) {
 			if (!MediaIndexExists(mediaIndex)) {
 				if (Type == MediaOrderType.Shuffle)
 					_order.Insert(_random.Next(0, _order.Count + 1), mediaIndex);
@@ -88,16 +84,14 @@ namespace mCubed.Core
 		/// Remove a media index from the media order
 		/// </summary>
 		/// <param name="mediaIndex">The media index to remove</param>
-		public void RemoveMediaIndex(int mediaIndex)
-		{
+		public void RemoveMediaIndex(int mediaIndex) {
 			_order.Remove(mediaIndex);
 		}
 
 		/// <summary>
 		/// Clear all the media indices from the media order
 		/// </summary>
-		public void Clear()
-		{
+		public void Clear() {
 			_order.Clear();
 		}
 
@@ -106,8 +100,7 @@ namespace mCubed.Core
 		/// </summary>
 		/// <param name="orderKey">The order key to move</param>
 		/// <param name="position">The position at which it should be moved to</param>
-		public void MoveOrderKey(int orderKey, int position)
-		{
+		public void MoveOrderKey(int orderKey, int position) {
 			if (OrderKeyExists(orderKey)) {
 				int temp = _order[orderKey];
 				_order.RemoveAt(orderKey);
@@ -120,8 +113,7 @@ namespace mCubed.Core
 		/// </summary>
 		/// <param name="mediaIndex">The media index to move</param>
 		/// <param name="position">The position at which it should be moved to</param>
-		public void MoveMediaIndex(int mediaIndex, int position)
-		{
+		public void MoveMediaIndex(int mediaIndex, int position) {
 			MoveOrderKey(OrderKeyForMediaIndex(mediaIndex), position);
 		}
 
@@ -130,8 +122,7 @@ namespace mCubed.Core
 		/// </summary>
 		/// <param name="orderKey1">The first order key to swap</param>
 		/// <param name="orderKey2">The second order key to swap</param>
-		public void SwapOrderKeys(int orderKey1, int orderKey2)
-		{
+		public void SwapOrderKeys(int orderKey1, int orderKey2) {
 			if (OrderKeyExists(orderKey1) && OrderKeyExists(orderKey2)) {
 				int temp = _order[orderKey1];
 				_order[orderKey1] = _order[orderKey2];
@@ -144,8 +135,7 @@ namespace mCubed.Core
 		/// </summary>
 		/// <param name="mediaIndex1">The first media index to swap</param>
 		/// <param name="mediaIndex2">The second media index to swap</param>
-		public void SwapMediaIndices(int mediaIndex1, int mediaIndex2)
-		{
+		public void SwapMediaIndices(int mediaIndex1, int mediaIndex2) {
 			SwapOrderKeys(OrderKeyForMediaIndex(mediaIndex1), OrderKeyForMediaIndex(mediaIndex2));
 		}
 
@@ -158,8 +148,7 @@ namespace mCubed.Core
 		/// </summary>
 		/// <param name="mediaIndex">The media index to check against</param>
 		/// <returns>True if the media index exists, or false otherwise</returns>
-		public bool MediaIndexExists(int mediaIndex)
-		{
+		public bool MediaIndexExists(int mediaIndex) {
 			return _order.Contains(mediaIndex);
 		}
 
@@ -168,8 +157,7 @@ namespace mCubed.Core
 		/// </summary>
 		/// <param name="orderKey">The order key to retrieve the media index for</param>
 		/// <returns>The media index for the order key</returns>
-		public int MediaIndexForOrderKey(int orderKey)
-		{
+		public int MediaIndexForOrderKey(int orderKey) {
 			return _order[orderKey];
 		}
 
@@ -178,8 +166,7 @@ namespace mCubed.Core
 		/// </summary>
 		/// <param name="orderKey">The order key to check against</param>
 		/// <returns>True if the order key exists, or false otherwise</returns>
-		public bool OrderKeyExists(int orderKey)
-		{
+		public bool OrderKeyExists(int orderKey) {
 			return (orderKey < _order.Count && orderKey >= 0);
 		}
 
@@ -188,8 +175,7 @@ namespace mCubed.Core
 		/// </summary>
 		/// <param name="mediaIndex">The media index to retrieve the order key for</param>
 		/// <returns>The order key for the media index</returns>
-		public int OrderKeyForMediaIndex(int mediaIndex)
-		{
+		public int OrderKeyForMediaIndex(int mediaIndex) {
 			return _order.IndexOf(mediaIndex);
 		}
 
@@ -200,8 +186,7 @@ namespace mCubed.Core
 		/// <summary>
 		/// Reshuffle the media order only if its type is set to shuffle
 		/// </summary>
-		public void Shuffle()
-		{
+		public void Shuffle() {
 			if (Type == MediaOrderType.Shuffle) {
 				for (int i = _order.Count - 1; i >= 0; i--) {
 					SwapOrderKeys(i, _random.Next(0, i + 1));

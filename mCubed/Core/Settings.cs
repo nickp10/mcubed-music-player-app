@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using System.Collections.ObjectModel;
+using System.Text;
 
 namespace mCubed.Core {
 	public class Settings : INotifyPropertyChanged {
@@ -16,6 +18,7 @@ namespace mCubed.Core {
 		#region Data Store
 
 		private string _path = Path.Combine(Utilities.ExecutionDirectory, "mCubed.xml");
+		private ColumnSettings _columnSettings;
 		private string _directoryMediaDefault = Environment.CurrentDirectory;
 		private string _directoryPictureDefault = Environment.CurrentDirectory;
 		private XDocument _document;
@@ -41,6 +44,11 @@ namespace mCubed.Core {
 		#endregion
 
 		#region Bindable Properties
+
+		/// <summary>
+		/// Get the column settings that are to be used [Bindable]
+		/// </summary>
+		public ColumnSettings ColumnSettings { get { return _columnSettings; } }
 
 		/// <summary>
 		/// Get/set the default directory for media browsing
@@ -195,10 +203,12 @@ namespace mCubed.Core {
 		/// </summary>
 		/// <param name="element">The XML settings to generate from</param>
 		private void GenerateRoot(XElement element) {
-			if(element.Element("Libraries") != null)
-				Libraries = element.Element("Libraries").Elements("Library").Select(e => GenerateLibrary(e));
+			if (element.Element("Libraries") != null)
+				Libraries = element.Element("Libraries").Elements().Select(e => GenerateLibrary(e));
 			if (element.Element("Formulas") != null)
 				Formulas = Formulas.Union(element.Element("Formulas").Elements().Select(e => GenerateFormula(e)));
+			if (element.Element("Columns") != null)
+				ColumnSettings.GenerateRoot(element.Element("Columns"));
 			ShowMDIManager = element.Parse("ShowMDIManager", true);
 			ShowMini = element.Parse("ShowMini", false);
 			DirectoryMediaDefault = element.Parse("DirectoryMediaDefault", Environment.CurrentDirectory);
@@ -253,7 +263,8 @@ namespace mCubed.Core {
 				new XAttribute("DirectoryPictureDefault", DirectoryPictureDefault ?? ""),
 				new XAttribute("SelectedTab", SelectedTabEnum.ToString() ?? ""),
 				new XElement("Formulas", Formulas.Select(f => GenerateFormula(f))),
-				new XElement("Libraries", Libraries.Select(l => GenerateLibrary(l)))
+				new XElement("Libraries", Libraries.Select(l => GenerateLibrary(l))),
+				ColumnSettings.GenerateRoot()
 			);
 		}
 
@@ -278,6 +289,9 @@ namespace mCubed.Core {
 		/// Load the settings file
 		/// </summary>
 		public void Load() {
+			// Create the column settings first
+			_columnSettings = new ColumnSettings();
+
 			// Attempt to load the file
 			if (ValidSettingsFile())
 				GenerateRoot(_document.Root);
@@ -500,6 +514,177 @@ namespace mCubed.Core {
 		private void OnShowMiniChanged() {
 			if (ShowMiniChanged != null)
 				ShowMiniChanged();
+		}
+
+		#endregion
+	}
+
+	public class ColumnSettings : INotifyPropertyChanged {
+		#region INotifyPropertyChanged Members
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		#region Data Store
+
+		private readonly ObservableCollection<ColumnDetail> _allColumns = new ObservableCollection<ColumnDetail>();
+		private readonly ObservableCollection<ColumnDetail> _display = new ObservableCollection<ColumnDetail>();
+		private readonly ObservableCollection<ColumnDetail> _groupBy = new ObservableCollection<ColumnDetail>();
+		private readonly ObservableCollection<ColumnDetail> _sortBy = new ObservableCollection<ColumnDetail>();
+		private readonly Dictionary<string, ObservableCollection<ColumnDetail>> _collections;
+
+		#endregion
+
+		#region Bindable Properties
+
+		/// <summary>
+		/// Get the collection of all the available columns to select from [Bindable]
+		/// </summary>
+		public ObservableCollection<ColumnDetail> AllColumns { get { return _allColumns; } }
+
+		/// <summary>
+		/// Get the collection of the columns in order to display [Bindable]
+		/// </summary>
+		public ObservableCollection<ColumnDetail> Display { get { return _display; } }
+
+		/// <summary>
+		/// Get the collection of the columns in order to group by [Bindable]
+		/// </summary>
+		public ObservableCollection<ColumnDetail> GroupBy { get { return _groupBy; } }
+
+		/// <summary>
+		/// Get the collection of the columns in order to sort by [Bindable]
+		/// </summary>
+		public ObservableCollection<ColumnDetail> SortBy { get { return _sortBy; } }
+
+		#endregion
+
+		#region Constructor
+
+		/// <summary>
+		/// Create a column settings instance with default column information
+		/// </summary>
+		public ColumnSettings() {
+			_collections = new Dictionary<string, ObservableCollection<ColumnDetail>>()
+			{
+				{ "SortBy", SortBy },
+				{ "GroupBy", GroupBy },
+				{ "Display", Display }
+			};
+			Utilities.MainSettings.PropertyChanged += new PropertyChangedEventHandler(OnFormulasCollectionChanged);
+			foreach (var property in MetaDataFormula.MetaDataProperties) {
+				AllColumns.Add(new ColumnDetail(ColumnType.Property, property.Formula, property.Display));
+			}
+		}
+
+		#endregion
+
+		#region Event Handlers
+
+		/// <summary>
+		/// Event that handles when the formulas collection changes so that the columns change accordingly
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnFormulasCollectionChanged(object sender, PropertyChangedEventArgs e) {
+			// Check if the formulas property changed
+			if (e.PropertyName == null || e.PropertyName == "Formulas") {
+				// Remove all the existing custom formula columns
+				foreach (var column in AllColumns.Where(c => c.Type == ColumnType.Formula).ToArray()) {
+					AllColumns.Remove(column);
+					// Remove from SortBy, GroupBy, & SortBy
+				}
+
+				// Add columns for each of the new items
+				foreach (var column in Utilities.MainSettings.Formulas.Where(f => f.Type == MetaDataFormulaType.Custom)) {
+					AllColumns.Add(new ColumnDetail(ColumnType.Formula, column.Name, column.Name));
+				}
+			}
+		}
+
+		#endregion
+
+		#region XML to mCubed Members
+
+		/// <summary>
+		/// Generate the mCubed column detail settings from XML
+		/// </summary>
+		/// <param name="element">The XML settings to generate from</param>
+		public void GenerateRoot(XElement element) {
+			// Load up all the indivdual column information first
+			Dictionary<int, ColumnDetail> details = new Dictionary<int, ColumnDetail>();
+			foreach (XElement ele in element.Elements()) {
+				// Get the instance
+				string key = ele.Parse("Key", "");
+				ColumnType type = ele.Parse("Type", ColumnType.Property);
+				ColumnDetail detail = AllColumns.FirstOrDefault(c => c.Key == key && c.Type == type);
+
+				// Create the instance if it wasn't found
+				if (detail == null) {
+					detail = new ColumnDetail(type, key, null);
+					AllColumns.Add(detail);
+				}
+
+				// Put the instance in the dictionary and modify the details accordingly
+				int index = ele.Parse<int>("ID", 0);
+				details.Add(index, detail);
+				detail.Width = ele.Parse("Width", detail.Width);
+				detail.Display = ele.Parse("Display", detail.Display);
+			}
+
+			// Load up all the column collections
+			foreach (var collection in _collections) {
+				// Find all the column details ID's
+				string[] columns = element.Parse(collection.Key, "").Split(',');
+				var ids = columns.Select(c => c.Parse(0)).Where(i => i != 0);
+
+				// Find the column detail
+				foreach (var id in ids.Where(i => details.ContainsKey(i)))
+					collection.Value.Add(details[id]);
+			}
+		}
+
+		#endregion
+
+		#region mCubed to XML Members
+
+		/// <summary>
+		/// Generate the XML column detail settings from mCubed
+		/// </summary>
+		/// <returns>The XML settings that were generated</returns>
+		public XElement GenerateRoot() {
+			// Setup
+			XElement root = new XElement("Columns");
+
+			// Save all the column collections
+			foreach (var collection in _collections) {
+				StringBuilder builder = new StringBuilder();
+				foreach (var column in collection.Value) {
+					int id = AllColumns.IndexOf(column);
+					if (id == -1) {
+						id = AllColumns.Count;
+						AllColumns.Add(column);
+					}
+					if (builder.Length != 0)
+						builder.Append(",");
+					builder.Append(id+1);
+				}
+				root.Add(new XAttribute(collection.Key, builder.ToString()));
+			}
+
+			// Save all the individual columns
+			for (int i = 0; i < AllColumns.Count; i++) {
+				var item = AllColumns[i];
+				root.Add(new XElement("Column",
+					new XAttribute("ID", i+1),
+					new XAttribute("Display", item.Display),
+					new XAttribute("Key", item.Key),
+					new XAttribute("Type", item.Type),
+					new XAttribute("Width", item.Width.ToString())
+				));
+			}
+			return root;
 		}
 
 		#endregion

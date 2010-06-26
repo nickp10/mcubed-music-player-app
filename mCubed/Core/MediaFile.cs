@@ -1,9 +1,7 @@
 ﻿using System.ComponentModel;
 
-namespace mCubed.Core
-{
-	public class MediaFile : INotifyPropertyChanged
-	{
+namespace mCubed.Core {
+	public class MediaFile : INotifyPropertyChanged {
 		#region INotifyPropertyChanged Members
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -28,8 +26,7 @@ namespace mCubed.Core
 		/// <summary>
 		/// Get/set whether or not this media file is currently loaded [Bindable]
 		/// </summary>
-		public bool IsLoaded
-		{
+		public bool IsLoaded {
 			get { return _isLoaded; }
 			set {
 				this.SetAndNotify(ref _isLoaded, value, null, OnIsLoadedChanged, "IsLoaded");
@@ -40,8 +37,7 @@ namespace mCubed.Core
 		/// <summary>
 		/// Get the meta-data for this media file [Bindable]
 		/// </summary>
-		public MetaDataInfo MetaData
-		{
+		public MetaDataInfo MetaData {
 			get { return _metaData; }
 			private set { this.SetAndNotify(ref _metaData, value, "MetaData"); }
 		}
@@ -49,8 +45,7 @@ namespace mCubed.Core
 		/// <summary>
 		/// Get/set the order key in which this media file will be played [Bindable]
 		/// </summary>
-		public int OrderKey
-		{
+		public int OrderKey {
 			get { return _orderKey; }
 			set {
 				this.SetAndNotify(ref _orderKey, value, "OrderKey");
@@ -73,8 +68,7 @@ namespace mCubed.Core
 		/// <param name="filePath">The path to the file</param>
 		/// <param name="index">The index to reference the media file by</param>
 		/// <param name="compParent">The library the media file belongs to</param>
-		public MediaFile(string filePath, int index, Library parent)
-		{
+		public MediaFile(string filePath, int index, Library parent) {
 			Index = index;
 			MetaData = new MDITagLib(filePath) { Parent = this };
 			Parent = parent;
@@ -87,8 +81,7 @@ namespace mCubed.Core
 		/// <summary>
 		/// Event that handles when the media file has been loaded or unloaded
 		/// </summary>
-		private void OnIsLoadedChanged()
-		{
+		private void OnIsLoadedChanged() {
 			if (IsLoaded)
 				Parent.MediaFileCurrent = this;
 		}
@@ -100,8 +93,7 @@ namespace mCubed.Core
 		/// <summary>
 		/// Play this media directly
 		/// </summary>
-		public void Play()
-		{
+		public void Play() {
 			IsLoaded = true;
 			Parent.IsLoaded = true;
 			Parent.MediaObject.State = MediaState.Play;

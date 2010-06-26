@@ -209,6 +209,7 @@
   <ItemGroup>
     <Compile Include="Controls\Formula.cs" />
     <Compile Include="Controls\Icon.cs" />
+    <Compile Include="Core\ColumnDetail.cs" />
     <Compile Include="Core\GlobalKeyboardHook.cs" />
     <Compile Include="Core\Library.cs" />
     <Compile Include="Core\MetaDataFormula.cs" />

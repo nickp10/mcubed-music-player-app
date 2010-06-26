@@ -73,11 +73,31 @@ namespace mCubed.Controls {
 
 		#endregion
 
+		#region Data Store
+
+		private MetaDataFormulaType _type = MetaDataFormulaType.Custom;
+
+		#endregion
+
 		#region Properties
 
+		/// <summary>
+		/// Get/set the binding that will be used to bind a formula to the result of this file binding
+		/// </summary>
 		public BindingBase File { get; set; }
+
+		/// <summary>
+		/// Get/set the name of the meta-data formula that this formula markup will retrieve
+		/// </summary>
 		public string Name { get; set; }
-		public MetaDataFormulaType Type { get; set; }
+
+		/// <summary>
+		/// Get/set the type of the meta-data formula that this formula markup will retrieve
+		/// </summary>
+		public MetaDataFormulaType Type {
+			get { return _type; }
+			set { _type = value; }
+		}
 
 		#endregion
 

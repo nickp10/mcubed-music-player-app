@@ -245,6 +245,20 @@ namespace mCubed.Core {
 		}
 
 		/// <summary>
+		/// Perform the given action for all the elements in the given collection
+		/// </summary>
+		/// <typeparam name="T">The type of elements to iterate through</typeparam>
+		/// <param name="list">The list to iterate through</param>
+		/// <param name="func">The function to perform on each of the elements</param>
+		public static void Perform<T>(this IEnumerable<T> list, Action<T> func) {
+			if (func != null && list != null) {
+				foreach (T item in list) {
+					func(item);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Replace every occurence of item with another item maintaining the original sequence of the items
 		/// </summary>
 		/// <typeparam name="T">The type of elements to iterate through</typeparam>
@@ -568,6 +582,7 @@ namespace mCubed.Core {
 		#endregion
 	}
 
+	public enum ColumnType { Formula, Property }
 	public enum MediaAction { Play, Pause, PlayPause, Stop, Prev, Next, Restart, ToggleMDI, ToggleMini, ToggleMediaOrder, ToggleRepeat, ToggleShuffle }
 	public enum MediaFailure { Playback, AddMedia }
 	public enum MediaOrderType { Sequential, Shuffle, Custom }
@@ -593,6 +608,7 @@ namespace mCubed.Core {
 	public sealed class MetaDataAttribute : Attribute {
 		public string ColumnAlias { get; set; }
 		public string Description { get; set; }
+		public string Display { get { return (ColumnAlias ?? DisplayFormula).ToReadableString(); } }
 		public string DisplayFormula { get; set; }
 		public string Formula { get; set; }
 		public string Path { get; set; }
