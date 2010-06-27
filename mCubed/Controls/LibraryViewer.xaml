@@ -65,8 +65,8 @@
 					</Style>
 				</ListView.ItemContainerStyle>
 				<ListView.View>
-					<GridView AllowsColumnReorder="True">
-						<GridViewColumn>
+                    <GridView AllowsColumnReorder="True" x:Name="LibraryGridView">
+                        <GridViewColumn>
 							<GridViewColumn.CellTemplate>
 								<DataTemplate>
 									<Path HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 0 7 L 3.5 3.5 Z" Fill="Black">
@@ -83,33 +83,6 @@
 									</Path>
 								</DataTemplate>
 							</GridViewColumn.CellTemplate>
-						</GridViewColumn>
-						<GridViewColumn DisplayMemberBinding="{Binding OrderKey}">
-							<GridViewColumnHeader Content="##" Tag="OrderKey"/>
-						</GridViewColumn>
-						<GridViewColumn DisplayMemberBinding="{Binding MetaData.Track}">
-							<GridViewColumnHeader Content="#" Tag="MetaData.Track"/>
-						</GridViewColumn>
-						<GridViewColumn DisplayMemberBinding="{Binding MetaData.Title}">
-							<GridViewColumnHeader Content="Title" Tag="MetaData.Title"/>
-						</GridViewColumn>
-						<GridViewColumn DisplayMemberBinding="{Binding MetaData.JoinedPerformers}">
-							<GridViewColumnHeader Content="Artist" Tag="MetaData.JoinedPerformers"/>
-						</GridViewColumn>
-						<GridViewColumn DisplayMemberBinding="{Binding MetaData.Album}">
-							<GridViewColumnHeader Content="Album" Tag="MetaData.Album"/>
-						</GridViewColumn>
-						<GridViewColumn DisplayMemberBinding="{Binding MetaData.AudioBitrate}">
-							<GridViewColumnHeader Content="Bitrate" Tag="MetaData.AudioBitrate"/>
-						</GridViewColumn>
-						<GridViewColumn DisplayMemberBinding="{Binding MetaData.AudioSampleRate}">
-							<GridViewColumnHeader Content="Sample Rate" Tag="MetaData.AudioSampleRate"/>
-						</GridViewColumn>
-						<GridViewColumn DisplayMemberBinding="{Binding MetaData.LengthString}">
-							<GridViewColumnHeader Content="Length" Tag="MetaData.Length"/>
-						</GridViewColumn>
-						<GridViewColumn DisplayMemberBinding="{Binding MetaData.FileName}">
-							<GridViewColumnHeader Content="Filename" Tag="MetaData.FileName"/>
 						</GridViewColumn>
 					</GridView>
 				</ListView.View>

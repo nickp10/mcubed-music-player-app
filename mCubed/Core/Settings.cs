@@ -6,6 +6,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Collections.Specialized;
 
 namespace mCubed.Core {
 	public class Settings : INotifyPropertyChanged {
@@ -29,7 +30,8 @@ namespace mCubed.Core {
 		private int _selectedTab = (int)TabOption.Help;
 		private bool _showMDIManager = true;
 		private bool _showMini;
-		private IEnumerable<MetaDataFormula> _formulas = new[] {
+		private readonly ObservableCollection<MetaDataFormula> _formulas = new ObservableCollection<MetaDataFormula>()
+		{
 			new MetaDataFormula {
 				FallbackValue = "Music Meta-data Manager",
 				Formula = "%Track% - %Title% [%Playback.State%] [%Playback.Position%/%Playback.Length%]",
@@ -69,10 +71,7 @@ namespace mCubed.Core {
 		/// <summary>
 		/// Get the collection of formulas that may be used throughout the application [Bindable]
 		/// </summary>
-		public IEnumerable<MetaDataFormula> Formulas {
-			get { return _formulas; }
-			private set { this.SetAndNotify(ref _formulas, (value ?? Enumerable.Empty<MetaDataFormula>()).ToArray(), "Formulas"); }
-		}
+		public ObservableCollection<MetaDataFormula> Formulas { get { return _formulas; } }
 
 		/// <summary>
 		/// Get whether or not the settings have loaded or not [Bindable]
@@ -206,7 +205,7 @@ namespace mCubed.Core {
 			if (element.Element("Libraries") != null)
 				Libraries = element.Element("Libraries").Elements().Select(e => GenerateLibrary(e));
 			if (element.Element("Formulas") != null)
-				Formulas = Formulas.Union(element.Element("Formulas").Elements().Select(e => GenerateFormula(e)));
+				element.Element("Formulas").Elements().Select(e => GenerateFormula(e)).Where(e => !Formulas.Contains(e)).Perform(e => Formulas.Add(e));
 			if (element.Element("Columns") != null)
 				ColumnSettings.GenerateRoot(element.Element("Columns"));
 			ShowMDIManager = element.Parse("ShowMDIManager", true);
@@ -408,24 +407,6 @@ namespace mCubed.Core {
 			}
 		}
 
-		/// <summary>
-		/// Add a custom formula to the collection of formulas
-		/// </summary>
-		/// <param name="formula">The formula that will be added</param>
-		public void AddFormula(MetaDataFormula formula) {
-			if (formula != null && formula.Type == MetaDataFormulaType.Custom)
-				Formulas = Formulas.Union(new[] { formula });
-		}
-
-		/// <summary>
-		/// Remove a custom formula from the collection of formulas
-		/// </summary>
-		/// <param name="formula">The formula that will be removed</param>
-		public void RemoveFormula(MetaDataFormula formula) {
-			if (formula != null && formula.Type == MetaDataFormulaType.Custom)
-				Formulas = Formulas.Where(f => f != formula);
-		}
-
 		#endregion
 
 		#region Event Handlers
@@ -519,7 +500,7 @@ namespace mCubed.Core {
 		#endregion
 	}
 
-	public class ColumnSettings : INotifyPropertyChanged {
+	public class ColumnSettings : INotifyPropertyChanged, IDisposable {
 		#region INotifyPropertyChanged Members
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -572,9 +553,9 @@ namespace mCubed.Core {
 				{ "GroupBy", GroupBy },
 				{ "Display", Display }
 			};
-			Utilities.MainSettings.PropertyChanged += new PropertyChangedEventHandler(OnFormulasCollectionChanged);
+			Utilities.MainSettings.Formulas.CollectionChanged += new NotifyCollectionChangedEventHandler(OnFormulasCollectionChanged);
 			foreach (var property in MetaDataFormula.MetaDataProperties) {
-				AllColumns.Add(new ColumnDetail(ColumnType.Property, property.Formula, property.Display));
+				AllColumns.Add(new ColumnDetail(ColumnType.Property, property.Property.Name, property.Display));
 			}
 		}
 
@@ -587,18 +568,22 @@ namespace mCubed.Core {
 		/// </summary>
 		/// <param name="sender">The sender object</param>
 		/// <param name="e">The event arguments</param>
-		private void OnFormulasCollectionChanged(object sender, PropertyChangedEventArgs e) {
-			// Check if the formulas property changed
-			if (e.PropertyName == null || e.PropertyName == "Formulas") {
-				// Remove all the existing custom formula columns
-				foreach (var column in AllColumns.Where(c => c.Type == ColumnType.Formula).ToArray()) {
-					AllColumns.Remove(column);
-					// Remove from SortBy, GroupBy, & SortBy
+		private void OnFormulasCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+			// Remove each of the removed formula columns from each of the column collections
+			if (e.Action == NotifyCollectionChangedAction.Remove) {
+				foreach (var item in e.OldItems.OfType<MetaDataFormula>()) {
+					var column = AllColumns.FirstOrDefault(c => c.Type == ColumnType.Formula && c.Key == item.Name);
+					if (column != null) {
+						new[] { AllColumns, SortBy, GroupBy, Display }.Perform(c => c.Remove(column));
+					}
 				}
+			}
 
-				// Add columns for each of the new items
-				foreach (var column in Utilities.MainSettings.Formulas.Where(f => f.Type == MetaDataFormulaType.Custom)) {
-					AllColumns.Add(new ColumnDetail(ColumnType.Formula, column.Name, column.Name));
+			// Add a formula column for each of the added items
+			else if (e.Action == NotifyCollectionChangedAction.Add) {
+				foreach (var item in e.NewItems.OfType<MetaDataFormula>()) {
+					var column = new ColumnDetail(ColumnType.Formula, item.Name, item.Name);
+					AllColumns.Add(column);
 				}
 			}
 		}
@@ -643,6 +628,15 @@ namespace mCubed.Core {
 				foreach (var id in ids.Where(i => details.ContainsKey(i)))
 					collection.Value.Add(details[id]);
 			}
+
+			// Default the Display column
+			if (Display.Count == 0) {
+				var displayProps = new[] {
+					"OrderKey", "Track", "Title", "JoinedPerformers", "Album", "LengthString", "JoinedGenres", "FileName"
+				};
+				displayProps.Select(s => AllColumns.FirstOrDefault(c => c.Type == ColumnType.Property && c.Key == s)).
+					Where(s => s != null).Perform(s => Display.Add(s));
+			}
 		}
 
 		#endregion
@@ -685,6 +679,18 @@ namespace mCubed.Core {
 				));
 			}
 			return root;
+		}
+
+		#endregion
+
+		#region IDisposable Members
+
+		/// <summary>
+		/// Dispose of the column settings appropriately
+		/// </summary>
+		public void Dispose() {
+			Utilities.MainSettings.Formulas.CollectionChanged -= new NotifyCollectionChangedEventHandler(OnFormulasCollectionChanged);
+			PropertyChanged = null;
 		}
 
 		#endregion

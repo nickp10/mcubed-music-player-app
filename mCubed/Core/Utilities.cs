@@ -11,7 +11,6 @@ namespace mCubed.Core {
 	public static class Utilities {
 		#region Data Store
 
-		private static mCubed.Controls.ProgressManager _mainProgressManager;
 		private static ProcessManager _mainProcessManager = new ProcessManager();
 		private static Settings _mainSettings = new Settings();
 

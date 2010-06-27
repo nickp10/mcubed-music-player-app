@@ -67,7 +67,8 @@ namespace mCubed {
 		/// <param name="sender">The sender object</param>
 		/// <param name="e">The event arguments</param>
 		private void ApplicationSettings_AddFormula(object sender, RoutedEventArgs e) {
-			Settings.AddFormula(new MetaDataFormula { Formula = "%Title%", Name = "New Formula", Type = MetaDataFormulaType.Custom });
+			var formula = new MetaDataFormula { Formula = "%Title%", Name = "New Formula", Type = MetaDataFormulaType.Custom };
+			Settings.Formulas.Add(formula);
 		}
 
 		/// <summary>
@@ -77,7 +78,8 @@ namespace mCubed {
 		/// <param name="e">The event arguments</param>
 		private void ApplicationSettings_RemoveFormula(object sender, RoutedEventArgs e) {
 			var selection = FormulaListView.SelectedItem as MetaDataFormula;
-			Settings.RemoveFormula(selection);
+			if (selection != null)
+				Settings.Formulas.Remove(selection);
 		}
 
 		#endregion

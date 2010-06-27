@@ -118,12 +118,28 @@ namespace mCubed.Controls {
 				} else {
 					formula = Utilities.MainSettings.Formulas.FirstOrDefault(f => f.Type == Type);
 				}
-				MDFFile file = new MDFFile(formula);
-				BindingOperations.SetBinding(target, Formula.FormulaFileProperty, File);
-				Formula.Subscribe(target, file);
-				return new Binding { Source = file, Path = new PropertyPath("Value") }.ProvideValue(serviceProvider);
+				if (formula != null)
+					return BindFormula(formula, target, File).ProvideValue(serviceProvider);
 			}
 			return this;
+		}
+
+		#endregion
+
+		#region Binding Members
+
+		/// <summary>
+		/// Binds a formula for a given target element with the given binding for the media file
+		/// </summary>
+		/// <param name="formula">The formula that should be applied to the media file</param>
+		/// <param name="targetElement">The element that will be the target of this binding</param>
+		/// <param name="fileBinding">The binding that will be used to retrieve the media file</param>
+		/// <returns>The appropriate binding element to the value for the formula applied on the media file</returns>
+		public static BindingBase BindFormula(MetaDataFormula formula, FrameworkElement targetElement, BindingBase fileBinding) {
+			MDFFile file = new MDFFile(formula);
+			BindingOperations.SetBinding(targetElement, Formula.FormulaFileProperty, fileBinding);
+			Formula.Subscribe(targetElement, file);
+			return new Binding { Source = file, Path = new PropertyPath("Value") };
 		}
 
 		#endregion
