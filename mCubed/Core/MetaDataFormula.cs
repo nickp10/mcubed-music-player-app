@@ -159,6 +159,24 @@ namespace mCubed.Core {
 
 		#endregion
 
+		#region Static Members
+
+		/// <summary>
+		/// Get the value for a media file with the given meta data formula
+		/// </summary>
+		/// <param name="formula">The formula to retrieve the value for</param>
+		/// <param name="file">The file to retrieve information out of</param>
+		/// <returns>The value of a formula being applied to a given file</returns>
+		public static string GetValue(MetaDataFormula formula, MediaFile file) {
+			var mdf = new MDFFile(formula);
+			mdf.MediaFile = file;
+			var value = mdf.Value;
+			mdf.Dispose();
+			return value;
+		}
+
+		#endregion
+
 		#region Data Store
 
 		private MediaFile _mediaFile;
@@ -318,7 +336,9 @@ namespace mCubed.Core {
 		/// Disposes the formula file properly
 		/// </summary>
 		public void Dispose() {
+			OnMediaFileChanging();
 			Parent.ValueChanged -= ChangeValue;
+			PropertyChanged = null;
 		}
 
 		#endregion

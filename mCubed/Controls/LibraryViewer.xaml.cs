@@ -1,20 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Markup;
 using mCubed.Core;
 using mCubed.MetaData;
-using System.Collections.Specialized;
-using System.IO;
-using System.Windows.Markup;
-using System.Text;
 
 namespace mCubed.Controls {
-	public partial class LibraryViewer : UserControl {
+	public partial class LibraryViewer : UserControl, INotifyPropertyChanged {
+		#region INotifyPropertyChanged Members
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
 		#region Dependency Property: Library
 
 		/// <summary>
@@ -46,6 +52,7 @@ namespace mCubed.Controls {
 
 		#region Data Store
 
+		private ObservableCollection<ColumnVector> _displayColumns;
 		private GridLength _prevMDIHeight = new GridLength(.4, GridUnitType.Star);
 
 		#endregion
@@ -63,6 +70,14 @@ namespace mCubed.Controls {
 		}
 
 		/// <summary>
+		/// Get the collection of column details that represents the displayed columns and its ordering [Bindable]
+		/// </summary>
+		public ObservableCollection<ColumnVector> DisplayColumns {
+			get { return _displayColumns; }
+			private set { this.SetAndNotify(ref _displayColumns, value, null, OnDisplayColumnsChanged, "DisplayColumns"); }
+		}
+
+		/// <summary>
 		/// Get the collection of currently selected items
 		/// </summary>
 		public IEnumerable<MediaFile> SelectedItems { get { return SelectedMedia.SelectedItems.OfType<MediaFile>(); } }
@@ -75,25 +90,12 @@ namespace mCubed.Controls {
 			// Set up event handlers
 			Utilities.MainSettings.ShowMDIManagerChanged += new Action(OnShowMDIManagerChanged);
 			Loaded += new RoutedEventHandler(OnLoaded);
-			Utilities.MainSettings.ColumnSettings.Display.CollectionChanged += new NotifyCollectionChangedEventHandler(OnDisplayCollectionChanged);
 
 			// Initialize
 			InitializeComponent();
-			OnDisplayCollectionChanged(null, null);
 
-			// Setup column reorder event
-			LibraryGridView.Columns.CollectionChanged += delegate(object cs, NotifyCollectionChangedEventArgs ce)
-			{
-				if (ce.Action == NotifyCollectionChangedAction.Move) {
-					if (ce.OldStartingIndex == 0 || ce.NewStartingIndex == 0) {
-						var item = LibraryGridView.Columns[ce.NewStartingIndex];
-						LibraryGridView.Columns.RemoveAt(ce.NewStartingIndex);
-						LibraryGridView.Columns.Insert(ce.OldStartingIndex, item);
-					} else {
-						Utilities.MainSettings.ColumnSettings.Display.Move(ce.OldStartingIndex - 1, ce.NewStartingIndex - 1);
-					}
-				}
-			};
+			// Setup column reorder event after initilization
+			LibraryGridView.Columns.CollectionChanged += new NotifyCollectionChangedEventHandler(OnColumnCollectionChanged);
 		}
 
 		#endregion
@@ -117,11 +119,18 @@ namespace mCubed.Controls {
 		/// <param name="oldLibrary">The previous library value</param>
 		/// <param name="newLibrary">The new library value</param>
 		private void OnLibraryChanged(Library oldLibrary, Library newLibrary) {
-			// Register/unregister for the refreshed event for the library
-			if (oldLibrary != null)
+			// Unregister the old library
+			if (oldLibrary != null) {
 				oldLibrary.Refreshed -= new Action(OnRefreshed);
-			if (newLibrary != null)
+				DisplayColumns.CollectionChanged -= new NotifyCollectionChangedEventHandler(OnDisplayCollectionChanged);
+			}
+
+			// Register the new library
+			if (newLibrary != null) {
 				newLibrary.Refreshed += new Action(OnRefreshed);
+				DisplayColumns = newLibrary.ColumnSettings.Display;
+				DisplayColumns.CollectionChanged += new NotifyCollectionChangedEventHandler(OnDisplayCollectionChanged);
+			}
 		}
 
 		/// <summary>
@@ -256,6 +265,30 @@ namespace mCubed.Controls {
 		#region Column Event Handlers
 
 		/// <summary>
+		/// Event that handles when the grid view column collection itself changes
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnColumnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+			if (e.Action == NotifyCollectionChangedAction.Move) {
+				if (e.OldStartingIndex == 0 || e.NewStartingIndex == 0) {
+					var item = LibraryGridView.Columns[e.NewStartingIndex];
+					LibraryGridView.Columns.RemoveAt(e.NewStartingIndex);
+					LibraryGridView.Columns.Insert(e.OldStartingIndex, item);
+				} else {
+					DisplayColumns.Move(e.OldStartingIndex - 1, e.NewStartingIndex - 1);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Event that handles when the collection of columns being displayed changes to a new collection
+		/// </summary>
+		private void OnDisplayColumnsChanged() {
+			OnDisplayCollectionChanged(null, null);
+		}
+
+		/// <summary>
 		/// Event that handles when the display column collection has changed
 		/// </summary>
 		/// <param name="sender">The sender object</param>
@@ -266,7 +299,7 @@ namespace mCubed.Controls {
 				LibraryGridView.Columns.RemoveAt(1);
 
 			// Add all the additional columns
-			foreach (var columnInfo in Utilities.MainSettings.ColumnSettings.Display) {
+			foreach (var columnInfo in DisplayColumns) {
 				// Create the column
 				var column = new GridViewColumn();
 				var header = new GridViewColumnHeader();
@@ -278,17 +311,17 @@ namespace mCubed.Controls {
 				xaml.Append(" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"");
 				xaml.Append(" xmlns:controls=\"clr-namespace:mCubed.Controls;assembly=" + GetType().Assembly.GetName().Name + "\"");
 				xaml.Append(">");
-				if (columnInfo.Type == ColumnType.Property)
-					xaml.Append("<TextBlock Text=\"{Binding MetaData." + columnInfo.Key + "}\"/>");
+				if (columnInfo.ColumnDetail.Type == ColumnType.Property)
+					xaml.Append("<TextBlock Text=\"{Binding MetaData." + columnInfo.ColumnDetail.Key + "}\"/>");
 				else
-					xaml.Append("<TextBlock Text=\"{controls:Formula Name=" + columnInfo.Key + ", File={Binding}}\"/>");
+					xaml.Append("<TextBlock Text=\"{controls:Formula Name=" + columnInfo.ColumnDetail.Key + ", File={Binding}}\"/>");
 				xaml.Append("</DataTemplate>");
 				column.CellTemplate = (DataTemplate)XamlReader.Parse(xaml.ToString());
 
 				// Setup the bindings
 				BindingOperations.SetBinding(column, GridViewColumn.WidthProperty, new Binding { Source = columnInfo, Mode = BindingMode.TwoWay, Path = new PropertyPath("Width") });
-				BindingOperations.SetBinding(header, GridViewColumnHeader.ContentProperty, new Binding { Source = columnInfo, Path = new PropertyPath("Display") });
-				header.Tag = "MetaData." + columnInfo.Key;
+				BindingOperations.SetBinding(header, GridViewColumnHeader.ContentProperty, new Binding { Source = columnInfo.ColumnDetail, Path = new PropertyPath("Display") });
+				header.Tag = "MetaData." + columnInfo.ColumnDetail.Key;
 
 				// Add the column
 				LibraryGridView.Columns.Add(column);

@@ -383,7 +383,7 @@ namespace mCubed.Core {
 
 			// Invoke each property changed on each event listener
 			if (invocationList != null && invocationList.Length > 0) {
-				foreach (var property in properties.Select(p => new System.ComponentModel.PropertyChangedEventArgs(p)))
+				foreach (var property in properties.Select(p => new PropertyChangedEventArgs(p)))
 					foreach (var handler in invocationList)
 						handler.Method.Invoke(handler.Target, new object[] { sender, property });
 			}
@@ -581,6 +581,7 @@ namespace mCubed.Core {
 		#endregion
 	}
 
+	public enum ColumnDirection { Ascending, Descending }
 	public enum ColumnType { Formula, Property }
 	public enum MediaAction { Play, Pause, PlayPause, Stop, Prev, Next, Restart, ToggleMDI, ToggleMini, ToggleMediaOrder, ToggleRepeat, ToggleShuffle }
 	public enum MediaFailure { Playback, AddMedia }
@@ -619,5 +620,5 @@ namespace mCubed.Core {
 		public override string ToString() {
 			return Description;
 		}
-	}
+	}	
 }

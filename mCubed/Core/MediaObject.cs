@@ -4,7 +4,7 @@ using System.Timers;
 using System.Windows.Media;
 
 namespace mCubed.Core {
-	public class MediaObject : INotifyPropertyChanged {
+	public class MediaObject : INotifyPropertyChanged, IDisposable {
 		#region MediaObjectState
 
 		public struct MediaObjectState {
@@ -129,17 +129,10 @@ namespace mCubed.Core {
 
 		public MediaObject() {
 			// Set up event handlers
-			_timer.Elapsed += (sender, e) => UpdatePosition();
-			_player.MediaEnded += (sender, e) => OnMediaEnded();
-			_player.MediaFailed += (sender, e) => OnMediaFailed(sender, e);
-			_player.MediaOpened += delegate
-			{
-				Length = _player.NaturalDuration.TimeSpan;
-				if (_seekValue != 0) {
-					Seek(_seekValue);
-					_seekValue = 0;
-				}
-			};
+			_timer.Elapsed += new ElapsedEventHandler(OnTimerElapsed);
+			_player.MediaEnded += new EventHandler(OnMediaEnded);
+			_player.MediaFailed += new EventHandler<ExceptionEventArgs>(OnMediaFailed);
+			_player.MediaOpened += new EventHandler(OnMediaOpened);
 		}
 
 		#endregion
@@ -155,6 +148,15 @@ namespace mCubed.Core {
 		}
 
 		/// <summary>
+		/// Event that handles when the media has ended, notifying all those who want to know
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaEnded(object sender, EventArgs e) {
+			OnMediaEnded();
+		}
+
+		/// <summary>
 		/// Event that handles when the media playback has failed
 		/// </summary>
 		/// <param name="sender">The sender object</param>
@@ -162,6 +164,19 @@ namespace mCubed.Core {
 		private void OnMediaFailed(object sender, ExceptionEventArgs e) {
 			if (MediaFailed != null)
 				MediaFailed(e.ErrorException.Message);
+		}
+
+		/// <summary>
+		/// Event that handles when the media has opened
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaOpened(object sender, EventArgs e) {
+			Length = _player.NaturalDuration.TimeSpan;
+			if (_seekValue != 0) {
+				Seek(_seekValue);
+				_seekValue = 0;
+			}
 		}
 
 		/// <summary>
@@ -226,6 +241,15 @@ namespace mCubed.Core {
 
 			// Notify
 			this.OnPropertyChanged("State");
+		}
+
+		/// <summary>
+		/// Event that handles when the timer has elapsed
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnTimerElapsed(object sender, ElapsedEventArgs e) {
+			UpdatePosition();
 		}
 
 		/// <summary>
@@ -351,6 +375,23 @@ namespace mCubed.Core {
 		/// <param name="action">The action that needs to be performed</param>
 		private void PerformAction(Action<MediaPlayer> action) {
 			_player.Dispatcher.Invoke(action, _player);
+		}
+
+		#endregion
+
+		#region IDisposable Members
+
+		/// <summary>
+		/// Dispose of the media object appropriately
+		/// </summary>
+		public void Dispose() {
+			PropertyChanged = null;
+			MediaEnded = null;
+			MediaFailed = null;
+			_timer.Elapsed -= new ElapsedEventHandler(OnTimerElapsed);
+			_player.MediaEnded -= new EventHandler(OnMediaEnded);
+			_player.MediaFailed -= new EventHandler<ExceptionEventArgs>(OnMediaFailed);
+			_player.MediaOpened -= new EventHandler(OnMediaOpened);
 		}
 
 		#endregion

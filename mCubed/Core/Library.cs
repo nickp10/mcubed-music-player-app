@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 
 namespace mCubed.Core {
-	public class Library : INotifyPropertyChanged {
+	public class Library : INotifyPropertyChanged, IDisposable {
 		#region INotifyPropertyChanged Members
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -19,13 +19,14 @@ namespace mCubed.Core {
 		private static IEnumerable<string> _repeatTypes =
 			Enum.GetNames(typeof(MediaRepeat)).
 			Select(s => s.ToReadableString()).ToArray();
+		private readonly ColumnSettings _columnSettings = new ColumnSettings();
 		private string _displayName;
-		private ObservableCollection<string> _directories = new ObservableCollection<string>();
+		private readonly ObservableCollection<string> _directories = new ObservableCollection<string>();
 		private bool _isLoaded;
 		private bool _isShuffled;
 		private IEnumerable<MediaFile> _mediaFiles = Enumerable.Empty<MediaFile>();
 		private MediaFile _mediaFileCurrent;
-		private MediaObject _mediaObject = new MediaObject();
+		private readonly MediaObject _mediaObject = new MediaObject();
 		private IEnumerable<MediaOrder> _mediaOrders = Enumerable.Empty<MediaOrder>();
 		private MediaOrder _mediaOrderCurrent;
 		private int _nextMediaIndex = 1;
@@ -36,6 +37,11 @@ namespace mCubed.Core {
 		#endregion
 
 		#region Bindable Properties
+
+		/// <summary>
+		/// Get the column settings for this library for how the media will be grouped, sorted, and displayed [Bindable]
+		/// </summary>
+		public ColumnSettings ColumnSettings { get { return _columnSettings; } }
 
 		/// <summary>
 		/// Get the list of directories that make up this library [Bindable]
@@ -611,6 +617,19 @@ namespace mCubed.Core {
 		public void ToggleRepeat(bool forward) {
 			var types = Enum.GetValues(typeof(MediaRepeat)).Cast<MediaRepeat>();
 			RepeatStatus = forward ? types.ElementAfter(RepeatStatus, true) : types.ElementBefore(RepeatStatus, true);
+		}
+
+		#endregion
+
+		#region IDisposable Members
+
+		/// <summary>
+		/// Dispose of the library properly
+		/// </summary>
+		public void Dispose() {
+			PropertyChanged = null;
+			Directories.CollectionChanged -= new NotifyCollectionChangedEventHandler(OnDirectoriesChanged);
+			MediaObject.Dispose();
 		}
 
 		#endregion
