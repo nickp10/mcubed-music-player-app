@@ -16,8 +16,7 @@
 				<RowDefinition Height=".4*" x:Name="MDIRow"/>
 				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
-			<ListView Grid.Row="1" ItemsSource="{Binding Path=Library.MediaFiles.Structure}" x:Name="SelectedMedia"
-					GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler" SelectionChanged="OnSelectedMediaChanged">
+			<ListView Grid.Row="1" ItemsSource="{Binding Path=Library.MediaFiles.Structure}" SelectionChanged="OnSelectedMediaChanged" x:Name="SelectedMedia">
 				<ListView.Resources>
 					<controls:GroupItemIndentConverter x:Key="GroupItemIndentConverter" />
 					<controls:GroupItemMarginConverter x:Key="GroupItemMarginConverter" />

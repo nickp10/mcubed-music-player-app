@@ -60,16 +60,6 @@ namespace mCubed.Controls {
 		#region Properties
 
 		/// <summary>
-		/// Get the collection view source that represents the items being displayed
-		/// </summary>
-		public CollectionViewSource CollectionItems {
-			get {
-				var ele = Content as FrameworkElement;
-				return ele == null ? null : ele.FindResource("CollectionItems") as CollectionViewSource;
-			}
-		}
-
-		/// <summary>
 		/// Get the collection of column details that represents the displayed columns and its ordering [Bindable]
 		/// </summary>
 		public ObservableCollection<ColumnVector> DisplayColumns {
@@ -121,13 +111,11 @@ namespace mCubed.Controls {
 		private void OnLibraryChanged(Library oldLibrary, Library newLibrary) {
 			// Unregister the old library
 			if (oldLibrary != null) {
-				oldLibrary.Refreshed -= new Action(OnRefreshed);
 				DisplayColumns.CollectionChanged -= new NotifyCollectionChangedEventHandler(OnDisplayCollectionChanged);
 			}
 
 			// Register the new library
 			if (newLibrary != null) {
-				newLibrary.Refreshed += new Action(OnRefreshed);
 				DisplayColumns = newLibrary.ColumnSettings.Display;
 				DisplayColumns.CollectionChanged += new NotifyCollectionChangedEventHandler(OnDisplayCollectionChanged);
 			}
@@ -216,49 +204,41 @@ namespace mCubed.Controls {
 		}
 
 		/// <summary>
-		/// Event that handles when the library view should be refreshed
-		/// </summary>
-		private void OnRefreshed() {
-			if (CollectionItems != null)
-				CollectionItems.View.Refresh();
-		}
-
-		/// <summary>
 		/// The sorting method that handles sorting a grid view
 		/// </summary>
 		/// <param name="header">The header that was clicked</param>
-		private void Sort(GridViewColumnHeader header) {
-			ICollectionView view = CollectionItems == null ? null : CollectionItems.View;
-			if (String.IsNullOrEmpty(header.Tag as string) || view == null)
-				return;
-			SortDescription ascending = new SortDescription(header.Tag as string, ListSortDirection.Ascending);
-			SortDescription descending = new SortDescription(header.Tag as string, ListSortDirection.Descending);
-			if (view.SortDescriptions.Contains(ascending)) {
-				int index = view.SortDescriptions.IndexOf(ascending);
-				view.SortDescriptions.RemoveAt(index);
-				view.SortDescriptions.Insert(index, descending);
-				header.ContentTemplate = Resources["GridViewHeaderDesc"] as DataTemplate;
-			} else if (view.SortDescriptions.Contains(descending)) {
-				view.SortDescriptions.Remove(descending);
-				header.ContentTemplate = null;
-			} else {
-				view.SortDescriptions.Add(ascending);
-				header.ContentTemplate = Resources["GridViewHeaderAsc"] as DataTemplate;
-			}
-			view.Refresh();
-		}
+		//private void Sort(GridViewColumnHeader header) {
+		//     ICollectionView view = CollectionItems == null ? null : CollectionItems.View;
+		//     if (String.IsNullOrEmpty(header.Tag as string) || view == null)
+		//          return;
+		//     SortDescription ascending = new SortDescription(header.Tag as string, ListSortDirection.Ascending);
+		//     SortDescription descending = new SortDescription(header.Tag as string, ListSortDirection.Descending);
+		//     if (view.SortDescriptions.Contains(ascending)) {
+		//          int index = view.SortDescriptions.IndexOf(ascending);
+		//          view.SortDescriptions.RemoveAt(index);
+		//          view.SortDescriptions.Insert(index, descending);
+		//          header.ContentTemplate = Resources["GridViewHeaderDesc"] as DataTemplate;
+		//     } else if (view.SortDescriptions.Contains(descending)) {
+		//          view.SortDescriptions.Remove(descending);
+		//          header.ContentTemplate = null;
+		//     } else {
+		//          view.SortDescriptions.Add(ascending);
+		//          header.ContentTemplate = Resources["GridViewHeaderAsc"] as DataTemplate;
+		//     }
+		//     view.Refresh();
+		//}
 
 		/// <summary>
 		/// The action to be taken when a gridview header is clicked
 		/// </summary>
 		/// <param name="sender">The object sending the request</param>
 		/// <param name="e">The arguments for the request</param>
-		private void GridViewColumnHeaderClickedHandler(object sender, RoutedEventArgs e) {
-			GridViewColumnHeader headerClicked = e.OriginalSource as GridViewColumnHeader;
-			if (headerClicked != null && headerClicked.Role != GridViewColumnHeaderRole.Padding) {
-				Sort(headerClicked);
-			}
-		}
+		//private void GridViewColumnHeaderClickedHandler(object sender, RoutedEventArgs e) {
+		//     GridViewColumnHeader headerClicked = e.OriginalSource as GridViewColumnHeader;
+		//     if (headerClicked != null && headerClicked.Role != GridViewColumnHeaderRole.Padding) {
+		//          Sort(headerClicked);
+		//     }
+		//}
 
 		#endregion
 

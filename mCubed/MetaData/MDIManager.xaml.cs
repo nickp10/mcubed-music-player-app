@@ -240,20 +240,17 @@ namespace mCubed.MetaData {
 			if (updateMDF.Count > 0 || updateMDP != null) {
 				Utilities.MainProcessManager.AddProcess(delegate(Process process)
 				{
-					var libraries = Enumerable.Empty<Library>();
 					foreach (var mdi in updateMDI) {
 						foreach (var mdf in updateMDF)
 							mdi.SetProperty(mdf.Key, mdf.Value);
 						if (updateMDP != null)
 							mdi.Pictures = updateMDP;
-						libraries = libraries.Union(new[] { mdi.Parent.Parent });
 						mdi.Save();
+						mdi.Parent.Parent.MediaFiles.Reset(mdi.Parent);
 						process.CompletedCount++;
 					}
 					ReloadSuggestions();
 					ReloadPictures();
-					foreach (var library in libraries)
-						Dispatcher.Invoke(new Action(library.RefreshView));
 				}, "Saving meta-data information", updateMDI.Length);
 			}
 		}

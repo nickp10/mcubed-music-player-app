@@ -158,12 +158,6 @@ namespace mCubed.Core {
 
 		#endregion
 
-		#region Properties
-
-		public event Action Refreshed;
-
-		#endregion
-
 		#region Constructor
 
 		public Library() {
@@ -313,13 +307,15 @@ namespace mCubed.Core {
 		private void OnMediaOrderCurrentChanged() {
 			// Load the order
 			MediaOrderCurrent.IsLoaded = IsLoaded;
+			MediaFiles.BeginTransaction();
 
 			// Move things around
-			foreach (MediaFile file in MediaFiles)
+			foreach (MediaFile file in MediaFiles) {
 				file.OrderKey = MediaOrderCurrent.OrderKeyForMediaIndex(file.Index) + 1;
+			}
 
 			// Update the view
-			RefreshView();
+			MediaFiles.EndTransaction();
 
 			// Update the selects
 			UpdateSelects();
@@ -602,14 +598,6 @@ namespace mCubed.Core {
 		#endregion
 
 		#region Members
-
-		/// <summary>
-		/// Refresh the view for the collection of media files
-		/// </summary>
-		public void RefreshView() {
-			if (Refreshed != null)
-				Refreshed();
-		}
 
 		/// <summary>
 		/// Reshuffle all the media orders marked with the type of shuffle

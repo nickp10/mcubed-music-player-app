@@ -516,8 +516,8 @@ namespace mCubed.Core {
 			// Get the grouper
 			IComparer<T> grouper = Grouper;
 
-			// Check if there was a grouper
-			if (grouper == null) {
+			// Check if the list contains the item
+			if (IsLeaf && _items.Contains(item)) {
 				// Remove the item
 				_items.Remove(item);
 				OnPropertyChanged(_itemProps);
@@ -526,7 +526,9 @@ namespace mCubed.Core {
 				if (_items.Count == 0 && !IsRoot)
 					Parent.RemoveGroup(this);
 			} else {
-				FindGroupForItem(grouper, item).RemoveItemFromGroup(item);
+				GroupList<T>[] tempGroups = _groups.ToArray();
+				foreach (GroupList<T> group in tempGroups)
+					group.RemoveItemFromGroup(item);
 			}
 		}
 
