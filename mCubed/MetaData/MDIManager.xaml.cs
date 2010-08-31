@@ -78,7 +78,7 @@ namespace mCubed.MetaData {
 						_metaDataInfoDictionary[index] = value;
 						if (CurrentKey == index)
 							MetaDataInfo = value;
-					} else {
+					} else if (value.Any()) {
 						_metaDataInfoDictionary.Add(index, value);
 						this.OnPropertyChanged("Keys");
 						CurrentKey = index;

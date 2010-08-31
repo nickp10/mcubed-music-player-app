@@ -4,31 +4,33 @@ using System.Linq;
 using System.Windows.Data;
 using mCubed.Core;
 
-namespace mCubed.MetaData
-{
-	public class MDIStatusConverter : IValueConverter
-	{
+namespace mCubed.MetaData {
+	/// <summary>
+	/// Used to set the checkbox state for the appropriate meta-data information status
+	/// to determine if the MDI is only loaded or is being edited also [Binding, Two-Way]
+	/// </summary>
+	public class MDIStatusConverter : IValueConverter {
 		#region IValueConverter Members
 
-		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-		{
+		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
 			return (value is MetaDataStatus && ((MetaDataStatus)value) == MetaDataStatus.Edit) ? true : false;
 		}
 
-		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-		{
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
 			return (value is bool && (bool)value) ? MetaDataStatus.Edit : MetaDataStatus.Loaded;
 		}
 
 		#endregion
 	}
 
-	public class MDIValueStatusConverter : IMultiValueConverter
-	{
+	/// <summary>
+	/// Used to set the state of the meta-data information value control to determine if
+	/// the control is being read, modified, or in between [Multi-Binding, One-Way]
+	/// </summary>
+	public class MDIValueStatusConverter : IMultiValueConverter {
 		#region IMultiValueConverter Members
 
-		public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-		{
+		public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
 			// Setup the conversion
 			MetaDataValueStatus status = MetaDataValueStatus.Read;
 			bool[] bools = values.OfType<bool>().ToArray();
@@ -41,46 +43,47 @@ namespace mCubed.MetaData
 			return status;
 		}
 
-		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
-		{
+		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture) {
 			return null;
 		}
 
 		#endregion
 	}
 
-	public class MDPFullSizeConverter : IMultiValueConverter
-	{
+	/// <summary>
+	/// Used to determine if the full-size picture should be displayed or not based
+	/// on whether or not the mouse is over the thumbnail-size picture [Multi-Binding, One-Way]
+	/// </summary>
+	public class MDPFullSizeConverter : IMultiValueConverter {
 		#region IMultiValueConverter Members
 
-		public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-		{
+		public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
 			// 0 == PicThumb.IsMouseOver, 1 == PicPopup.IsMouseOver
 			bool[] bools = values.OfType<bool>().ToArray();
 			return bools.Length == 2 && (bools[0] || bools[1]);
 		}
 
-		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
-		{
+		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture) {
 			return null;
 		}
 
 		#endregion
 	}
 
-	public class MDPListConverter : IMultiValueConverter
-	{
+	/// <summary>
+	/// Used to display the appropriate collection of meta-data pictures in the MDP manager which accounts
+	/// for the list of pictures and whether or not to include duplicates [Multi-Binding, One-Way]
+	/// </summary>
+	public class MDPListConverter : IMultiValueConverter {
 		#region IMultiValueConverter Members
 
-		public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-		{
+		public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
 			if (values.Length == 2 && values[0] is IEnumerable<MetaDataPic> && values[1] is bool)
 				return (bool)values[1] ? ((IEnumerable<MetaDataPic>)values[0]).DistinctEquals() : values[0];
 			return null;
 		}
 
-		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
-		{
+		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture) {
 			return null;
 		}
 

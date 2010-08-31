@@ -24,7 +24,7 @@ namespace mCubed.Core {
 		private readonly ObservableCollection<string> _directories = new ObservableCollection<string>();
 		private bool _isLoaded;
 		private bool _isShuffled;
-		private IEnumerable<MediaFile> _mediaFiles = Enumerable.Empty<MediaFile>();
+		private readonly GroupList<MediaFile> _mediaFiles = new GroupList<MediaFile>();
 		private MediaFile _mediaFileCurrent;
 		private readonly MediaObject _mediaObject = new MediaObject();
 		private IEnumerable<MediaOrder> _mediaOrders = Enumerable.Empty<MediaOrder>();
@@ -75,10 +75,7 @@ namespace mCubed.Core {
 		/// <summary>
 		/// Get the collection of media files contained within this library [Bindable]
 		/// </summary>
-		public IEnumerable<MediaFile> MediaFiles {
-			get { return _mediaFiles; }
-			private set { this.SetAndNotify(ref _mediaFiles, (value ?? Enumerable.Empty<MediaFile>()).ToArray(), null, OnMediaFilesChanged, "MediaFiles"); }
-		}
+		public GroupList<MediaFile> MediaFiles { get { return _mediaFiles; } }
 
 		/// <summary>
 		/// Get/set the current loaded media file [Bindable]
@@ -182,6 +179,29 @@ namespace mCubed.Core {
 				Utilities.MainSettings.OnFailure(MediaFailure.Playback, error);
 				Select(MediaSelect.Next, RepeatStatus == MediaRepeat.RepeatMedia ? MediaRepeat.NoRepeat : RepeatStatus, true, true);
 			};
+			MediaFiles.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e)
+			{
+				if (sender == MediaFiles && e.PropertyName == "Structure")
+					OnMediaFilesChanged();
+			};
+
+			// Setup the group by and sort by event handlers
+			ColumnSettings.GroupBy.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs e)
+			{
+				MediaFiles.BeginTransaction();
+				MediaFiles.ClearGroupBys();
+				foreach (IComparer<MediaFile> groupBy in ColumnSettings.GroupBy)
+					MediaFiles.AddGroupBy(groupBy);
+				MediaFiles.EndTransaction();
+			};
+			ColumnSettings.SortBy.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs e)
+			{
+				MediaFiles.BeginTransaction();
+				MediaFiles.ClearSortBys();
+				foreach (IComparer<MediaFile> sortBy in ColumnSettings.SortBy)
+					MediaFiles.AddSortBy(sortBy);
+				MediaFiles.EndTransaction();
+			};
 		}
 
 		#endregion
@@ -195,22 +215,24 @@ namespace mCubed.Core {
 		/// <param name="e">The event arguments</param>
 		private void OnDirectoriesChanged(object sender, NotifyCollectionChangedEventArgs e) {
 			// Setup
-			var items = MediaFiles;
+			MediaFiles.BeginTransaction();
 
 			// Remove all the removed directories
 			if (e.OldItems != null) {
 				foreach (string item in e.OldItems.OfType<string>())
-					items = items.Except(RemoveDirectory(items, item));
+					foreach (MediaFile file in RemoveDirectory(MediaFiles, item))
+						MediaFiles.Remove(file);
 			}
 
 			// Add all the added directories
 			if (e.NewItems != null) {
 				foreach (string item in e.NewItems.OfType<string>())
-					items = items.Union(AddDirectory(item));
+					foreach (MediaFile file in AddDirectory(item))
+						MediaFiles.Add(file);
 			}
 
 			// Finalize
-			MediaFiles = items;
+			MediaFiles.EndTransaction();
 		}
 
 		/// <summary>
@@ -239,7 +261,7 @@ namespace mCubed.Core {
 		/// </summary>
 		private void OnMediaFilesChanged() {
 			// Update the source, so the source is not null
-			if (MediaFileCurrent == null && MediaFiles.Count() > 0)
+			if (MediaFileCurrent == null && MediaFiles.Count > 0)
 				MediaFileCurrent = FindMedia(MediaOrderCurrent.MediaIndexForOrderKey(0));
 
 			// Update the media order
@@ -420,6 +442,7 @@ namespace mCubed.Core {
 		/// </summary>
 		/// <param name="list">The items in which to search which items to be removing</param>
 		/// <param name="directory">The directory to remove</param>
+		/// <returns>The list of items that need to be removed from the collection</returns>
 		private IEnumerable<MediaFile> RemoveDirectory(IEnumerable<MediaFile> list, string directory) {
 			// Check the directory first
 			var items = Enumerable.Empty<MediaFile>();
@@ -514,7 +537,10 @@ namespace mCubed.Core {
 		/// </summary>
 		/// <param name="media">The media that should be added to the library</param>
 		public void AddMedia(IEnumerable<MediaFile> media) {
-			MediaFiles = MediaFiles.Union(media);
+			MediaFiles.BeginTransaction();
+			foreach (MediaFile file in media)
+				MediaFiles.Add(file);
+			MediaFiles.EndTransaction();
 		}
 
 		/// <summary>
@@ -522,8 +548,11 @@ namespace mCubed.Core {
 		/// </summary>
 		/// <param name="media">The media that should be removed from the library</param>
 		public void RemoveMedia(IEnumerable<MediaFile> media) {
+			MediaFiles.BeginTransaction();
 			PrepareRemove(media);
-			MediaFiles = MediaFiles.Except(media);
+			foreach (MediaFile file in media)
+				MediaFiles.Remove(file);
+			MediaFiles.EndTransaction();
 		}
 
 		/// <summary>
@@ -566,7 +595,7 @@ namespace mCubed.Core {
 			}
 
 			// Clear the media and update the selects
-			MediaFiles = null;
+			MediaFiles.Clear();
 			MediaFileCurrent = null;
 		}
 

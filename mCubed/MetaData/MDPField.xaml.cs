@@ -1,20 +1,16 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using mCubed.Core;
 using System.Windows.Input;
-using System.ComponentModel;
+using mCubed.Core;
 
-namespace mCubed.MetaData
-{
-	public partial class MDPField : UserControl
-	{
+namespace mCubed.MetaData {
+	public partial class MDPField : UserControl {
 		#region Dependency Property: IsFullSizeOpen
 
 		public static readonly DependencyProperty IsFullSizeOpenProperty =
 			DependencyProperty.Register("IsFullSizeOpen", typeof(bool), typeof(MDPField), new UIPropertyMetadata(false));
-		public bool IsFullSizeOpen
-		{
+		public bool IsFullSizeOpen {
 			get { return (bool)GetValue(IsFullSizeOpenProperty); }
 			set { SetValue(IsFullSizeOpenProperty, value); }
 		}
@@ -25,8 +21,7 @@ namespace mCubed.MetaData
 
 		public static readonly DependencyProperty PictureProperty =
 			DependencyProperty.Register("Picture", typeof(MetaDataPic), typeof(MDPField), new UIPropertyMetadata(null));
-		public MetaDataPic Picture
-		{
+		public MetaDataPic Picture {
 			get { return (MetaDataPic)GetValue(PictureProperty); }
 			set { SetValue(PictureProperty, value); }
 		}
@@ -35,8 +30,7 @@ namespace mCubed.MetaData
 
 		#region Constructor
 
-		public MDPField()
-		{
+		public MDPField() {
 			// Setup the bindings
 			Loaded += delegate
 			{
@@ -59,9 +53,8 @@ namespace mCubed.MetaData
 		/// </summary>
 		/// <param name="sender">The sender object</param>
 		/// <param name="e">The event arguments</param>
-		private void OnPictureSaved(object sender, MouseButtonEventArgs e)
-		{
-			if(Picture != null)
+		private void OnPictureSaved(object sender, MouseButtonEventArgs e) {
+			if (Picture != null)
 				Picture.SaveToFile();
 		}
 
@@ -70,8 +63,7 @@ namespace mCubed.MetaData
 		/// </summary>
 		/// <param name="sender">The sender object</param>
 		/// <param name="e">The event arguments</param>
-		private void OnPictureDeleted(object sender, MouseButtonEventArgs e)
-		{
+		private void OnPictureDeleted(object sender, MouseButtonEventArgs e) {
 			if (Picture != null)
 				Picture.Delete();
 		}
@@ -81,8 +73,7 @@ namespace mCubed.MetaData
 		/// </summary>
 		/// <param name="sender">The sender object</param>
 		/// <param name="e">The event arguments</param>
-		private void OnPictureBrowsed(object sender, MouseButtonEventArgs e)
-		{
+		private void OnPictureBrowsed(object sender, MouseButtonEventArgs e) {
 			if (Picture != null)
 				Picture.BrowseDialog();
 		}

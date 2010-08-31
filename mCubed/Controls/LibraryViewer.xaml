@@ -8,19 +8,6 @@
 		<ResourceDictionary Source="../Resources/Resources.xaml"/>
 	</UserControl.Resources>
 	<Border DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" BorderThickness="2" Background="Transparent">
-		<Border.Resources>
-			<CollectionViewSource Source="{Binding Path=Library.MediaFiles}" x:Key="CollectionItems">
-				<!--<CollectionViewSource.GroupDescriptions>
-					<PropertyGroupDescription PropertyName="MetaData.FirstAlbumArtist"/>
-					<PropertyGroupDescription PropertyName="MetaData.Album"/>
-				</CollectionViewSource.GroupDescriptions>
-				<CollectionViewSource.SortDescriptions>
-					<scm:SortDescription PropertyName="MetaData.FirstAlbumArtist" Direction="Ascending"/>
-					<scm:SortDescription PropertyName="MetaData.Album" Direction="Ascending"/>
-					<scm:SortDescription PropertyName="MetaData.Track" Direction="Ascending"/>
-				</CollectionViewSource.SortDescriptions>-->
-			</CollectionViewSource>
-		</Border.Resources>
 		<Grid>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="40"/>
@@ -29,9 +16,13 @@
 				<RowDefinition Height=".4*" x:Name="MDIRow"/>
 				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
-			<ListView Grid.Row="1" ItemsSource="{Binding Source={StaticResource CollectionItems}}" x:Name="SelectedMedia"
+			<ListView Grid.Row="1" ItemsSource="{Binding Path=Library.MediaFiles.Structure}" x:Name="SelectedMedia"
 					GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler" SelectionChanged="OnSelectedMediaChanged">
 				<ListView.Resources>
+					<controls:GroupItemIndentConverter x:Key="GroupItemIndentConverter" />
+					<controls:GroupItemMarginConverter x:Key="GroupItemMarginConverter" />
+					<controls:GroupItemWidthConverter x:Key="GroupItemWidthConverter" />
+					<controls:IsGroupItemConverter x:Key="IsGroupItemConverter" />
 					<ContextMenu x:Key="ListView_ContextMenu">
 						<MenuItem Header="Play Media" Click="OnMediaFilePlay"/>
 						<Separator/>
@@ -47,8 +38,8 @@
 							<Style TargetType="{x:Type GroupItem}">
 								<Setter Property="Template">
 									<Setter.Value>
-										<ControlTemplate>
-											<HeaderedContentControl Header="{Binding Name}">
+										<ControlTemplate TargetType="{x:Type GroupItem}">
+											<HeaderedContentControl Header="{Binding Name}" Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}, Path=ViewportWidth}">
 												<ItemsPresenter/>
 											</HeaderedContentControl>
 										</ControlTemplate>
@@ -60,13 +51,36 @@
 				</ListView.GroupStyle>-->
 				<ListView.ItemContainerStyle>
 					<Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
+						<Setter Property="controls:SelectorExtension.IsSelectable" Value="False"/>
+						<Setter Property="controls:SelectorExtension.IsGridViewRow" Value="False"/>
 						<EventSetter Event="MouseDoubleClick" Handler="OnMediaFilePlay"/>
-						<Setter Property="ContextMenu" Value="{StaticResource ListView_ContextMenu}"/>
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding Converter={StaticResource IsGroupItemConverter}}" Value="False">
+								<Setter Property="ContextMenu" Value="{StaticResource ListView_ContextMenu}"/>
+								<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+								<Setter Property="controls:SelectorExtension.IsSelectable" Value="True"/>
+								<Setter Property="controls:SelectorExtension.IsGridViewRow" Value="True"/>
+							</DataTrigger>
+						</Style.Triggers>
 					</Style>
 				</ListView.ItemContainerStyle>
+				<ListView.ItemTemplate>
+					<DataTemplate>
+						<Grid Margin="{Binding RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}, Path=HorizontalOffset, Converter={StaticResource GroupItemMarginConverter}}"
+							 Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}, Path=ViewportWidth, Converter={StaticResource GroupItemWidthConverter}}">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="5"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+							<TextBlock FontWeight="Bold" FontSize="13" Foreground="{DynamicResource SelectorOutline}" Margin="{Binding Depth, Converter={StaticResource GroupItemIndentConverter}}" Text="{Binding Key}"/>
+							<Border Grid.Column="2" Style="{StaticResource {x:Type Border}}" Height="1" />
+						</Grid>
+					</DataTemplate>
+				</ListView.ItemTemplate>
 				<ListView.View>
-                    <GridView AllowsColumnReorder="True" x:Name="LibraryGridView">
-                        <GridViewColumn>
+					<GridView x:Name="LibraryGridView">
+						<GridViewColumn>
 							<GridViewColumn.CellTemplate>
 								<DataTemplate>
 									<Path HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 0 7 L 3.5 3.5 Z" Fill="Black">

@@ -464,6 +464,7 @@ namespace mCubed.Core {
 		protected override void Save(object obj) {
 			var tlFile = TagLib.File.Create(FilePath);
 			tlFile.RemoveTags(TagLib.TagTypes.Id3v1);
+			tlFile.RemoveTags(TagLib.TagTypes.Id3v2);
 			tlFile.Save();
 			tlFile = TagLib.File.Create(FilePath);
 			tlFile.Tag.Album = Album;

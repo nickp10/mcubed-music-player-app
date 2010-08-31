@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace mCubed.Core {
 	public class ColumnDetail : INotifyPropertyChanged, IDisposable {
@@ -174,7 +175,7 @@ namespace mCubed.Core {
 		#endregion
 	}
 
-	public class ColumnVector : INotifyPropertyChanged, IDisposable {
+	public class ColumnVector : IKeyProvider<MediaFile>, IComparer<MediaFile>, INotifyPropertyChanged, IDisposable {
 		#region INotifyPropertyChanged Members
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -235,6 +236,47 @@ namespace mCubed.Core {
 		/// <returns>The value from the file as described by the column details</returns>
 		public IComparable ProvideValue(MediaFile file) {
 			return ColumnDetail.ProvideValue(file);
+		}
+
+		#endregion
+
+		#region IKeyProvider<MediaFile> Members
+
+		/// <summary>
+		/// Get the value for the column details and the given media file
+		/// </summary>
+		/// <param name="item">The file that the column details should be applied on to generate a value</param>
+		/// <returns>The value from the file as described by the column details</returns>
+		public string GetKey(MediaFile item) {
+			IComparable comparable = ProvideValue(item);
+			if (comparable == null)
+				return null;
+			return comparable.ToString();
+		}
+
+		#endregion
+
+		#region IComparer<MediaFile> Members
+
+		/// <summary>
+		/// Compare the two given media files based off the column details for this vector
+		/// </summary>
+		/// <param name="x">The first media file to compare</param>
+		/// <param name="y">The second media file to compare</param>
+		/// <returns>A negative integer representing x should come before y, a positive integer representing y should come before x, or 0 if they are equivalent</returns>
+		public int Compare(MediaFile x, MediaFile y) {
+			// Get the values to compare by
+			IComparable xComp = x == null ? null : ProvideValue(x);
+			IComparable yComp = y == null ? null : ProvideValue(y);
+
+			// Now compare
+			if (x == null) {
+				return y == null ? 0 : -1;
+			} else if (y == null) {
+				return 1;
+			} else {
+				return xComp.CompareTo(yComp);
+			}
 		}
 
 		#endregion
