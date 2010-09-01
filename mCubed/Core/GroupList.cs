@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Threading;
 
@@ -35,10 +37,12 @@ namespace mCubed.Core {
 		private static readonly string[] _groupProps = new string[] { "Groups", "IsLeaf", "FirstItem", "DepthDown", "Structure" };
 		private readonly int _depth;
 		private readonly List<IComparer<T>> _groupBys; // ROOT ONLY
+		private INotifyCollectionChanged _groupByNotifier; // ROOT ONLY
 		private readonly List<GroupList<T>> _groups = new List<GroupList<T>>();
 		private readonly List<T> _items = new List<T>();
 		private readonly GroupList<T> _parent;
 		private readonly List<IComparer<T>> _sortBys; // ROOT ONLY
+		private INotifyCollectionChanged _sortByNotifier; // ROOT ONLY
 		private readonly Dictionary<int, GroupListTransaction<T>> _transactions; // ROOT ONLY
 
 		#endregion
@@ -352,7 +356,7 @@ namespace mCubed.Core {
 				items.Add(item);
 
 			// Clear the items
-			ClearGroup();
+			ClearInternal();
 
 			// Re-add the cached items
 			foreach (T item in items)
@@ -406,14 +410,14 @@ namespace mCubed.Core {
 		public void Clear() {
 			PerformAction(list =>
 			{
-				list.ClearGroup();
+				list.ClearInternal();
 			});
 		}
 
 		/// <summary>
-		/// Clears all the items from the group 
+		/// Clears all the items from the list, for internal purposes 
 		/// </summary>
-		private void ClearGroup() {
+		private void ClearInternal() {
 			foreach (GroupList<T> group in _groups)
 				group.Dispose();
 			_groups.Clear();
@@ -427,18 +431,84 @@ namespace mCubed.Core {
 		#region Group By Members
 
 		/// <summary>
+		/// Subscribe to the collection changed events on the given object, duplicating the items as the group bys for the list
+		/// </summary>
+		/// <typeparam name="U">The type of collection that is storing the list of group bys</typeparam>
+		/// <param name="notifier">The object that stores the group bys and notifies when the collection has changed</param>
+		public void SubscribeGroupBy<U>(U notifier) where U : INotifyCollectionChanged {
+			PerformAction(list =>
+			{
+				list.SubscribeGroupByInternal(notifier);
+			});
+		}
+
+		/// <summary>
+		/// Subscribe to the collection changed events on the given object, duplicating the items as the group bys for the list, for internal purposes
+		/// </summary>
+		/// <typeparam name="U">The type of collection that is storing the list of group bys</typeparam>
+		/// <param name="notifier">The object that stores the group bys and notifies when the collection has changed</param>
+		private void SubscribeGroupByInternal<U>(U notifier) where U : INotifyCollectionChanged {
+			UnsubscribeGroupByInternal();
+			_groupByNotifier = notifier;
+			_groupByNotifier.CollectionChanged += new NotifyCollectionChangedEventHandler(OnGroupBysChanged);
+			OnGroupBysChanged(_groupByNotifier, null);
+		}
+
+		/// <summary>
+		/// Unubscribe to the collection changed events on the previously subscribed object
+		/// </summary>		
+		public void UnsubscribeGroupBy() {
+			PerformAction(list =>
+			{
+				list.UnsubscribeGroupByInternal();
+			});
+		}
+
+		/// <summary>
+		/// Unubscribe to the collection changed events on the previously subscribed object, for internal purposes
+		/// </summary>
+		private void UnsubscribeGroupByInternal() {
+			if (_groupByNotifier != null)
+				_groupByNotifier.CollectionChanged -= new NotifyCollectionChangedEventHandler(OnGroupBysChanged);
+		}
+
+		/// <summary>
+		/// Event that handles when the collection of group bys has changed, prompting the list's group bys to reflect the changes
+		/// </summary>
+		/// <param name="sender">The collection that sent the notification</param>
+		/// <param name="e">The arguments stating the changes in the collection</param>
+		private void OnGroupBysChanged(object sender, NotifyCollectionChangedEventArgs e) {
+			IEnumerable collection = sender as IEnumerable;
+			if (collection != null && (e == null || e.Action != NotifyCollectionChangedAction.Reset)) {
+				ClearGroupBysInternal();
+				foreach (object groupBy in collection) {
+					if (groupBy is IComparer<T>)
+						AddGroupByInternal((IComparer<T>)groupBy);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Add a group by to the list of group bys for the list
 		/// </summary>
 		/// <param name="grouper">The grouper that determines how to group the items</param>
 		public void AddGroupBy(IComparer<T> grouper) {
 			PerformAction(list =>
 			{
-				// Store the collection of group bys in the root
-				list._groupBys.Add(grouper);
-
-				// Tell all the leafs to group themselves accordingly
-				list.AddGroup();
+				list.AddGroupByInternal(grouper);
 			});
+		}
+
+		/// <summary>
+		/// Add a group by to the list of group bys for the list, for internal purposes
+		/// </summary>
+		/// <param name="grouper">The grouper that determines how to group the items</param>
+		private void AddGroupByInternal(IComparer<T> grouper) {
+			// Store the collection of group bys in the root
+			_groupBys.Add(grouper);
+
+			// Tell all the leafs to group themselves accordingly
+			AddGroup();
 		}
 
 		/// <summary>
@@ -485,12 +555,20 @@ namespace mCubed.Core {
 		public void RemoveGroupBy(IComparer<T> grouper) {
 			PerformAction(list =>
 			{
-				// Remove the group by from the collection
-				list._groupBys.Remove(grouper);
-
-				// Reset the collection, there's no easier way to do this for now
-				list.ResetInternal();
+				list.RemoveGroupByInternal(grouper);
 			});
+		}
+
+		/// <summary>
+		/// Remove a group by from the list of group bys for the list, for internal purposes
+		/// </summary>
+		/// <param name="grouper">The grouper that should be removed from the list of group bys</param>
+		private void RemoveGroupByInternal(IComparer<T> grouper) {
+			// Remove the group by from the collection
+			_groupBys.Remove(grouper);
+
+			// Reset the collection, there's no easier way to do this for now
+			ResetInternal();
 		}
 
 		/// <summary>
@@ -504,7 +582,7 @@ namespace mCubed.Core {
 			OnPropertyChanged(_groupProps);
 
 			// Check if itself needs to be removed
-			if (_groups.Count == 0 && !IsRoot)
+			if (_items.Count == 0 && _groups.Count == 0 && !IsRoot)
 				Parent.RemoveGroup(this);
 		}
 
@@ -517,7 +595,7 @@ namespace mCubed.Core {
 			IComparer<T> grouper = Grouper;
 
 			// Check if the list contains the item
-			if (IsLeaf && _items.Contains(item)) {
+			if (_items.Contains(item)) {
 				// Remove the item
 				_items.Remove(item);
 				OnPropertyChanged(_itemProps);
@@ -568,17 +646,82 @@ namespace mCubed.Core {
 		public void ClearGroupBys() {
 			PerformAction(list =>
 			{
-				// Clear the group bys
-				list._groupBys.Clear();
-
-				// Reset the collection, there's no easier way to do this
-				list.ResetInternal();
+				list.ClearGroupBysInternal();
 			});
+		}
+
+		/// <summary>
+		/// Clear all the group bys in the list while reorganizing the list accordingly, for internal purposes
+		/// </summary>
+		private void ClearGroupBysInternal() {
+			// Clear the group bys
+			_groupBys.Clear();
+
+			// Reset the collection, there's no easier way to do this
+			ResetInternal();
 		}
 
 		#endregion
 
 		#region Sort By Members
+
+		/// <summary>
+		/// Subscribe to the collection changed events on the given object, duplicating the items as the sort bys for the list
+		/// </summary>
+		/// <typeparam name="U">The type of collection that is storing the list of sort bys</typeparam>
+		/// <param name="notifier">The object that stores the sort bys and notifies when the collection has changed</param>
+		public void SubscribeSortBy<U>(U notifier) where U : INotifyCollectionChanged {
+			PerformAction(list =>
+			{
+				list.SubscribeSortByInternal(notifier);
+			});
+		}
+
+		/// <summary>
+		/// Subscribe to the collection changed events on the given object, duplicating the items as the sort bys for the list, for internal purposes
+		/// </summary>
+		/// <typeparam name="U">The type of collection that is storing the list of sort bys</typeparam>
+		/// <param name="notifier">The object that stores the sort bys and notifies when the collection has changed</param>
+		private void SubscribeSortByInternal<U>(U notifier) where U : INotifyCollectionChanged {
+			UnsubscribeSortByInternal();
+			_sortByNotifier = notifier;
+			_sortByNotifier.CollectionChanged += new NotifyCollectionChangedEventHandler(OnSortBysChanged);
+			OnSortBysChanged(_sortByNotifier, null);
+		}
+
+		/// <summary>
+		/// Unubscribe to the collection changed events on the previously subscribed object
+		/// </summary>		
+		public void UnsubscribeSortBy() {
+			PerformAction(list =>
+			{
+				list.UnsubscribeSortByInternal();
+			});
+		}
+
+		/// <summary>
+		/// Unubscribe to the collection changed events on the previously subscribed object, for internal purposes
+		/// </summary>		
+		private void UnsubscribeSortByInternal() {
+			if (_sortByNotifier != null)
+				_sortByNotifier.CollectionChanged -= new NotifyCollectionChangedEventHandler(OnSortBysChanged);
+		}
+
+		/// <summary>
+		/// Event that handles when the collection of sort bys has changed, prompting the list's sort bys to reflect the changes
+		/// </summary>
+		/// <param name="sender">The collection that sent the notification</param>
+		/// <param name="e">The arguments stating the changes in the collection</param>
+		private void OnSortBysChanged(object sender, NotifyCollectionChangedEventArgs e) {
+			IEnumerable collection = sender as IEnumerable;
+			if (collection != null && (e == null || e.Action != NotifyCollectionChangedAction.Reset)) {
+				ClearSortBysInternal();
+				foreach (object sortBy in collection) {
+					if (sortBy is IComparer<T>)
+						AddSortByInternal((IComparer<T>)sortBy);
+				}
+			}
+		}
 
 		/// <summary>
 		/// Add a sort by to the end of the list of sort bys for the list
@@ -587,12 +730,20 @@ namespace mCubed.Core {
 		public void AddSortBy(IComparer<T> sorter) {
 			PerformAction(list =>
 			{
-				// Store the collection of sort bys in the root
-				list._sortBys.Add(sorter);
-
-				// Resort the collection
-				list.Resort();
+				list.AddSortByInternal(sorter);
 			});
+		}
+
+		/// <summary>
+		/// Add a sort by to the end of the list of sort bys for the list, for internal purposes
+		/// </summary>
+		/// <param name="sorter">The sorter that determines how the items should be sorted</param>
+		private void AddSortByInternal(IComparer<T> sorter) {
+			// Store the collection of sort bys in the root
+			_sortBys.Add(sorter);
+
+			// Resort the collection
+			Resort();
 		}
 
 		/// <summary>
@@ -602,12 +753,20 @@ namespace mCubed.Core {
 		public void RemoveSortBy(IComparer<T> sorter) {
 			PerformAction(list =>
 			{
-				// Remove the sort by from the collection
-				list._sortBys.Remove(sorter);
-
-				// Resort the collection
-				list.Resort();
+				list.RemoveSortByInternal(sorter);
 			});
+		}
+
+		/// <summary>
+		/// Remove the given sort by from the list of sort bys for the list, for internal purposes
+		/// </summary>
+		/// <param name="sorter">The sorter that should be removed from the list of sort bys</param>
+		private void RemoveSortByInternal(IComparer<T> sorter) {
+			// Remove the sort by from the collection
+			_sortBys.Remove(sorter);
+
+			// Resort the collection
+			Resort();
 		}
 
 		/// <summary>
@@ -643,9 +802,16 @@ namespace mCubed.Core {
 		public void ClearSortBys() {
 			PerformAction(list =>
 			{
-				// Clear the sort bys
-				list._sortBys.Clear();
+				list.ClearGroupBysInternal();
 			});
+		}
+
+		/// <summary>
+		/// Clears all the sort bys for the list, however no rearranging of the items occurs, for internal purposes
+		/// </summary>
+		private void ClearSortBysInternal() {
+			// Clear the sort bys
+			_sortBys.Clear();
 		}
 
 		#endregion
@@ -782,6 +948,15 @@ namespace mCubed.Core {
 		/// Dispose of the list, mainly used to release resources properly for the sub-groups
 		/// </summary>
 		public void Dispose() {
+			// Unsubscribe from delegates
+			UnsubscribeGroupByInternal();
+			UnsubscribeSortByInternal();
+
+			// Dispose all disposable references it created
+			foreach (GroupList<T> group in _groups)
+				group.Dispose();
+
+			// Unsubscribe others from its events
 			PropertyChanged = null;
 		}
 

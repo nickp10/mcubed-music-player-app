@@ -164,6 +164,8 @@ namespace mCubed.Core {
 			// Initializations
 			MediaOrders = new[] { new MediaOrder { Parent = this, Type = MediaOrderType.Sequential }, new MediaOrder { Parent = this, Type = MediaOrderType.Shuffle } };
 			MediaOrderCurrent = MediaOrders.First();
+			MediaFiles.SubscribeGroupBy(ColumnSettings.GroupBy);
+			MediaFiles.SubscribeSortBy(ColumnSettings.SortBy);
 
 			// Set up event handlers
 			Directories.CollectionChanged += new NotifyCollectionChangedEventHandler(OnDirectoriesChanged);
@@ -177,24 +179,6 @@ namespace mCubed.Core {
 			{
 				if (sender == MediaFiles && e.PropertyName == "Structure")
 					OnMediaFilesChanged();
-			};
-
-			// Setup the group by and sort by event handlers
-			ColumnSettings.GroupBy.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs e)
-			{
-				MediaFiles.BeginTransaction();
-				MediaFiles.ClearGroupBys();
-				foreach (IComparer<MediaFile> groupBy in ColumnSettings.GroupBy)
-					MediaFiles.AddGroupBy(groupBy);
-				MediaFiles.EndTransaction();
-			};
-			ColumnSettings.SortBy.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs e)
-			{
-				MediaFiles.BeginTransaction();
-				MediaFiles.ClearSortBys();
-				foreach (IComparer<MediaFile> sortBy in ColumnSettings.SortBy)
-					MediaFiles.AddSortBy(sortBy);
-				MediaFiles.EndTransaction();
 			};
 		}
 
