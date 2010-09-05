@@ -167,8 +167,11 @@ namespace mCubed.Core {
 		/// Dispose of the column detail appropriately
 		/// </summary>
 		public void Dispose() {
+			// Unsubscribe from delegates
 			if (_formula != null)
 				_formula.PropertyChanged -= new PropertyChangedEventHandler(OnFormulaPropertyChanged);
+
+			// Unsubscribe others from its events
 			PropertyChanged = null;
 		}
 
@@ -287,6 +290,7 @@ namespace mCubed.Core {
 		/// Dispose of the column detail object appropriately
 		/// </summary>
 		public void Dispose() {
+			// Unsubscribe others from its events
 			PropertyChanged = null;
 		}
 

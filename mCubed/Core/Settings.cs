@@ -5,7 +5,6 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 
 namespace mCubed.Core {
@@ -710,6 +709,7 @@ namespace mCubed.Core {
 		/// Dispose of the column settings appropriately
 		/// </summary>
 		public void Dispose() {
+			// Unsubscribe others from its events
 			PropertyChanged = null;
 		}
 

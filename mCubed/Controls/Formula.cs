@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
 using mCubed.Core;
-using System.Windows;
 
 namespace mCubed.Controls {
 	[MarkupExtensionReturnType(typeof(object))]
@@ -13,7 +12,7 @@ namespace mCubed.Controls {
 		#region Attached Dependency Property: FormulaFile
 
 		private static readonly Dictionary<FrameworkElement, MDFFile> _dictionary = new Dictionary<FrameworkElement, MDFFile>();
-		public static readonly DependencyProperty FormulaFileProperty = 
+		public static readonly DependencyProperty FormulaFileProperty =
 			DependencyProperty.RegisterAttached("FormulaFile", typeof(MediaFile), typeof(Formula), new UIPropertyMetadata(null, new PropertyChangedCallback(OnFormulaFileChanged)));
 
 		/// <summary>

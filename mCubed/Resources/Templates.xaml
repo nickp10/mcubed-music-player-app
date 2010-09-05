@@ -7,15 +7,15 @@
 	<DataTemplate x:Key="GridViewHeaderAsc">
 		<StackPanel Orientation="Horizontal">
 			<TextBlock VerticalAlignment="Center" Text="{Binding}" Margin="0,0,5,0"/>
-            <Path VerticalAlignment="Center" Data="M 0 7 L 7 7 L 3.5 3.5 Z" Fill="#000"/>
-        </StackPanel>
+			<Path VerticalAlignment="Center" Data="M 0 7 L 7 7 L 3.5 3.5 Z" Fill="#000"/>
+		</StackPanel>
 	</DataTemplate>
 
 	<DataTemplate x:Key="GridViewHeaderDesc">
 		<StackPanel Orientation="Horizontal">
 			<TextBlock VerticalAlignment="Center" Text="{Binding}" Margin="0,0,5,0"/>
-            <Path VerticalAlignment="Center" Data="M 0 0 L 7 0 L 3.5 3.5 Z" Fill="#000"/>
-        </StackPanel>
+			<Path VerticalAlignment="Center" Data="M 0 0 L 7 0 L 3.5 3.5 Z" Fill="#000"/>
+		</StackPanel>
 	</DataTemplate>
 
 </ResourceDictionary>

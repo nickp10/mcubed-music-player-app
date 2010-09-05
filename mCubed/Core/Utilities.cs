@@ -620,5 +620,5 @@ namespace mCubed.Core {
 		public override string ToString() {
 			return Description;
 		}
-	}	
+	}
 }

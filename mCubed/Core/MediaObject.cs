@@ -385,9 +385,12 @@ namespace mCubed.Core {
 		/// Dispose of the media object appropriately
 		/// </summary>
 		public void Dispose() {
+			// Unsubscribe others from its events
 			PropertyChanged = null;
 			MediaEnded = null;
 			MediaFailed = null;
+
+			// Unsubscribe from delegates
 			_timer.Elapsed -= new ElapsedEventHandler(OnTimerElapsed);
 			_player.MediaEnded -= new EventHandler(OnMediaEnded);
 			_player.MediaFailed -= new EventHandler<ExceptionEventArgs>(OnMediaFailed);

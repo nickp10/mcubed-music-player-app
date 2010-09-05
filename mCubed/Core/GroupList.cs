@@ -956,6 +956,9 @@ namespace mCubed.Core {
 			foreach (GroupList<T> group in _groups)
 				group.Dispose();
 
+			// Clear children references to ensure no cyclic references
+			_groups.Clear();
+
 			// Unsubscribe others from its events
 			PropertyChanged = null;
 		}
@@ -1047,6 +1050,11 @@ namespace mCubed.Core {
 		/// Dispose of the transaction accordingly by ensuring it references no actions and no properties
 		/// </summary>
 		public void Dispose() {
+			// Dispose all disposable references it created
+			foreach (GroupListTransactionItem<T> action in _actions)
+				action.Dispose();
+
+			// Clear children references to ensure no cyclic references
 			_actions.Clear();
 			_properties.Clear();
 		}
@@ -1069,6 +1077,7 @@ namespace mCubed.Core {
 		/// Dispose of the transaction item properly
 		/// </summary>
 		public void Dispose() {
+			// Clear children references to ensure no cyclic references
 			Action = null;
 			PerformOn = null;
 		}

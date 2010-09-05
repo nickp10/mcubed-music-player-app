@@ -34,7 +34,7 @@
 					</Style.Triggers>
 				</Style>
 			</Image.Style>
-		</Image>	
+		</Image>
 		<TextBlock Grid.Column="2" Text="Pictures" VerticalAlignment="Center" FontWeight="Bold"/>
 		<WrapPanel Grid.Column="4" Height="16">
 			<Image Source="{controls:Icon Type=Add}" Height="16" Cursor="Hand" ToolTip="Add a picture" MouseLeftButtonDown="OnPictureAdded"/>

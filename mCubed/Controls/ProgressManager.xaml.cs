@@ -1,13 +1,10 @@
 ﻿using System.Windows.Controls;
 
-namespace mCubed.Controls
-{
-	public partial class ProgressManager : UserControl
-	{
+namespace mCubed.Controls {
+	public partial class ProgressManager : UserControl {
 		#region Constructor
 
-		public ProgressManager()
-		{
+		public ProgressManager() {
 			// Initialize
 			InitializeComponent();
 		}

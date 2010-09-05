@@ -1,12 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
-using System;
-using System.Collections;
-using System.Windows;
 
 namespace mCubed.Core {
 	public class MetaDataFormula : INotifyPropertyChanged {
@@ -136,7 +132,7 @@ namespace mCubed.Core {
 		/// Event that handles when the fallback value changed
 		/// </summary>
 		private void OnFallbackValueChanged() {
-			if(ValueChanged != null)
+			if (ValueChanged != null)
 				ValueChanged();
 		}
 
@@ -168,9 +164,9 @@ namespace mCubed.Core {
 		/// <param name="file">The file to retrieve information out of</param>
 		/// <returns>The value of a formula being applied to a given file</returns>
 		public static string GetValue(MetaDataFormula formula, MediaFile file) {
-			var mdf = new MDFFile(formula);
+			MDFFile mdf = new MDFFile(formula);
 			mdf.MediaFile = file;
-			var value = mdf.Value;
+			string value = mdf.Value;
 			mdf.Dispose();
 			return value;
 		}
@@ -336,8 +332,11 @@ namespace mCubed.Core {
 		/// Disposes the formula file properly
 		/// </summary>
 		public void Dispose() {
+			// Unsubscribe from delegates
 			OnMediaFileChanging();
 			Parent.ValueChanged -= ChangeValue;
+
+			// Unsubscribe others from its events
 			PropertyChanged = null;
 		}
 

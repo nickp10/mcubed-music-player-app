@@ -21,7 +21,7 @@ namespace mCubed {
 		public mCubedWindow() {
 			// Initialize
 			InitializeComponent();
-			
+
 			// Hook up event handlers
 			Utilities.MainSettings.ShowMiniChanged += new Action(OnShowMiniChanged);
 			Utilities.MainSettings.Failure += new Action<MediaFailure, string>(OnFailure);
@@ -105,12 +105,12 @@ namespace mCubed {
 			string display = "Garbage in, garbage out!";
 			switch (failure) {
 				case MediaFailure.AddMedia:
-					display += " Actually, this media file is corrupt. It cannot be played, nor " + 
-						"can the meta-data information be modified; therefore, this file will not " + 
+					display += " Actually, this media file is corrupt. It cannot be played, nor " +
+						"can the meta-data information be modified; therefore, this file will not " +
 						"be added. The file that caused this error:";
 					break;
 				case MediaFailure.Playback:
-					display += " Actually, the playback of this file type is currently not " + 
+					display += " Actually, the playback of this file type is currently not " +
 						"supported by mCubed; therefore, this file will be skipped. The exact details:";
 					break;
 			}

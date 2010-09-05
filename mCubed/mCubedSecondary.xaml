@@ -507,7 +507,9 @@
 								<DataTemplate>
 									<Expander Cursor="Hand">
 										<Expander.Header>
-											<Underline><TextBlock Text="{Binding Title}"/></Underline>
+											<Underline>
+												<TextBlock Text="{Binding Title}"/>
+											</Underline>
 										</Expander.Header>
 										<Expander.Content>
 											<TextBlock Cursor="Arrow" TextWrapping="Wrap" Text="{Binding Description}"/>

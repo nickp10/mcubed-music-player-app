@@ -42,7 +42,7 @@ namespace mCubed.Core {
 		/// Setup the global keyboard hook appropriately
 		/// </summary>
 		public static void SetupHook() {
-			if(_hookID == IntPtr.Zero)
+			if (_hookID == IntPtr.Zero)
 				_hookID = SetHook(_callback);
 		}
 
@@ -67,7 +67,12 @@ namespace mCubed.Core {
 		/// Dispose or unhook the global keyboard hook
 		/// </summary>
 		public static void Dispose() {
+			// Unsubscribe from delegates
 			UnhookWindowsHookEx(_hookID);
+
+			// Unsubscribe others from its events
+			OnKeyDown = null;
+			OnKeyUp = null;
 		}
 
 		#endregion

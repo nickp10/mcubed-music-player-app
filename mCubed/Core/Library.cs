@@ -628,8 +628,13 @@ namespace mCubed.Core {
 		/// Dispose of the library properly
 		/// </summary>
 		public void Dispose() {
-			PropertyChanged = null;
+			// Unsubscribe from delegates
 			Directories.CollectionChanged -= new NotifyCollectionChangedEventHandler(OnDirectoriesChanged);
+
+			// Unsubscribe others from its events
+			PropertyChanged = null;
+
+			// Dispose all disposable references it created
 			MediaObject.Dispose();
 		}
 
