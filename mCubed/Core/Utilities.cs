@@ -11,8 +11,8 @@ namespace mCubed.Core {
 	public static class Utilities {
 		#region Data Store
 
-		private static ProcessManager _mainProcessManager = new ProcessManager();
-		private static Settings _mainSettings = new Settings();
+		private static readonly ProcessManager _mainProcessManager = new ProcessManager();
+		private static readonly Settings _mainSettings = new Settings();
 
 		#endregion
 

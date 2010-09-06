@@ -93,7 +93,7 @@ namespace mCubed.MetaData {
 
 		#endregion
 
-		#region Properties
+		#region Events
 
 		public event Action<MDIValue> StatusChanged;
 		public event Action<MDIValue> ValueChanged;

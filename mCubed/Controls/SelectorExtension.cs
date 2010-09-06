@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 
 namespace mCubed.Controls {
-	public class SelectorExtension {
+	public static class SelectorExtension {
 		#region Attached Dependency Property: IsSelectable
 
 		public static readonly DependencyProperty IsSelectableProperty =

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Xml.Linq;
 
 namespace mCubed.Core {
-	public class Settings : INotifyPropertyChanged {
+	public class Settings : INotifyPropertyChanged, IDisposable {
 		#region INotifyPropertyChanged Members
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -138,7 +138,7 @@ namespace mCubed.Core {
 
 		#endregion
 
-		#region Properties
+		#region Events
 
 		public event Action Loaded;
 		public event Action<MediaObject> MediaObjectChanged;
@@ -506,6 +506,7 @@ namespace mCubed.Core {
 				foreach (var formula in e.OldItems.OfType<MetaDataFormula>()) {
 					var column = AllColumns.FirstOrDefault(c => c.Type == ColumnType.Formula && c.Key == formula.Name);
 					if (column != null) {
+						column.Dispose();
 						AllColumns.Remove(column);
 						foreach (var library in Libraries) {
 							library.ColumnSettings.Remove(column);
@@ -564,6 +565,33 @@ namespace mCubed.Core {
 		private void OnShowMiniChanged() {
 			if (ShowMiniChanged != null)
 				ShowMiniChanged();
+		}
+
+		#endregion
+
+		#region IDisposable Members
+
+		/// <summary>
+		/// Dispose of the settings properly
+		/// </summary>
+		public void Dispose() {
+			// Unsubscribe others from its events
+			PropertyChanged = null;
+			Loaded = null;
+			MediaObjectChanged = null;
+			NowPlayingChanged = null;
+			Failure = null;
+			ShowMDIManagerChanged = null;
+			ShowMiniChanged = null;
+
+			// Unsubscribe from delegates
+			Formulas.CollectionChanged -= new NotifyCollectionChangedEventHandler(OnFormulasCollectionChanged);
+
+			// Dispose all disposable references it created
+			foreach (Library library in Libraries)
+				library.Dispose();
+			foreach (MetaDataFormula formula in Formulas)
+				formula.Dispose();
 		}
 
 		#endregion
@@ -696,6 +724,7 @@ namespace mCubed.Core {
 		public void Remove(ColumnDetail column) {
 			foreach (var collection in _collections) {
 				foreach (var item in collection.Value.Where(c => c.ColumnDetail == column).ToArray()) {
+					item.Dispose();
 					collection.Value.Remove(item);
 				}
 			}

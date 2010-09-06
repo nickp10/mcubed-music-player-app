@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace mCubed.Core {
-	public class MetaDataPic : INotifyPropertyChanged, IEquatable<MetaDataPic>, ICopiable<MetaDataPic> {
+	public class MetaDataPic : INotifyPropertyChanged, IEquatable<MetaDataPic>, ICopiable<MetaDataPic>, IDisposable {
 		#region INotifyPropertyChanged Members
 
 		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
@@ -321,6 +321,18 @@ namespace mCubed.Core {
 				MimeType = MimeType,
 				Data = Data
 			};
+		}
+
+		#endregion
+
+		#region IDisposable Members
+
+		/// <summary>
+		/// Dispose of the meta-data picture properly
+		/// </summary>
+		public void Dispose() {
+			// Unsubscribe others from its events
+			PropertyChanged = null;
 		}
 
 		#endregion

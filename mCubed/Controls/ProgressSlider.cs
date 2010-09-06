@@ -78,7 +78,7 @@ namespace mCubed.Controls {
 
 		#endregion
 
-		#region Properties
+		#region Events
 
 		public event Action<double> Seek;
 

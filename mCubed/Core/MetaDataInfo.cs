@@ -7,7 +7,7 @@ using System.Linq;
 using System.Reflection;
 
 namespace mCubed.Core {
-	public abstract class MetaDataInfo : INotifyPropertyChanged {
+	public abstract class MetaDataInfo : INotifyPropertyChanged, IDisposable {
 		#region INotifyPropertyChanged Members
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -330,6 +330,9 @@ namespace mCubed.Core {
 
 		#region Properties
 
+		/// <summary>
+		/// Get/set the media file that the information is for
+		/// </summary>
 		public MediaFile Parent { get; set; }
 
 		#endregion
@@ -426,6 +429,18 @@ namespace mCubed.Core {
 		/// Load the information from the media
 		/// </summary>
 		protected abstract void Load();
+
+		#endregion
+
+		#region IDisposable Members
+
+		/// <summary>
+		/// Dispose of the meta-data information object properly
+		/// </summary>
+		public void Dispose() {
+			// Unsubscribe others from its events
+			PropertyChanged = null;
+		}
 
 		#endregion
 	}

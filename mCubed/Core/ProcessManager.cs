@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 
 namespace mCubed.Core {
-	public class ProcessManager : INotifyPropertyChanged {
+	public class ProcessManager : INotifyPropertyChanged, IDisposable {
 		#region INotifyPropertyChanged Members
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -16,7 +16,7 @@ namespace mCubed.Core {
 		private Process _currentProcess;
 		private bool _isProcessActive;
 		private IEnumerable<Process> _processes = Enumerable.Empty<Process>();
-		private Process _totalProcess = new Process(null) { Description = "Total progress" };
+		private readonly Process _totalProcess = new Process(null) { Description = "Total progress" };
 
 		#endregion
 
@@ -113,14 +113,31 @@ namespace mCubed.Core {
 				process.Run();
 			} else {
 				CurrentProcess = null;
+				foreach (Process proc in Processes)
+					proc.Dispose();
 				Processes = Enumerable.Empty<Process>();
 			}
 		}
 
 		#endregion
+
+		#region IDisposable Members
+
+		/// <summary>
+		/// Dispose of the process manager properly
+		/// </summary>
+		public void Dispose() {
+			// Unsubscribe others from its events
+			PropertyChanged = null;
+
+			// Dispose all disposable references it created
+			TotalProcess.Dispose();
+		}
+
+		#endregion
 	}
 
-	public class Process : INotifyPropertyChanged {
+	public class Process : INotifyPropertyChanged, IDisposable {
 		#region INotifyPropertyChanged Members
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -192,7 +209,7 @@ namespace mCubed.Core {
 		public Process(BackgroundWorker worker) {
 			_worker = worker;
 			if (_worker != null)
-				_worker.RunWorkerCompleted += (sender, e) => IsCompleted = true;
+				_worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(OnWorkerCompleted);
 		}
 
 		#endregion
@@ -207,6 +224,15 @@ namespace mCubed.Core {
 				_worker.ReportProgress(WorkerProgress);
 		}
 
+		/// <summary>
+		/// Event that handles when the background worked has completed
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+			IsCompleted = true;
+		}
+
 		#endregion
 
 		#region Members
@@ -217,6 +243,27 @@ namespace mCubed.Core {
 		public void Run() {
 			if (_worker != null && !_worker.IsBusy && !IsCompleted)
 				_worker.RunWorkerAsync();
+		}
+
+		#endregion
+
+		#region IDisposable Members
+
+		/// <summary>
+		/// Dispose of the process appropriately
+		/// </summary>
+		public void Dispose() {
+			// Unsubscribe others from its events
+			PropertyChanged = null;
+
+			// Dispose the worker
+			if (_worker != null) {
+				// Unsubscribe from delegates
+				_worker.RunWorkerCompleted -= new RunWorkerCompletedEventHandler(OnWorkerCompleted);
+
+				// Dispose all disposable references it created
+				_worker.Dispose();
+			}
 		}
 
 		#endregion

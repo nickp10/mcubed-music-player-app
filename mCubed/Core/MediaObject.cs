@@ -118,7 +118,7 @@ namespace mCubed.Core {
 
 		#endregion
 
-		#region Properties
+		#region Events
 
 		public event Action MediaEnded;
 		public event Action<string> MediaFailed;
@@ -395,6 +395,9 @@ namespace mCubed.Core {
 			_player.MediaEnded -= new EventHandler(OnMediaEnded);
 			_player.MediaFailed -= new EventHandler<ExceptionEventArgs>(OnMediaFailed);
 			_player.MediaOpened -= new EventHandler(OnMediaOpened);
+
+			// Dispose all disposable references it created
+			_timer.Dispose();
 		}
 
 		#endregion

@@ -4,9 +4,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using mCubed.Core;
-using System.Windows.Data;
 
 namespace mCubed.MetaData {
 	public partial class MDIField : UserControl, INotifyPropertyChanged {
@@ -131,8 +131,6 @@ namespace mCubed.MetaData {
 
 		#region Properties
 
-		public event Action<MDIField, bool> SpecializedTabOut;
-
 		/// <summary>
 		/// Get/set the current selection within this field control
 		/// </summary>
@@ -157,6 +155,12 @@ namespace mCubed.MetaData {
 				}
 			}
 		}
+
+		#endregion
+
+		#region Events
+
+		public event Action<MDIField, bool> SpecializedTabOut;
 
 		#endregion
 

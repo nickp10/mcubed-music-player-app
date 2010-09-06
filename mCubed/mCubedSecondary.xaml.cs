@@ -78,8 +78,10 @@ namespace mCubed {
 		/// <param name="e">The event arguments</param>
 		private void ApplicationSettings_RemoveFormula(object sender, RoutedEventArgs e) {
 			var selection = FormulaListView.SelectedItem as MetaDataFormula;
-			if (selection != null)
+			if (selection != null) {
+				selection.Dispose();
 				Settings.Formulas.Remove(selection);
+			}
 		}
 
 		#endregion

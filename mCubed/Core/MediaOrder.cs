@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace mCubed.Core {
-	public class MediaOrder : INotifyPropertyChanged {
+	public class MediaOrder : INotifyPropertyChanged, IDisposable {
 		#region INotifyPropertyChanged Members
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -192,6 +192,18 @@ namespace mCubed.Core {
 					SwapOrderKeys(i, _random.Next(0, i + 1));
 				}
 			}
+		}
+
+		#endregion
+
+		#region IDisposable Members
+
+		/// <summary>
+		/// Dispose of the media order properly
+		/// </summary>
+		public void Dispose() {
+			// Unsubscribe others from its events
+			PropertyChanged = null;
 		}
 
 		#endregion

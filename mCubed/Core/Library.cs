@@ -551,6 +551,9 @@ namespace mCubed.Core {
 			foreach (MediaOrder order in MediaOrders) {
 				order.RemoveMediaIndex(media.Index);
 			}
+
+			// Dispose the media
+			media.Dispose();
 		}
 
 		/// <summary>
@@ -574,8 +577,12 @@ namespace mCubed.Core {
 				mediaOrder.Clear();
 			}
 
-			// Clear the media and update the selects
+			// Clear the media
+			foreach (MediaFile file in MediaFiles)
+				file.Dispose();
 			MediaFiles.Clear();
+
+			// Update the current media file
 			MediaFileCurrent = null;
 		}
 
@@ -635,6 +642,12 @@ namespace mCubed.Core {
 			PropertyChanged = null;
 
 			// Dispose all disposable references it created
+			foreach (MediaOrder order in MediaOrders)
+				order.Dispose();
+			foreach (MediaFile file in MediaFiles)
+				file.Dispose();			
+			MediaFiles.Dispose();
+			ColumnSettings.Dispose();
 			MediaObject.Dispose();
 		}
 

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace mCubed.Core {
-	public class MetaDataFormula : INotifyPropertyChanged {
+	public class MetaDataFormula : INotifyPropertyChanged, IDisposable {
 		#region Static: Formula Population
 
 		/// <summary>
@@ -120,7 +120,7 @@ namespace mCubed.Core {
 
 		#endregion
 
-		#region Properties
+		#region Events
 
 		public event Action ValueChanged;
 
@@ -146,6 +146,18 @@ namespace mCubed.Core {
 
 		#endregion
 
+		#region IDisposable Members
+
+		/// <summary>
+		/// Dispose of the meta-data formula properly
+		/// </summary>
+		public void Dispose() {
+			// Unsubscribe others from its events
+			PropertyChanged = null;
+			ValueChanged = null;
+		}
+
+		#endregion
 	}
 
 	public class MDFFile : INotifyPropertyChanged, IDisposable {
@@ -227,7 +239,7 @@ namespace mCubed.Core {
 
 		public MDFFile(MetaDataFormula parent) {
 			Parent = parent;
-			Parent.ValueChanged += ChangeValue;
+			Parent.ValueChanged += new Action(ChangeValue);
 		}
 
 		#endregion
@@ -334,7 +346,7 @@ namespace mCubed.Core {
 		public void Dispose() {
 			// Unsubscribe from delegates
 			OnMediaFileChanging();
-			Parent.ValueChanged -= ChangeValue;
+			Parent.ValueChanged -= new Action(ChangeValue);
 
 			// Unsubscribe others from its events
 			PropertyChanged = null;
