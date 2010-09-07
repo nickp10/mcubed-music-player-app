@@ -313,6 +313,18 @@ namespace mCubed.Core {
 		/// <param name="sender">The object that the field is being set on</param>
 		/// <param name="field">The field that will be changing</param>
 		/// <param name="value">The new value for the field</param>
+		/// <returns>True if the field's value changed, or false otherwise</returns>
+		public static bool Set<T>(this object sender, ref T field, T value) {
+			return Set(sender, ref field, value, null, null);
+		}
+
+		/// <summary>
+		/// Sets a field value only if it has changed, and the result is returned
+		/// </summary>
+		/// <typeparam name="T">The type the field and the value are</typeparam>
+		/// <param name="sender">The object that the field is being set on</param>
+		/// <param name="field">The field that will be changing</param>
+		/// <param name="value">The new value for the field</param>
 		/// <param name="before">The action that should be performed before the value is set</param>
 		/// <param name="after">The action that should be performed after the value is set</param>
 		/// <returns>True if the field's value changed, or false otherwise</returns>

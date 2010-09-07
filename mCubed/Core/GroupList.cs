@@ -43,6 +43,8 @@ namespace mCubed.Core {
 		private readonly GroupList<T> _parent;
 		private readonly List<IComparer<T>> _sortBys; // ROOT ONLY
 		private INotifyCollectionChanged _sortByNotifier; // ROOT ONLY
+		private bool _suppressNotify; // ROOT ONLY
+		private readonly List<GroupListNotification<T>> _suppressNotifyCache; // ROOT ONLY
 		private readonly Dictionary<int, GroupListTransaction<T>> _transactions; // ROOT ONLY
 
 		#endregion
@@ -113,6 +115,14 @@ namespace mCubed.Core {
 		/// Get whether or not this group list is a leaf, meaning it contains no further groupings underneath it [Bindable]
 		/// </summary>
 		public bool IsLeaf { get { return _groups.Count == 0; } }
+
+		/// <summary>
+		/// Get whether or not notifications are currently being suppressed
+		/// </summary>
+		public bool IsNotificationSuppressed {
+			get { return Root._suppressNotify; }
+			private set { Root._suppressNotify = value; }
+		}
 
 		/// <summary>
 		/// Get whether or not the group list is read only, which will ALWAYS be false [Bindable]
@@ -193,6 +203,7 @@ namespace mCubed.Core {
 			_groupBys = new List<IComparer<T>>();
 			_sortBys = new List<IComparer<T>>();
 			_transactions = new Dictionary<int, GroupListTransaction<T>>();
+			_suppressNotifyCache = new List<GroupListNotification<T>>();
 		}
 
 		/// <summary>
@@ -207,7 +218,7 @@ namespace mCubed.Core {
 
 		#endregion
 
-		#region Event Handlers
+		#region Notification Members
 
 		/// <summary>
 		/// Event that handles when a property has changed
@@ -226,14 +237,21 @@ namespace mCubed.Core {
 		/// <param name="properties">The name of the property or properties that has or have changed</param>
 		private void OnPropertyChangedInternal(params string[] properties) {
 			// Determine if the properties should be cached or actually be notified
-			Action<GroupList<T>, GroupList<T>, string[]> func = GroupList<T>.OnPropertyChangedInternal;
-			if (Root.IsInTransaction)
+			Action<GroupListNotification<T>> func = GroupList<T>.OnPropertyChangedInternal;
+			if (IsNotificationSuppressed)
+				func = Root.AddSuppressedNotification;
+			else if (Root.IsInTransaction)
 				func = Root.Transaction.AddProperties;
 
 			// Notify up the chain of each property, using "this" as the sender
 			GroupList<T> propertyChanged = this;
 			while (propertyChanged != null) {
-				func(propertyChanged, this, properties);
+				func(new GroupListNotification<T>
+				{
+					Properties = properties,
+					PropertyChanged = propertyChanged,
+					Sender = this
+				});
 				propertyChanged = propertyChanged.Parent;
 			}
 
@@ -248,11 +266,39 @@ namespace mCubed.Core {
 		/// <param name="propertyChanged">The list to use the property changed event handler from to notify of the property changed</param>
 		/// <param name="sender">The sender to send as the object that the property changed for</param>
 		/// <param name="properties">The name of the property or properties that has or have changed</param>
-		private static void OnPropertyChangedInternal(GroupList<T> propertyChanged, GroupList<T> sender, params string[] properties) {
-			PropertyChangedEventHandler handler = propertyChanged.PropertyChanged;
-			if (handler != null && properties != null)
-				foreach (string property in properties)
-					handler(sender, new PropertyChangedEventArgs(property));
+		private static void OnPropertyChangedInternal(GroupListNotification<T> notification) {
+			PropertyChangedEventHandler handler = notification.PropertyChanged.PropertyChanged;
+			if (handler != null && notification.Properties != null)
+				foreach (string property in notification.Properties)
+					handler(notification.Sender, new PropertyChangedEventArgs(property));
+		}
+
+		#endregion
+
+		#region Notification Suppress Members
+
+		/// <summary>
+		/// Add a suppressed notification to the cache
+		/// </summary>
+		/// <param name="notification">The notificatoin to supppress</param>
+		private void AddSuppressedNotification(GroupListNotification<T> notification) {
+			_suppressNotifyCache.Add(notification);
+		}
+
+		/// <summary>
+		/// Clear the cache of suppressed notifications
+		/// </summary>
+		private void ClearSuppressedNotifications() {
+			_suppressNotifyCache.Clear();
+		}
+
+		/// <summary>
+		/// Notify all the suppressed notifications
+		/// </summary>
+		private void NotifySuppressedNotifications() {
+			foreach (GroupListNotification<T> notification in _suppressNotifyCache)
+				GroupList<T>.OnPropertyChangedInternal(notification);
+			ClearSuppressedNotifications();
 		}
 
 		#endregion
@@ -379,12 +425,47 @@ namespace mCubed.Core {
 		/// </summary>
 		/// <param name="item">The item that will be reset, only if the list already contains the item</param>
 		private void ResetInternal(T item) {
-			// Check if the list contains the item first
-			if (Contains(item)) {
-				// Remove the item and re-add it
-				RemoveItemFromGroup(item);
+			// Find its current location
+			GroupList<T> currentGroup = FindItemsCurrentGroup(item);
+			if (currentGroup != null) {
+				// Suppress notifications
+				IsNotificationSuppressed = true;
+
+				// Remove the item
+				currentGroup.RemoveItemFromGroup(item);
+
+				// Add the item properly
 				AddItemToGroup(item);
+
+				// Retrieve its new location
+				GroupList<T> newGroup = FindItemsCurrentGroup(item);
+
+				// Only notify if a new group was chosen
+				IsNotificationSuppressed = false;
+				if (newGroup == currentGroup) {
+					ClearSuppressedNotifications();
+				} else {
+					NotifySuppressedNotifications();
+				}
 			}
+		}
+
+		/// <summary>
+		/// Finds the current group location for the given item
+		/// </summary>
+		/// <param name="item">The item to retrieve the current group location for</param>
+		/// <returns>The current group location for the given item</returns>
+		private GroupList<T> FindItemsCurrentGroup(T item) {
+			if (_items.Contains(item)) {
+				return this;
+			} else {
+				foreach (GroupList<T> group in _groups) {
+					GroupList<T> curGroup = group.FindItemsCurrentGroup(item);
+					if (curGroup != null)
+						return curGroup;
+				}
+			}
+			return null;
 		}
 
 		/// <summary>
@@ -433,9 +514,8 @@ namespace mCubed.Core {
 		/// <summary>
 		/// Subscribe to the collection changed events on the given object, duplicating the items as the group bys for the list
 		/// </summary>
-		/// <typeparam name="U">The type of collection that is storing the list of group bys</typeparam>
 		/// <param name="notifier">The object that stores the group bys and notifies when the collection has changed</param>
-		public void SubscribeGroupBy<U>(U notifier) where U : INotifyCollectionChanged {
+		public void SubscribeGroupBy(INotifyCollectionChanged notifier) {
 			PerformAction(list =>
 			{
 				list.SubscribeGroupByInternal(notifier);
@@ -445,13 +525,15 @@ namespace mCubed.Core {
 		/// <summary>
 		/// Subscribe to the collection changed events on the given object, duplicating the items as the group bys for the list, for internal purposes
 		/// </summary>
-		/// <typeparam name="U">The type of collection that is storing the list of group bys</typeparam>
 		/// <param name="notifier">The object that stores the group bys and notifies when the collection has changed</param>
-		private void SubscribeGroupByInternal<U>(U notifier) where U : INotifyCollectionChanged {
+		private void SubscribeGroupByInternal(INotifyCollectionChanged notifier) {
 			UnsubscribeGroupByInternal();
 			_groupByNotifier = notifier;
 			_groupByNotifier.CollectionChanged += new NotifyCollectionChangedEventHandler(OnGroupBysChanged);
-			OnGroupBysChanged(_groupByNotifier, null);
+			if (notifier is IEnumerable)
+				foreach (object item in (IEnumerable)notifier)
+					if (item is IComparer<T>)
+						AddGroupByInternal((IComparer<T>)item);
 		}
 
 		/// <summary>
@@ -478,13 +560,30 @@ namespace mCubed.Core {
 		/// <param name="sender">The collection that sent the notification</param>
 		/// <param name="e">The arguments stating the changes in the collection</param>
 		private void OnGroupBysChanged(object sender, NotifyCollectionChangedEventArgs e) {
-			IEnumerable collection = sender as IEnumerable;
-			if (collection != null && (e == null || e.Action != NotifyCollectionChangedAction.Reset)) {
-				ClearGroupBysInternal();
-				foreach (object groupBy in collection) {
-					if (groupBy is IComparer<T>)
-						AddGroupByInternal((IComparer<T>)groupBy);
-				}
+			PerformAction(list =>
+			{
+				OnGroupBysChangedInternal(sender, e);
+			});
+		}
+
+		/// <summary>
+		/// Event that handles when the collection of group bys has changed, prompting the list's group bys to reflect the changes, for internal purposes
+		/// </summary>
+		/// <param name="sender">The collection that sent the notification</param>
+		/// <param name="e">The arguments stating the changes in the collection</param>
+		private void OnGroupBysChangedInternal(object sender, NotifyCollectionChangedEventArgs e) {
+			if (e != null) {
+				// Remove the old items
+				if (e.OldItems != null)
+					foreach (object item in e.OldItems)
+						if (item is IComparer<T>)
+							RemoveGroupByInternal((IComparer<T>)item);
+
+				// Add the new items
+				if (e.NewItems != null)
+					foreach (object item in e.NewItems)
+						if (item is IComparer<T>)
+							AddGroupByInternal((IComparer<T>)item);
 			}
 		}
 
@@ -686,7 +785,10 @@ namespace mCubed.Core {
 			UnsubscribeSortByInternal();
 			_sortByNotifier = notifier;
 			_sortByNotifier.CollectionChanged += new NotifyCollectionChangedEventHandler(OnSortBysChanged);
-			OnSortBysChanged(_sortByNotifier, null);
+			if (notifier is IEnumerable)
+				foreach (object item in (IEnumerable)notifier)
+					if (item is IComparer<T>)
+						AddSortByInternal((IComparer<T>)item);
 		}
 
 		/// <summary>
@@ -713,13 +815,30 @@ namespace mCubed.Core {
 		/// <param name="sender">The collection that sent the notification</param>
 		/// <param name="e">The arguments stating the changes in the collection</param>
 		private void OnSortBysChanged(object sender, NotifyCollectionChangedEventArgs e) {
-			IEnumerable collection = sender as IEnumerable;
-			if (collection != null && (e == null || e.Action != NotifyCollectionChangedAction.Reset)) {
-				ClearSortBysInternal();
-				foreach (object sortBy in collection) {
-					if (sortBy is IComparer<T>)
-						AddSortByInternal((IComparer<T>)sortBy);
-				}
+			PerformAction(list =>
+			{
+				list.OnSortBysChangedInternal(sender, e);
+			});
+		}
+
+		/// <summary>
+		/// Event that handles when the collection of sort bys has changed, prompting the list's sort bys to reflect the changes, for internal purposes
+		/// </summary>
+		/// <param name="sender">The collection that sent the notification</param>
+		/// <param name="e">The arguments stating the changes in the collection</param>
+		private void OnSortBysChangedInternal(object sender, NotifyCollectionChangedEventArgs e) {
+			if (e != null) {
+				// Remove the old items
+				if (e.OldItems != null)
+					foreach (object item in e.OldItems)
+						if (item is IComparer<T>)
+							RemoveSortByInternal((IComparer<T>)item);
+
+				// Add the new items
+				if (e.NewItems != null)
+					foreach (object item in e.NewItems)
+						if (item is IComparer<T>)
+							AddSortByInternal((IComparer<T>)item);
 			}
 		}
 
@@ -860,12 +979,8 @@ namespace mCubed.Core {
 						list._transactions.Remove(ThreadID);
 
 						// Notify of all changes
-						Dictionary<GroupList<T>, Dictionary<GroupList<T>, List<string>>> properties = transaction.Properties;
-						foreach (KeyValuePair<GroupList<T>, Dictionary<GroupList<T>, List<string>>> propertyChanged in properties) {
-							foreach (KeyValuePair<GroupList<T>, List<string>> sender in propertyChanged.Value) {
-								GroupList<T>.OnPropertyChangedInternal(propertyChanged.Key, sender.Key, sender.Value.ToArray());
-							}
-						}
+						foreach (GroupListNotification<T> notification in transaction.Properties)
+							GroupList<T>.OnPropertyChangedInternal(notification);
 
 						// Dispose the transaction
 						transaction.Dispose();
@@ -970,7 +1085,7 @@ namespace mCubed.Core {
 		#region Data Store
 
 		private readonly Queue<GroupListTransactionItem<T>> _actions = new Queue<GroupListTransactionItem<T>>();
-		private readonly Dictionary<GroupList<T>, Dictionary<GroupList<T>, List<string>>> _properties = new Dictionary<GroupList<T>, Dictionary<GroupList<T>, List<string>>>();
+		private readonly List<GroupListNotification<T>> _properties = new List<GroupListNotification<T>>();
 
 		#endregion
 
@@ -982,14 +1097,14 @@ namespace mCubed.Core {
 		public Queue<GroupListTransactionItem<T>> Actions { get { return _actions; } }
 
 		/// <summary>
+		/// Get the list of property notifications that have been queued up
+		/// </summary>
+		public List<GroupListNotification<T>> Properties { get { return _properties; } }
+
+		/// <summary>
 		/// Get/set the run count for this transaction so nesting this transaction doesn't run the actions multiple times
 		/// </summary>
 		public int RunCount { get; set; }
-
-		/// <summary>
-		/// Get the dictionary that maps lists to the list of properties that have changed for each list
-		/// </summary>
-		public Dictionary<GroupList<T>, Dictionary<GroupList<T>, List<string>>> Properties { get { return _properties; } }
 
 		#endregion
 
@@ -1014,32 +1129,47 @@ namespace mCubed.Core {
 		/// <summary>
 		/// Add a list of properties that have changed, only keeping the distinct properties
 		/// </summary>
-		/// <param name="propertyChangedList">The list that the properties will be notified for</param>
-		/// <param name="senderList">The list that will be used as the sender argument for the notification</param>
-		/// <param name="properties">The list of properties that have changed</param>
-		public void AddProperties(GroupList<T> propertyChangedList, GroupList<T> senderList, params string[] properties) {
-			if (propertyChangedList != null && senderList != null && properties != null && properties.Length > 0) {
-				foreach (string property in properties) {
-					if (_properties.ContainsKey(propertyChangedList)) {
-						Dictionary<GroupList<T>, List<string>> propertyDict = _properties[propertyChangedList];
-						if (propertyDict.ContainsKey(senderList)) {
-							List<string> propertyList = propertyDict[senderList];
-							if (!propertyList.Contains(property))
-								propertyList.Add(property);
-						} else {
-							List<string> propertyList = new List<string>();
-							propertyList.Add(property);
-							propertyDict[senderList] = propertyList;
-						}
-					} else {
-						List<string> propertyList = new List<string>();
-						propertyList.Add(property);
-						Dictionary<GroupList<T>, List<string>> propertyDict = new Dictionary<GroupList<T>, List<string>>();
-						propertyDict[senderList] = propertyList;
-						_properties[propertyChangedList] = propertyDict;
-					}
+		/// <param name="notification">The nofitication that should be queued up</param>
+		public void AddProperties(GroupListNotification<T> notification) {
+			// Check if a current notification can be modified
+			foreach (GroupListNotification<T> property in Properties) {
+				// Check if the property changed and sender are the same
+				if (property.PropertyChanged == notification.PropertyChanged && property.Sender == notification.Sender) {
+					// Create an array containing the distinct properties from the old notification and new notification
+					List<string> properties = new List<string>(property.Properties);
+					foreach (string newProp in notification.Properties)
+						if (!properties.Contains(newProp))
+							properties.Add(newProp);
+					property.Properties = properties.ToArray();
+
+					// Found a notification so return
+					return;
 				}
 			}
+
+			// Just add the notification otherwise
+			Properties.Add(notification);
+
+			//foreach (string property in properties) {
+			//     if (_properties.ContainsKey(propertyChangedList)) {
+			//          Dictionary<GroupList<T>, List<string>> propertyDict = _properties[propertyChangedList];
+			//          if (propertyDict.ContainsKey(senderList)) {
+			//               List<string> propertyList = propertyDict[senderList];
+			//               if (!propertyList.Contains(property))
+			//                    propertyList.Add(property);
+			//          } else {
+			//               List<string> propertyList = new List<string>();
+			//               propertyList.Add(property);
+			//               propertyDict[senderList] = propertyList;
+			//          }
+			//     } else {
+			//          List<string> propertyList = new List<string>();
+			//          propertyList.Add(property);
+			//          Dictionary<GroupList<T>, List<string>> propertyDict = new Dictionary<GroupList<T>, List<string>>();
+			//          propertyDict[senderList] = propertyList;
+			//          _properties[propertyChangedList] = propertyDict;
+			//     }
+			//}
 		}
 
 		#endregion
@@ -1081,6 +1211,27 @@ namespace mCubed.Core {
 			Action = null;
 			PerformOn = null;
 		}
+
+		#endregion
+	}
+
+	public class GroupListNotification<T> {
+		#region Properties
+
+		/// <summary>
+		/// Get/set the collection of property names that have changed
+		/// </summary>
+		public string[] Properties { get; set; }
+
+		/// <summary>
+		/// Get/set the list that the property changed event will be used from
+		/// </summary>
+		public GroupList<T> PropertyChanged { get; set; }
+
+		/// <summary>
+		/// Get/set the list that will be used as the sender argument for the notification
+		/// </summary>
+		public GroupList<T> Sender { get; set; }
 
 		#endregion
 	}

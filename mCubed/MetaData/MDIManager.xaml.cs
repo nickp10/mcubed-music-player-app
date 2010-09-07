@@ -240,15 +240,19 @@ namespace mCubed.MetaData {
 			if (updateMDF.Count > 0 || updateMDP != null) {
 				Utilities.MainProcessManager.AddProcess(delegate(Process process)
 				{
+					// Update each MDI and save it
 					foreach (var mdi in updateMDI) {
+						mdi.Parent.Parent.MediaFiles.BeginTransaction();
 						foreach (var mdf in updateMDF)
 							mdi.SetProperty(mdf.Key, mdf.Value);
 						if (updateMDP != null)
 							mdi.Pictures = updateMDP;
 						mdi.Save();
-						mdi.Parent.Parent.MediaFiles.Reset(mdi.Parent);
+						mdi.Parent.Parent.MediaFiles.EndTransaction();
 						process.CompletedCount++;
 					}
+
+					// Perform some readjustments
 					ReloadSuggestions();
 					ReloadPictures();
 				}, "Saving meta-data information", updateMDI.Length);

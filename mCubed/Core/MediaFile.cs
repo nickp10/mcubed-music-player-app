@@ -49,8 +49,10 @@ namespace mCubed.Core {
 		public int OrderKey {
 			get { return _orderKey; }
 			set {
-				this.SetAndNotify(ref _orderKey, value, "OrderKey");
-				MetaData.OnPropertyChanged("OrderKey");
+				if (this.Set(ref _orderKey, value)) {
+					this.OnPropertyChanged("OrderKey");
+					MetaData.OnPropertyChanged("OrderKey");
+				}
 			}
 		}
 

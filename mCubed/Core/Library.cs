@@ -235,6 +235,17 @@ namespace mCubed.Core {
 		}
 
 		/// <summary>
+		/// Event that handles when a property on a media file has changed
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaFilePropertyChanged(object sender, PropertyChangedEventArgs e) {
+			MetaDataInfo info = sender as MetaDataInfo;
+			if (info != null && MetaDataFormula.MetaDataProperties.Any(p => p.Property.Name == e.PropertyName))
+				MediaFiles.Reset(info.Parent);
+		}
+
+		/// <summary>
 		/// Event that handles when the media files list changed
 		/// </summary>
 		private void OnMediaFilesChanged() {
@@ -500,6 +511,7 @@ namespace mCubed.Core {
 				// Setup the media file and return it
 				try {
 					var file = new MediaFile(path, NextMediaIndex, this);
+					file.MetaData.PropertyChanged += new PropertyChangedEventHandler(OnMediaFilePropertyChanged);
 					NextMediaIndex++;
 					return file;
 				} catch {
