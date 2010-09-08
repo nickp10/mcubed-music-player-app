@@ -760,6 +760,26 @@ namespace mCubed.Core {
 			ResetInternal();
 		}
 
+		/// <summary>
+		/// Resets the given group by to ensure that the compare has produced the expected groups
+		/// </summary>
+		/// <param name="grouper">The grouper to reset to ensure the expected groups have been created</param>
+		public void ResetGroupBy(IComparer<T> grouper) {
+			PerformAction(list =>
+			{
+				list.ResetGroupByInternal(grouper);
+			});
+		}
+
+		/// <summary>
+		/// Resets the given group by to ensure that the compare has produced the expected groups, for internal purposes
+		/// </summary>
+		/// <param name="grouper">The grouper to reset to ensure the expected groups have been created</param>
+		private void ResetGroupByInternal(IComparer<T> grouper) {
+			if (_groupBys.Contains(grouper))
+				ResetInternal();
+		}
+
 		#endregion
 
 		#region Sort By Members
@@ -862,7 +882,7 @@ namespace mCubed.Core {
 			_sortBys.Add(sorter);
 
 			// Resort the collection
-			Resort();
+			ResortInternal();
 		}
 
 		/// <summary>
@@ -885,7 +905,7 @@ namespace mCubed.Core {
 			_sortBys.Remove(sorter);
 
 			// Resort the collection
-			Resort();
+			ResortInternal();
 		}
 
 		/// <summary>
@@ -902,16 +922,16 @@ namespace mCubed.Core {
 		}
 
 		/// <summary>
-		/// Resorts all the leaves in the list to ensure the items are properly sorted.
+		/// Resorts all the leaves in the list to ensure the items are properly sorted, for internal purposes.
 		/// This uses the System.Collections.Generic.List&lt;T&gt;.Sort method to sort the items which is an unstable quicksort.
 		/// </summary>
-		private void Resort() {
+		private void ResortInternal() {
 			if (IsLeaf) {
 				_items.Sort(Sorter);
 				OnPropertyChanged(_itemProps);
 			} else {
 				foreach (GroupList<T> group in _groups)
-					group.Resort();
+					group.ResortInternal();
 			}
 		}
 
@@ -929,8 +949,27 @@ namespace mCubed.Core {
 		/// Clears all the sort bys for the list, however no rearranging of the items occurs, for internal purposes
 		/// </summary>
 		private void ClearSortBysInternal() {
-			// Clear the sort bys
 			_sortBys.Clear();
+		}
+
+		/// <summary>
+		/// Resets the given sort by to ensure that the compare has produced the expected sort
+		/// </summary>
+		/// <param name="sorter">The sorter to reset to ensure the expected sort has been produced</param>
+		public void ResetSortBy(IComparer<T> sorter) {
+			PerformAction(list =>
+			{
+				list.ResetSortByInternal(sorter);
+			});
+		}
+
+		/// <summary>
+		/// Resets the given sort by to ensure that the compare has produced the expected sort, for internal purposes
+		/// </summary>
+		/// <param name="sorter">The sorter to reset to ensure the expected sort has been produced</param>
+		private void ResetSortByInternal(IComparer<T> sorter) {
+			if (_sortBys.Contains(sorter))
+				ResortInternal();
 		}
 
 		#endregion

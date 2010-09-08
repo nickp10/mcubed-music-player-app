@@ -99,7 +99,7 @@
 																		</Style.Triggers>
 																	</Style>
 																</Grid.Style>
-																<TextBox Text="{Binding Path=Name, UpdateSourceTrigger=PropertyChanged}"/>
+																<TextBox Text="{Binding Path=Name, UpdateSourceTrigger=PropertyChanged}" TextChanged="FormulaName_TextChanged"/>
 															</Grid>
 															<Grid>
 																<Grid.Style>

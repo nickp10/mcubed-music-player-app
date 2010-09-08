@@ -71,7 +71,7 @@ namespace mCubed.Core {
 
 		private string _fallbackValue;
 		private string _formula;
-		private string _name;
+		private string _name = string.Empty;
 		private MetaDataFormulaType _type;
 
 		#endregion
@@ -99,7 +99,7 @@ namespace mCubed.Core {
 		/// </summary>
 		public string Name {
 			get { return _name; }
-			set { this.SetAndNotify(ref _name, value, "Name"); }
+			set { this.SetAndNotify(ref _name, CoerceNameValue(value), "Name"); }
 		}
 
 		/// <summary>
@@ -142,6 +142,21 @@ namespace mCubed.Core {
 		private void OnFormulaChanged() {
 			if (ValueChanged != null)
 				ValueChanged();
+		}
+
+		#endregion
+
+		#region Members
+
+		/// <summary>
+		/// Coerces the name value to ensure it only contains letters, numbers, spaces, and underscores
+		/// </summary>
+		/// <param name="name">The name value that should be coerced</param>
+		/// <returns>An acceptable string value for the name</returns>
+		private string CoerceNameValue(string name) {
+			if (name == null)
+				return string.Empty;
+			return Regex.Replace(name, "[^A-Za-z0-9 _]", "");
 		}
 
 		#endregion

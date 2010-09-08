@@ -7,6 +7,8 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Navigation;
 using mCubed.Core;
+using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace mCubed {
 	public partial class mCubedSecondary : Window {
@@ -228,6 +230,29 @@ namespace mCubed {
 		/// Get a collection of all the available custom formulas in mCubed [Bindable]
 		/// </summary>
 		public IEnumerable Formulas { get { return mCubedSecondary._formulas; } }
+
+		/// <summary>
+		/// Event that handles when the formula name has changed
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void FormulaName_TextChanged(object sender, TextChangedEventArgs e) {
+			TextBox textBox = sender as TextBox;
+			if (textBox != null) {
+				string baseText = textBox.Text;
+				string text = baseText;
+				int id = 1;
+				int count = 1;
+				while (string.IsNullOrEmpty(text) || Settings.Formulas.Count(f => f.Name == text) > count) {
+					text = baseText + id;
+					count = 0;
+					id++;
+				}
+				if (text != textBox.Text)
+					textBox.Text = text;
+				BindingOperations.GetBindingExpression(textBox, TextBox.TextProperty).UpdateTarget();
+			}
+		}
 
 		#endregion
 
