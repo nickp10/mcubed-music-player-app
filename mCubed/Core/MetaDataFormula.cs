@@ -122,6 +122,7 @@ namespace mCubed.Core {
 
 		#region Events
 
+		public event Action FormulaChanged;
 		public event Action ValueChanged;
 
 		#endregion
@@ -140,8 +141,13 @@ namespace mCubed.Core {
 		/// Event that handles when the formula has changed
 		/// </summary>
 		private void OnFormulaChanged() {
+			// Notify that the values generated from this formula will change
 			if (ValueChanged != null)
 				ValueChanged();
+
+			// Notify that the formula changed
+			if (FormulaChanged != null)
+				FormulaChanged();
 		}
 
 		#endregion
@@ -168,6 +174,7 @@ namespace mCubed.Core {
 		/// </summary>
 		public void Dispose() {
 			// Unsubscribe others from its events
+			FormulaChanged = null;
 			PropertyChanged = null;
 			ValueChanged = null;
 		}

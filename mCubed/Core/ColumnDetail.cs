@@ -32,6 +32,11 @@ namespace mCubed.Core {
 		}
 
 		/// <summary>
+		/// Get the meta-data formula that is being used to generate the values, only if the type is a formula type [Bindable]
+		/// </summary>
+		public MetaDataFormula Formula { get { return _formula; } }
+
+		/// <summary>
 		/// Get the key that will be used to retrieve the proper column type information in order to 
 		/// generate the value for each individual item for this column. For instance, "Title" with Type
 		/// equal to Property means that the "Title" property of each instance will be displayed as the
@@ -42,6 +47,11 @@ namespace mCubed.Core {
 			get { return _key; }
 			private set { this.SetAndNotify(ref _key, value, "Key"); }
 		}
+
+		/// <summary>
+		/// Get the meta-data attribute that is being used to generate the values, only if the type is a property type [Bindable]
+		/// </summary>
+		public MetaDataAttribute Property { get { return _property; } }
 
 		/// <summary>
 		/// Get the type of column that the detail represents [Bindable]
@@ -178,7 +188,7 @@ namespace mCubed.Core {
 		#endregion
 	}
 
-	public class ColumnVector : IKeyProvider<MediaFile>, IComparer<MediaFile>, INotifyPropertyChanged, IDisposable {
+	public class ColumnVector : IKeyProvider<MediaFile>, IComparer<MediaFile>, IResettable<MediaFile>, INotifyPropertyChanged, IDisposable {
 		#region INotifyPropertyChanged Members
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -225,7 +235,12 @@ namespace mCubed.Core {
 		/// </summary>
 		/// <param name="columnDetail">The column detail to specify additional information for</param>
 		public ColumnVector(ColumnDetail columnDetail) {
+			// Store the column detail
 			_columnDetail = columnDetail;
+
+			// Register to the formula changed event so it can reset itself
+			if (_columnDetail.Type == ColumnType.Formula && _columnDetail.Formula != null)
+				_columnDetail.Formula.FormulaChanged += new Action(OnReset);
 		}
 
 		#endregion
@@ -239,6 +254,14 @@ namespace mCubed.Core {
 		/// <returns>The value from the file as described by the column details</returns>
 		public IComparable ProvideValue(MediaFile file) {
 			return ColumnDetail.ProvideValue(file);
+		}
+
+		/// <summary>
+		/// Event that notifies when the column vector should be reset, meaning its provide value formula has changed
+		/// </summary>
+		private void OnReset() {
+			if (Reset != null)
+				Reset(this);
 		}
 
 		#endregion
@@ -284,6 +307,12 @@ namespace mCubed.Core {
 
 		#endregion
 
+		#region IResettable<MediaFile> Members
+
+		public event Action<IComparer<MediaFile>> Reset;
+
+		#endregion
+
 		#region IDisposable Members
 
 		/// <summary>
@@ -292,6 +321,11 @@ namespace mCubed.Core {
 		public void Dispose() {
 			// Unsubscribe others from its events
 			PropertyChanged = null;
+			Reset = null;
+
+			// Unsubscribe its delegates from other events
+			if (_columnDetail.Type == ColumnType.Formula && _columnDetail.Formula != null)
+				_columnDetail.Formula.FormulaChanged -= new Action(OnReset);
 		}
 
 		#endregion

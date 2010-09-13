@@ -4,11 +4,11 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Navigation;
 using mCubed.Core;
-using System.Windows.Controls;
-using System.Windows.Data;
 
 namespace mCubed {
 	public partial class mCubedSecondary : Window {

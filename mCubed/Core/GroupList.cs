@@ -428,6 +428,9 @@ namespace mCubed.Core {
 			// Find its current location
 			GroupList<T> currentGroup = FindItemsCurrentGroup(item);
 			if (currentGroup != null) {
+				// Find its current index
+				int currentIndex = currentGroup._items.IndexOf(item);
+
 				// Suppress notifications
 				IsNotificationSuppressed = true;
 
@@ -439,10 +442,11 @@ namespace mCubed.Core {
 
 				// Retrieve its new location
 				GroupList<T> newGroup = FindItemsCurrentGroup(item);
+				int newIndex = newGroup._items.IndexOf(item);
 
 				// Only notify if a new group was chosen
 				IsNotificationSuppressed = false;
-				if (newGroup == currentGroup) {
+				if (newGroup == currentGroup && newIndex == currentIndex) {
 					ClearSuppressedNotifications();
 				} else {
 					NotifySuppressedNotifications();
@@ -588,6 +592,17 @@ namespace mCubed.Core {
 		}
 
 		/// <summary>
+		/// Event that handles when a group by was reset from within the reset event in the group by
+		/// </summary>
+		/// <param name="grouper">The grouper that has been reset</param>
+		private void OnGroupByReset(IComparer<T> grouper) {
+			PerformAction(list =>
+			{
+				list.ResetGroupByInternal(grouper);
+			});
+		}
+
+		/// <summary>
 		/// Add a group by to the list of group bys for the list
 		/// </summary>
 		/// <param name="grouper">The grouper that determines how to group the items</param>
@@ -605,6 +620,10 @@ namespace mCubed.Core {
 		private void AddGroupByInternal(IComparer<T> grouper) {
 			// Store the collection of group bys in the root
 			_groupBys.Add(grouper);
+
+			// Register the reset delegate, if possible
+			if (grouper is IResettable<T>)
+				((IResettable<T>)grouper).Reset += new Action<IComparer<T>>(OnGroupByReset);
 
 			// Tell all the leafs to group themselves accordingly
 			AddGroup();
@@ -665,6 +684,10 @@ namespace mCubed.Core {
 		private void RemoveGroupByInternal(IComparer<T> grouper) {
 			// Remove the group by from the collection
 			_groupBys.Remove(grouper);
+
+			// Unregister the reset delegate, if possible
+			if (grouper is IResettable<T>)
+				((IResettable<T>)grouper).Reset -= new Action<IComparer<T>>(OnGroupByReset);
 
 			// Reset the collection, there's no easier way to do this for now
 			ResetInternal();
@@ -753,6 +776,11 @@ namespace mCubed.Core {
 		/// Clear all the group bys in the list while reorganizing the list accordingly, for internal purposes
 		/// </summary>
 		private void ClearGroupBysInternal() {
+			// Unregister all the reset delegates, if possible
+			foreach (IComparer<T> grouper in _groupBys)
+				if (grouper is IResettable<T>)
+					((IResettable<T>)grouper).Reset -= new Action<IComparer<T>>(OnGroupByReset);
+
 			// Clear the group bys
 			_groupBys.Clear();
 
@@ -863,6 +891,17 @@ namespace mCubed.Core {
 		}
 
 		/// <summary>
+		/// Event that handles when a sort by was reset from within the reset event in the sort by
+		/// </summary>
+		/// <param name="sorter">The sorter that has been reset</param>
+		private void OnSortByReset(IComparer<T> sorter) {
+			PerformAction(list =>
+			{
+				list.ResetSortByInternal(sorter);
+			});
+		}
+
+		/// <summary>
 		/// Add a sort by to the end of the list of sort bys for the list
 		/// </summary>
 		/// <param name="sorter">The sorter that determines how the items should be sorted</param>
@@ -880,6 +919,10 @@ namespace mCubed.Core {
 		private void AddSortByInternal(IComparer<T> sorter) {
 			// Store the collection of sort bys in the root
 			_sortBys.Add(sorter);
+
+			// Register the reset delegate, if possible
+			if (sorter is IResettable<T>)
+				((IResettable<T>)sorter).Reset += new Action<IComparer<T>>(OnSortByReset);
 
 			// Resort the collection
 			ResortInternal();
@@ -903,6 +946,10 @@ namespace mCubed.Core {
 		private void RemoveSortByInternal(IComparer<T> sorter) {
 			// Remove the sort by from the collection
 			_sortBys.Remove(sorter);
+
+			// Unregister the reset delegate, if possible
+			if (sorter is IResettable<T>)
+				((IResettable<T>)sorter).Reset -= new Action<IComparer<T>>(OnSortByReset);
 
 			// Resort the collection
 			ResortInternal();
@@ -949,6 +996,12 @@ namespace mCubed.Core {
 		/// Clears all the sort bys for the list, however no rearranging of the items occurs, for internal purposes
 		/// </summary>
 		private void ClearSortBysInternal() {
+			// Unregister all the reset delegates, if possible
+			foreach (IComparer<T> sorter in _sortBys)
+				if (sorter is IResettable<T>)
+					((IResettable<T>)sorter).Reset -= new Action<IComparer<T>>(OnSortByReset);
+
+			// Clear the sort bys
 			_sortBys.Clear();
 		}
 
@@ -1322,5 +1375,8 @@ namespace mCubed.Core {
 		/// <param name="item">The item to retrieve the key or string representation for</param>
 		/// <returns>The key or string representation for the given item</returns>
 		string GetKey(T item);
+	}
+	public interface IResettable<T> {
+		event Action<IComparer<T>> Reset;
 	}
 }
