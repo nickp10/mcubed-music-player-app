@@ -416,6 +416,9 @@ namespace mCubed.MetaData {
 				// Restore the keyboard input appropriately
 				if (reselect)
 					CurrentSelection = selection;
+
+				// Undo the manually marking, if any
+				IsMarked = false;
 			}
 		}
 
@@ -452,7 +455,7 @@ namespace mCubed.MetaData {
 		}
 
 		/// <summary>
-		/// Undo any changes that have occurred
+		/// Undo any and all changes that have occurred
 		/// </summary>
 		public void UndoChange() {
 			SetValue(OldValue.Select(v => v.Value), false);

@@ -208,10 +208,8 @@ namespace mCubed.MetaData {
 			ReloadPictures();
 
 			// Undo the changes
-			foreach (MDIField field in MetaDataFields) {
-				field.IsMarked = false;
+			foreach (MDIField field in MetaDataFields)
 				field.UndoChange();
-			}
 		}
 
 		/// <summary>
@@ -232,7 +230,6 @@ namespace mCubed.MetaData {
 					var tempItem = item.NewValue.Select(vc => vc.Value).DistinctUnordered().ToArray();
 					updateMDF.Add(item.PropertyName, tempItem);
 					item.SetValue(tempItem, true);
-					item.IsMarked = false;
 				}
 			}
 

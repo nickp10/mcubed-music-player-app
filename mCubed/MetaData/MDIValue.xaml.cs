@@ -140,6 +140,9 @@ namespace mCubed.MetaData {
 			binding.Bindings.Add(new Binding { Source = ValueTextBox.ContextMenu, Path = new PropertyPath("IsOpen") });
 			SetBinding(MDIValue.StatusProperty, binding);
 
+			// Send the value updated event when the text changes
+			ValueTextBox.TextChanged += new TextChangedEventHandler(OnValueTextBoxChanged);
+
 			// Select text
 			if (_customSelect) {
 				Select(_selectionStart, _selectionLength);
@@ -174,6 +177,15 @@ namespace mCubed.MetaData {
 			// Was the keypress handled
 			if (handled)
 				e.Handled = true;
+		}
+
+		/// <summary>
+		/// Event that handles when the value within the text box has changed
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnValueTextBoxChanged(object sender, TextChangedEventArgs e) {
+			OnValueChanged();
 		}
 
 		/// <summary>

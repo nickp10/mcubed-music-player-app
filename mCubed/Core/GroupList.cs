@@ -165,22 +165,7 @@ namespace mCubed.Core {
 		/// <summary>
 		/// Get the list's structure by aggregating the groups and each groups' subgroups until each subgroups' items are all contained in the structure [Bindable]
 		/// </summary>
-		public IEnumerable<object> Structure {
-			get {
-				List<object> items = new List<object>();
-				if (IsLeaf) {
-					foreach (T item in Items)
-						items.Add(item);
-				} else {
-					foreach (GroupList<T> group in Groups) {
-						items.Add(group);
-						foreach (object item in group.Structure)
-							items.Add(item);
-					}
-				}
-				return items;
-			}
-		}
+		public IEnumerable<object> Structure { get { return GetStructure(); } }
 
 		/// <summary>
 		/// Get the current thread's unique ID
@@ -1063,7 +1048,8 @@ namespace mCubed.Core {
 						Queue<GroupListTransactionItem<T>> actions = transaction.Actions;
 						while (actions.Count > 0) {
 							GroupListTransactionItem<T> item = actions.Dequeue();
-							RunAction(item.Action, item.PerformOn, item.SurroundWithTransaction);
+							lock(list)
+								RunAction(item.Action, item.PerformOn, item.SurroundWithTransaction);
 							item.Dispose();
 						}
 
@@ -1107,21 +1093,54 @@ namespace mCubed.Core {
 
 		#endregion
 
-		#region IEnumerable<T> Members
+		#region IEnumerable<T> / Structure Members
+
+		/// <summary>
+		/// Returns the structure of the list as a flat structure instead of a hierarchical strucutre
+		/// </summary>
+		/// <returns>The structure of the list as a flast structure</returns>
+		private IEnumerable<object> GetStructure() {
+			try {
+				if (IsRoot)
+					Monitor.Enter(Root);
+				List<object> items = new List<object>();
+				if (IsLeaf) {
+					foreach (T item in Items)
+						items.Add(item);
+				} else {
+					foreach (GroupList<T> group in Groups) {
+						items.Add(group);
+						foreach (object item in group.Structure)
+							items.Add(item);
+					}
+				}
+				return items;
+			} finally {
+				if (IsRoot)
+					Monitor.Exit(Root);
+			}
+		}
 
 		/// <summary>
 		/// Returns an enumerator that iterates through the list
 		/// </summary>
 		/// <returns>An enumerator that iterates through the list</returns>
 		public IEnumerator<T> GetEnumerator() {
-			if (IsLeaf) {
-				return _items.GetEnumerator();
-			} else {
-				List<T> items = new List<T>();
-				foreach (GroupList<T> group in Groups)
-					foreach (T item in group)
-						items.Add(item);
-				return items.GetEnumerator();
+			try {
+				if (IsRoot)
+					Monitor.Enter(Root);
+				if (IsLeaf) {
+					return _items.GetEnumerator();
+				} else {
+					List<T> items = new List<T>();
+					foreach (GroupList<T> group in Groups)
+						foreach (T item in group)
+							items.Add(item);
+					return items.GetEnumerator();
+				}
+			} finally {
+				if (IsRoot)
+					Monitor.Exit(Root);
 			}
 		}
 
