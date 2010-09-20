@@ -327,10 +327,13 @@ namespace mCubed.Core {
 		/// </summary>
 		public void Load() {
 			// Setup the columns
-			Formulas.CollectionChanged += new NotifyCollectionChangedEventHandler(OnFormulasCollectionChanged);
 			foreach (var property in MetaDataFormula.MetaDataProperties) {
 				AllColumns.Add(new ColumnDetail(property));
 			}
+
+			// Register to event handlers
+			Formulas.CollectionChanged += new NotifyCollectionChangedEventHandler(OnFormulasCollectionChanged);
+			AllColumns.CollectionChanged += new NotifyCollectionChangedEventHandler(OnAllColumnsCollectionChanged);
 
 			// Attempt to load the file
 			if (ValidSettingsFile())
@@ -496,6 +499,15 @@ namespace mCubed.Core {
 		}
 
 		/// <summary>
+		/// Event that handles when the collection of all the columns changes
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnAllColumnsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+			this.OnPropertyChanged("AllColumns");
+		}
+
+		/// <summary>
 		/// Event that handles when the formulas collection changes so that the columns change accordingly
 		/// </summary>
 		/// <param name="sender">The sender object</param>
@@ -585,6 +597,7 @@ namespace mCubed.Core {
 			ShowMiniChanged = null;
 
 			// Unsubscribe from delegates
+			AllColumns.CollectionChanged -= new NotifyCollectionChangedEventHandler(OnAllColumnsCollectionChanged);
 			Formulas.CollectionChanged -= new NotifyCollectionChangedEventHandler(OnFormulasCollectionChanged);
 
 			// Dispose all disposable references it created
@@ -606,9 +619,6 @@ namespace mCubed.Core {
 
 		#region Data Store
 
-		private readonly ObservableCollection<ColumnVector> _display = new ObservableCollection<ColumnVector>();
-		private readonly ObservableCollection<ColumnVector> _groupBy = new ObservableCollection<ColumnVector>();
-		private readonly ObservableCollection<ColumnVector> _sortBy = new ObservableCollection<ColumnVector>();
 		private readonly Dictionary<string, ObservableCollection<ColumnVector>> _collections = new Dictionary<string, ObservableCollection<ColumnVector>>();
 
 		#endregion
@@ -623,33 +633,80 @@ namespace mCubed.Core {
 		/// <summary>
 		/// Get the collection of the columns in order to display [Bindable]
 		/// </summary>
-		public ObservableCollection<ColumnVector> Display { get { return _display; } }
+		public ObservableCollection<ColumnVector> Display { get { return _collections["Display"]; } }
 
 		/// <summary>
 		/// Get the collection of the columns in order to group by [Bindable]
 		/// </summary>
-		public ObservableCollection<ColumnVector> GroupBy { get { return _groupBy; } }
+		public ObservableCollection<ColumnVector> GroupBy { get { return _collections["GroupBy"]; } }
 
 		/// <summary>
 		/// Get the collection of the columns in order to sort by [Bindable]
 		/// </summary>
-		public ObservableCollection<ColumnVector> SortBy { get { return _sortBy; } }
+		public ObservableCollection<ColumnVector> SortBy { get { return _collections["SortBy"]; } }
+
+		#endregion
+
+		#region Indexer
+
+		/// <summary>
+		/// Get the collection of columns at the given group name
+		/// </summary>
+		/// <param name="group">The name of the group to retrieve the columns for</param>
+		/// <returns>The collection of columns at the given group name</returns>
+		public ObservableCollection<ColumnVector> this[string group] {
+			get { return _collections[group]; }
+		}
 
 		#endregion
 
 		#region Constructor
 
+		/// <summary>
+		/// Construct a new column settings
+		/// </summary>
 		public ColumnSettings() {
-			// Create the collections
-			_collections.Add("Display", Display);
-			_collections.Add("GroupBy", GroupBy);
-			_collections.Add("SortBy", SortBy);
+			// Create the collections and register to their collection changed event
+			foreach (string key in new[] { "Display", "GroupBy", "SortBy" }) {
+				var value = new ObservableCollection<ColumnVector>();
+				value.CollectionChanged += new NotifyCollectionChangedEventHandler(OnCollectionChanged);
+				_collections.Add(key, value);
+			}
+
+			// Register to the collection changed event for AllColumns
+			Utilities.MainSettings.PropertyChanged += new PropertyChangedEventHandler(OnAllColumnsChanged);
 
 			// Default the Display columns
-			new[] {
-				"OrderKey", "Track", "Title", "JoinedPerformers", "Album", "LengthString", "JoinedGenres", "FileName"
-			}.Select(s => AllColumns.FirstOrDefault(c => c.Type == ColumnType.Property && c.Key == s)).
-				Where(s => s != null).Perform(s => Display.Add(new ColumnVector(s)));
+			new[] { "OrderKey", "Track", "Title", "JoinedPerformers", "Album", "LengthString", "JoinedGenres", "FileName" }.
+				Select(s => AllColumns.FirstOrDefault(c => c.Type == ColumnType.Property && c.Key == s)).
+				Where(s => s != null).
+				Perform(s => Display.Add(new ColumnVector(s)));
+		}
+
+		#endregion
+
+		#region Event Handlers
+
+		/// <summary>
+		/// Event that handles when all the collection of all the columns changed
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnAllColumnsChanged(object sender, PropertyChangedEventArgs e) {
+			if (e.PropertyName == "AllColumns")
+				this.OnPropertyChanged("AllColumns");
+		}
+
+		/// <summary>
+		/// Event that handles when a collection has changed for the column vectors
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+			// Get the key for the collection that changed
+			var pair = _collections.SingleOrDefault(c => c.Value == sender);
+			if (!string.IsNullOrEmpty(pair.Key))
+				this.OnPropertyChanged(pair.Key);
 		}
 
 		#endregion
@@ -740,6 +797,20 @@ namespace mCubed.Core {
 		public void Dispose() {
 			// Unsubscribe others from its events
 			PropertyChanged = null;
+
+			// Dispose of the resources it created while unregistering from events
+			foreach (var collection in _collections) {
+				foreach (var item in collection.Value) {
+					item.Dispose();
+				}
+				collection.Value.CollectionChanged -= new NotifyCollectionChangedEventHandler(OnCollectionChanged);
+			}
+
+			// Finish unregistering from events
+			Utilities.MainSettings.PropertyChanged -= new PropertyChangedEventHandler(OnAllColumnsChanged);
+		
+			// Ensure there are no cyclic references
+			_collections.Clear();
 		}
 
 		#endregion

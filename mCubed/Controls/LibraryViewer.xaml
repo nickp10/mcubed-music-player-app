@@ -10,13 +10,14 @@
 	<Border DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" BorderThickness="2" Background="Transparent">
 		<Grid>
 			<Grid.RowDefinitions>
-				<RowDefinition Height="40"/>
+				<RowDefinition Height="{Binding GroupSortHeight}"/>
 				<RowDefinition Height=".6*"/>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height=".4*" x:Name="MDIRow"/>
 				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
-			<ListView Grid.Row="1" ItemsSource="{Binding Path=Library.MediaFiles.Structure}" SelectionChanged="OnSelectedMediaChanged" x:Name="SelectedMedia">
+			<ListView Grid.Row="1" ItemsSource="{Binding Path=Library.MediaFiles.Structure}" SelectionChanged="OnSelectedMediaChanged"
+					GridViewColumnHeader.Click="OnGridViewColumnHeaderClicked" x:Name="SelectedMedia">
 				<ListView.Resources>
 					<controls:GroupItemIndentConverter x:Key="GroupItemIndentConverter" />
 					<controls:GroupItemMarginConverter x:Key="GroupItemMarginConverter" />
@@ -100,6 +101,8 @@
 					</GridView>
 				</ListView.View>
 			</ListView>
+			<controls:ColumnSelector Placement="MousePoint" ShowSelectedColumns="True" ColumnDeselected="OnDisplayColumnDeselected" ColumnSelected="OnDisplayColumnSelected"
+								ColumnSettings="{Binding Path=Library.ColumnSettings}" SelectedColumnGroup="Display" x:Name="DisplayColumnSelector" />
 			<GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="10" Background="Transparent" x:Name="MDISplitter"/>
 			<md:MDIManager Grid.Row="3" x:Name="MetaDataManager"/>
 			<controls:ProgressManager Grid.Row="4"/>

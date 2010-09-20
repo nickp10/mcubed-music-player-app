@@ -4,12 +4,10 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Markup;
 using mCubed.Core;
 using mCubed.MetaData;
 
@@ -18,6 +16,21 @@ namespace mCubed.Controls {
 		#region INotifyPropertyChanged Members
 
 		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		#region Dependency Property: GroupSortHeight
+
+		public static readonly DependencyProperty GroupSortHeightProperty =
+			DependencyProperty.Register("GroupSortHeight", typeof(double), typeof(LibraryViewer), new UIPropertyMetadata(0d));
+
+		/// <summary>
+		/// Get/set the height for the group by and sort by options [Bindable]
+		/// </summary>
+		public double GroupSortHeight {
+			get { return (double)GetValue(GroupSortHeightProperty); }
+			set { SetValue(GroupSortHeightProperty, value); }
+		}
 
 		#endregion
 
@@ -203,46 +216,20 @@ namespace mCubed.Controls {
 			}
 		}
 
-		/// <summary>
-		/// The sorting method that handles sorting a grid view
-		/// </summary>
-		/// <param name="header">The header that was clicked</param>
-		//private void Sort(GridViewColumnHeader header) {
-		//     ICollectionView view = CollectionItems == null ? null : CollectionItems.View;
-		//     if (String.IsNullOrEmpty(header.Tag as string) || view == null)
-		//          return;
-		//     SortDescription ascending = new SortDescription(header.Tag as string, ListSortDirection.Ascending);
-		//     SortDescription descending = new SortDescription(header.Tag as string, ListSortDirection.Descending);
-		//     if (view.SortDescriptions.Contains(ascending)) {
-		//          int index = view.SortDescriptions.IndexOf(ascending);
-		//          view.SortDescriptions.RemoveAt(index);
-		//          view.SortDescriptions.Insert(index, descending);
-		//          header.ContentTemplate = Resources["GridViewHeaderDesc"] as DataTemplate;
-		//     } else if (view.SortDescriptions.Contains(descending)) {
-		//          view.SortDescriptions.Remove(descending);
-		//          header.ContentTemplate = null;
-		//     } else {
-		//          view.SortDescriptions.Add(ascending);
-		//          header.ContentTemplate = Resources["GridViewHeaderAsc"] as DataTemplate;
-		//     }
-		//     view.Refresh();
-		//}
-
-		/// <summary>
-		/// The action to be taken when a gridview header is clicked
-		/// </summary>
-		/// <param name="sender">The object sending the request</param>
-		/// <param name="e">The arguments for the request</param>
-		//private void GridViewColumnHeaderClickedHandler(object sender, RoutedEventArgs e) {
-		//     GridViewColumnHeader headerClicked = e.OriginalSource as GridViewColumnHeader;
-		//     if (headerClicked != null && headerClicked.Role != GridViewColumnHeaderRole.Padding) {
-		//          Sort(headerClicked);
-		//     }
-		//}
-
 		#endregion
 
 		#region Column Event Handlers
+
+		/// <summary>
+		/// Event that handles when a grid view column header is clicked
+		/// </summary>
+		/// <param name="sender">The object sending the request</param>
+		/// <param name="e">The arguments for the request</param>
+		private void OnGridViewColumnHeaderClicked(object sender, RoutedEventArgs e) {
+			GridViewColumnHeader headerClicked = e.OriginalSource as GridViewColumnHeader;
+			if (headerClicked != null && headerClicked.Role != GridViewColumnHeaderRole.Padding)
+				DisplayColumnSelector.IsOpen = true;
+		}
 
 		/// <summary>
 		/// Event that handles when the grid view column collection itself changes
@@ -286,17 +273,14 @@ namespace mCubed.Controls {
 				column.Header = header;
 
 				// Setup the data template
-				StringBuilder xaml = new StringBuilder("<DataTemplate");
-				xaml.Append(" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"");
-				xaml.Append(" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"");
-				xaml.Append(" xmlns:controls=\"clr-namespace:mCubed.Controls;assembly=" + GetType().Assembly.GetName().Name + "\"");
-				xaml.Append(">");
-				if (columnInfo.ColumnDetail.Type == ColumnType.Property)
-					xaml.Append("<TextBlock Text=\"{Binding MetaData." + columnInfo.ColumnDetail.Key + "}\"/>");
-				else
-					xaml.Append("<TextBlock Text=\"{controls:Formula Name=" + columnInfo.ColumnDetail.Key + ", File={Binding}}\"/>");
-				xaml.Append("</DataTemplate>");
-				column.CellTemplate = (DataTemplate)XamlReader.Parse(xaml.ToString());
+				var factory = new FrameworkElementFactory(typeof(TextBlock));
+				if (columnInfo.ColumnDetail.Type == ColumnType.Property) {
+					var binding = new Binding { Path = new PropertyPath("MetaData." + columnInfo.ColumnDetail.Key) };
+					factory.SetBinding(TextBlock.TextProperty, binding);
+				} else {
+					Formula.BindFormula(factory, columnInfo.ColumnDetail.Formula, new Binding(), TextBlock.TextProperty);
+				}
+				column.CellTemplate = new DataTemplate { VisualTree = factory };
 
 				// Setup the bindings
 				BindingOperations.SetBinding(column, GridViewColumn.WidthProperty, new Binding { Source = columnInfo, Mode = BindingMode.TwoWay, Path = new PropertyPath("Width") });
@@ -306,6 +290,24 @@ namespace mCubed.Controls {
 				// Add the column
 				LibraryGridView.Columns.Add(column);
 			}
+		}
+
+		/// <summary>
+		/// Event that handles when a display column has been deselected
+		/// </summary>
+		/// <param name="column">The column that has been deselected</param>
+		private void OnDisplayColumnDeselected(ColumnDetail column) {
+			var vectors = Library.ColumnSettings.Display.Where(vector => vector.ColumnDetail == column).ToArray();
+			foreach (var vector in vectors)
+				Library.ColumnSettings.Display.Remove(vector);
+		}
+
+		/// <summary>
+		/// Event that handles when a display column has been selected
+		/// </summary>
+		/// <param name="column">The column that has been selected</param>
+		private void OnDisplayColumnSelected(ColumnDetail column) {
+			Library.ColumnSettings.Display.Add(new ColumnVector(column));
 		}
 
 		#endregion
@@ -324,5 +326,30 @@ namespace mCubed.Controls {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// The sorting method that handles sorting a grid view
+		/// </summary>
+		/// <param name="header">The header that was clicked</param>
+		//private void Sort(GridViewColumnHeader header) {
+		//     ICollectionView view = CollectionItems == null ? null : CollectionItems.View;
+		//     if (String.IsNullOrEmpty(header.Tag as string) || view == null)
+		//          return;
+		//     SortDescription ascending = new SortDescription(header.Tag as string, ListSortDirection.Ascending);
+		//     SortDescription descending = new SortDescription(header.Tag as string, ListSortDirection.Descending);
+		//     if (view.SortDescriptions.Contains(ascending)) {
+		//          int index = view.SortDescriptions.IndexOf(ascending);
+		//          view.SortDescriptions.RemoveAt(index);
+		//          view.SortDescriptions.Insert(index, descending);
+		//          header.ContentTemplate = Resources["GridViewHeaderDesc"] as DataTemplate;
+		//     } else if (view.SortDescriptions.Contains(descending)) {
+		//          view.SortDescriptions.Remove(descending);
+		//          header.ContentTemplate = null;
+		//     } else {
+		//          view.SortDescriptions.Add(ascending);
+		//          header.ContentTemplate = Resources["GridViewHeaderAsc"] as DataTemplate;
+		//     }
+		//     view.Refresh();
+		//}
 	}
 }

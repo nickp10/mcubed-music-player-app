@@ -37,7 +37,7 @@
 			</Grid.Style>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto" x:Name="GroupSortRow"/>
 				<RowDefinition Height="*"/>
 			</Grid.RowDefinitions>
 			<Grid.ColumnDefinitions>
@@ -71,7 +71,7 @@
 				<Button Content="Help/Settings" Click="OnShowSecondary" Padding="10,5"/>
 				<Button Content="Exit" Click="OnClose" Padding="10,5" Margin="10,0,0,0"/>
 			</WrapPanel>
-			<controls:LibraryViewer Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="3" Library="{Binding Path=LibrarySelected}"/>
+			<controls:LibraryViewer Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="3" Library="{Binding Path=LibrarySelected}" x:Name="LibraryViewer"/>
 			<controls:PlayerControls Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" VerticalAlignment="Center"/>
 		</Grid>
 	</Grid>

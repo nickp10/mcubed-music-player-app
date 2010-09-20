@@ -302,6 +302,17 @@ namespace mCubed.Core {
 			return list.Where(s => !String.IsNullOrEmpty(s)).Distinct();
 		}
 
+		/// <summary>
+		/// Wraps the given enumerable in a new enumerable instance to ensure a read-only enumerable
+		/// </summary>
+		/// <typeparam name="T">The type of elements to the enumerable will contain</typeparam>
+		/// <param name="list">The enumerable that should be wrapped up</param>
+		/// <returns>A new enumerable instance that guarantees the given enumerable will not be modified</returns>
+		public static IEnumerable<T> WrapEnumerable<T>(this IEnumerable<T> list) {
+			foreach (T item in list)
+				yield return item;
+		}
+
 		#endregion
 
 		#region Extension Methods: INotifyPropertyChanged

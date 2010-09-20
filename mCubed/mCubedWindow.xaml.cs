@@ -26,7 +26,8 @@ namespace mCubed {
 			Utilities.MainSettings.ShowMiniChanged += new Action(OnShowMiniChanged);
 			Utilities.MainSettings.Failure += new Action<MediaFailure, string>(OnFailure);
 			Closing += new CancelEventHandler(OnClosing);
-			AddHandler(Window.PreviewKeyDownEvent, new KeyEventHandler(OnKeyDown));
+			Loaded += new RoutedEventHandler(OnLoaded);
+			PreviewKeyDown += new KeyEventHandler(OnKeyDown);
 			GlobalKeyboardHook.OnKeyDown += new Action<object, Key>(OnGlobalKeyDown);
 
 			// Finalizations
@@ -79,6 +80,15 @@ namespace mCubed {
 			}
 			if (action.HasValue)
 				Utilities.MainSettings.PerformAction(action.Value);
+		}
+
+		/// <summary>
+		/// Event that handles when the main window has loaded
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnLoaded(object sender, RoutedEventArgs e) {
+			LibraryViewer.GroupSortHeight = GroupSortRow.ActualHeight;
 		}
 
 		/// <summary>
