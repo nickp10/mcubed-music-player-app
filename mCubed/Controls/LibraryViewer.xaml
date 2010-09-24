@@ -10,7 +10,7 @@
 	<Border DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" BorderThickness="2" Background="Transparent">
 		<Grid>
 			<Grid.RowDefinitions>
-				<RowDefinition Height="{Binding GroupSortHeight}"/>
+				<RowDefinition Height="Auto" SharedSizeGroup="GroupSortRow"/>
 				<RowDefinition Height=".6*"/>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height=".4*" x:Name="MDIRow"/>

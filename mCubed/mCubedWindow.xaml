@@ -24,7 +24,7 @@
 			</Grid.Style>
 			<controls:PlayerControls/>
 		</Grid>
-		<Grid Margin="10">
+		<Grid Grid.IsSharedSizeScope="True" Margin="10">
 			<Grid.Style>
 				<Style TargetType="{x:Type Grid}">
 					<Setter Property="Visibility" Value="Visible"/>
@@ -37,7 +37,7 @@
 			</Grid.Style>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="Auto" x:Name="GroupSortRow"/>
+				<RowDefinition Height="Auto" SharedSizeGroup="GroupSortRow"/>
 				<RowDefinition Height="*"/>
 			</Grid.RowDefinitions>
 			<Grid.ColumnDefinitions>

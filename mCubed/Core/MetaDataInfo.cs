@@ -205,7 +205,6 @@ namespace mCubed.Core {
 		/// <summary>
 		/// Get whether or not this media file is currently loaded [Bindable]
 		/// </summary>
-		[MetaData("A true or false description of whether or not the media file is currently loaded.")]
 		public bool IsLoaded { get { return Parent.IsLoaded; } }
 
 		/// <summary>

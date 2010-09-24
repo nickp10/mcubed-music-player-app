@@ -241,7 +241,7 @@ namespace mCubed.Core {
 		/// <param name="e">The event arguments</param>
 		private void OnMediaFilePropertyChanged(object sender, PropertyChangedEventArgs e) {
 			MetaDataInfo info = sender as MetaDataInfo;
-			if (info != null && MetaDataFormula.MetaDataProperties.Any(p => p.Property.Name == e.PropertyName))
+			if (info != null && MetaDataFormula.MetaDataProperties.Where(p => p.Path == "MetaData").Any(p => p.Property.Name == e.PropertyName))
 				MediaFiles.Reset(info.Parent);
 		}
 

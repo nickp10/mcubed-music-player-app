@@ -163,8 +163,13 @@ namespace mCubed.Core {
 			ColumnDetail detail = AllColumns.FirstOrDefault(c => c.Key == key && c.Type == type);
 
 			// Create the instance if it wasn't found
-			if (detail == null)
-				detail = new ColumnDetail(type, key);
+			if (detail == null) {
+				try {
+					detail = new ColumnDetail(type, key);
+				} catch {
+					return null;
+				}
+			}
 
 			// Put the instance in the dictionary and modify the details accordingly
 			detail.XMLID = element.Parse<int>("ID", 0);
@@ -224,9 +229,9 @@ namespace mCubed.Core {
 		/// <param name="element">The XML settings to generate from</param>
 		private void GenerateRoot(XElement element) {
 			if (element.Element("Formulas") != null)
-				element.Element("Formulas").Elements().Select(e => GenerateFormula(e)).Where(e => !Formulas.Contains(e)).Perform(e => Formulas.Add(e));
+				element.Element("Formulas").Elements().Select(e => GenerateFormula(e)).Where(e => e != null && !Formulas.Contains(e)).Perform(e => Formulas.Add(e));
 			if (element.Element("Columns") != null)
-				element.Element("Columns").Elements().Select(c => GenerateColumn(c)).Where(c => !AllColumns.Contains(c)).Perform(c => AllColumns.Add(c));
+				element.Element("Columns").Elements().Select(c => GenerateColumn(c)).Where(c => c != null && !AllColumns.Contains(c)).Perform(c => AllColumns.Add(c));
 			if (element.Element("Libraries") != null)
 				Libraries = element.Element("Libraries").Elements().Select(e => GenerateLibrary(e));
 			ShowMDIManager = element.Parse("ShowMDIManager", true);
