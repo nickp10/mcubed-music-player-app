@@ -3,6 +3,44 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:controls="clr-namespace:mCubed.Controls">
 
+	<!-- Up Arrow Path -->
+	<Style TargetType="{x:Type Path}" BasedOn="{StaticResource {x:Type Path}}" x:Key="UpArrowPath">
+		<Setter Property="Data" Value="M 0 7 L 7 7 L 3.5 3.5 Z"/>
+		<Setter Property="Fill" Value="Black"/>
+	</Style>
+	
+	<!-- Right Arrow Path -->
+	<Style TargetType="{x:Type Path}" BasedOn="{StaticResource {x:Type Path}}" x:Key="RightArrowPath">
+		<Setter Property="Data" Value="M 0 0 L 0 7 L 3.5 3.5 Z"/>
+		<Setter Property="Fill" Value="Black"/>
+	</Style>
+
+	<!-- Left Arrow Path -->
+	<Style TargetType="{x:Type Path}" BasedOn="{StaticResource {x:Type Path}}" x:Key="LeftArrowPath">
+		<Setter Property="Data" Value="M 7 0 L 7 7 L 3.5 3.5 Z"/>
+		<Setter Property="Fill" Value="Black"/>
+	</Style>
+
+	<!-- Down Arrow Path -->
+	<Style TargetType="{x:Type Path}" BasedOn="{StaticResource {x:Type Path}}" x:Key="DownArrowPath">
+		<Setter Property="Data" Value="M 0 0 L 7 0 L 3.5 3.5 Z"/>
+		<Setter Property="Fill" Value="Black"/>
+	</Style>
+
+	<!-- Check X Path -->
+	<Style TargetType="{x:Type Path}" BasedOn="{StaticResource {x:Type Path}}" x:Key="CheckXPath">
+		<Setter Property="Data" Value="M 0 0 L 7 7 M 0 7 L 7 0"/>
+		<Setter Property="Stroke" Value="Black"/>
+		<Setter Property="StrokeThickness" Value="2"/>
+	</Style>
+
+	<!-- Check Mark Path -->
+	<Style TargetType="{x:Type Path}" BasedOn="{StaticResource {x:Type Path}}" x:Key="CheckMarkPath">
+		<Setter Property="Data" Value="M 0 3.5 L 2.3 7 L 7 0"/>
+		<Setter Property="Stroke" Value="Black"/>
+		<Setter Property="StrokeThickness" Value="2"/>
+	</Style>
+
 	<!-- Border -->
 	<Style TargetType="{x:Type Border}">
 		<Setter Property="Background" Value="White"/>
@@ -12,7 +50,7 @@
 	</Style>
 
 	<!-- Menu Item Separator -->
-	<Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" TargetType="Separator">
+	<Style TargetType="{x:Type Separator}" x:Key="{x:Static MenuItem.SeparatorStyleKey}">
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="Separator">
@@ -23,7 +61,7 @@
 	</Style>
 
 	<!-- Menu Header -->
-	<ControlTemplate x:Key="{x:Static MenuItem.TopLevelHeaderTemplateKey}" TargetType="MenuItem">
+	<ControlTemplate TargetType="{x:Type MenuItem}" x:Key="{x:Static MenuItem.TopLevelHeaderTemplateKey}">
 		<Border x:Name="Border" Style="{StaticResource {x:Type Border}}" Background="Transparent" BorderBrush="Transparent">
 			<Grid>
 				<ContentPresenter Margin="5" ContentSource="Header" RecognizesAccessKey="True"/>
@@ -50,7 +88,7 @@
 	</ControlTemplate>
 
 	<!-- Menu Item -->
-	<ControlTemplate x:Key="{x:Static MenuItem.TopLevelItemTemplateKey}" TargetType="MenuItem">
+	<ControlTemplate TargetType="{x:Type MenuItem}" x:Key="{x:Static MenuItem.TopLevelItemTemplateKey}">
 		<Border x:Name="Border" Style="{StaticResource {x:Type Border}}" Background="Transparent" BorderBrush="Transparent">
 			<ContentPresenter Margin="5" ContentSource="Header" RecognizesAccessKey="True" />
 		</Border>
@@ -70,7 +108,7 @@
 	</ControlTemplate>
 
 	<!-- Menu Subheader -->
-	<ControlTemplate x:Key="{x:Static MenuItem.SubmenuHeaderTemplateKey}" TargetType="MenuItem">
+	<ControlTemplate TargetType="{x:Type MenuItem}" x:Key="{x:Static MenuItem.SubmenuHeaderTemplateKey}">
 		<Border x:Name="Border" Style="{StaticResource {x:Type Border}}" Background="Transparent" BorderBrush="Transparent" Padding="0,4">
 			<Grid>
 				<Grid.ColumnDefinitions>
@@ -82,7 +120,7 @@
 				</Grid.ColumnDefinitions>
 				<ContentPresenter x:Name="HeaderHost" Grid.Column="1" ContentSource="Header" RecognizesAccessKey="True"/>
 				<TextBlock x:Name="InputGestureText" Grid.Column="3" Text="{TemplateBinding InputGestureText}" HorizontalAlignment="Right"/>
-				<Path x:Name="Path" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 0 7 L 4 3.5 Z" Fill="#000"/>
+				<Path x:Name="Path" Grid.Column="4" Style="{DynamicResource RightArrowPath}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 				<Popup x:Name="Popup" Placement="Right" HorizontalOffset="-5" IsOpen="{TemplateBinding IsSubmenuOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade">
 					<Border x:Name="SubmenuBorder" Style="{StaticResource {x:Type Border}}">
 						<StackPanel IsItemsHost="True"/>
@@ -107,7 +145,7 @@
 	</ControlTemplate>
 
 	<!-- Menu Subitem -->
-	<ControlTemplate x:Key="{x:Static MenuItem.SubmenuItemTemplateKey}" TargetType="MenuItem">
+	<ControlTemplate TargetType="{x:Type MenuItem}" x:Key="{x:Static MenuItem.SubmenuItemTemplateKey}">
 		<Border x:Name="Border" Style="{StaticResource {x:Type Border}}" Background="Transparent" BorderBrush="Transparent" Padding="0,4">
 			<Grid>
 				<Grid.ColumnDefinitions>
@@ -191,7 +229,7 @@
 	<Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource {x:Type ButtonBase}}"/>
 
 	<!-- Toolbar Button -->
-	<Style x:Key="{x:Static ToolBar.ButtonStyleKey}" BasedOn="{StaticResource {x:Type ButtonBase}}" TargetType="{x:Type Button}">
+	<Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type ButtonBase}}" x:Key="{x:Static ToolBar.ButtonStyleKey}">
 		<Setter Property="Background" Value="Transparent"/>
 		<Setter Property="BorderBrush" Value="Transparent"/>
 	</Style>
@@ -353,11 +391,11 @@
 	<ControlTemplate TargetType="{x:Type ToggleButton}" x:Key="ComboBoxToggleButton">
 		<Grid>
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition />
-				<ColumnDefinition Width="20" />
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="20"/>
 			</Grid.ColumnDefinitions>
 			<Border x:Name="Border" Grid.ColumnSpan="2" Style="{StaticResource {x:Type Border}}"/>
-			<Path x:Name="Arrow" Grid.Column="1" Fill="#000" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 4 4 L 8 0 Z"/>
+			<Path x:Name="Arrow" Grid.Column="1" Style="{DynamicResource DownArrowPath}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 		</Grid>
 		<ControlTemplate.Triggers>
 			<Trigger Property="ToggleButton.IsMouseOver" Value="True">
@@ -377,7 +415,7 @@
 	<Style TargetType="{x:Type ComboBox}">
 		<Setter Property="Template">
 			<Setter.Value>
-				<ControlTemplate TargetType="ComboBox">
+				<ControlTemplate TargetType="{x:Type ComboBox}">
 					<Grid>
 						<ToggleButton x:Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}" Focusable="False" ClickMode="Press"
 								    IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>

@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Collections.Generic;
 
 namespace mCubed.Core {
 	public class ColumnDetail : INotifyPropertyChanged, IDisposable {
@@ -215,7 +215,7 @@ namespace mCubed.Core {
 		/// </summary>
 		public ColumnDirection Direction {
 			get { return _direction; }
-			set { this.SetAndNotify(ref _direction, value, "Direction"); }
+			set { this.SetAndNotify(ref _direction, value, null, OnReset, "Direction"); }
 		}
 
 		/// <summary>
@@ -294,15 +294,17 @@ namespace mCubed.Core {
 			// Get the values to compare by
 			IComparable xComp = x == null ? null : ProvideValue(x);
 			IComparable yComp = y == null ? null : ProvideValue(y);
+			int compare = 0;
 
 			// Now compare
-			if (x == null) {
-				return y == null ? 0 : -1;
-			} else if (y == null) {
-				return 1;
+			if (xComp == null) {
+				compare =  yComp == null ? 0 : -1;
+			} else if (yComp == null) {
+				compare = 1;
 			} else {
-				return xComp.CompareTo(yComp);
+				compare = xComp.CompareTo(yComp);
 			}
+			return Direction == ColumnDirection.Ascending ? compare : 0 - compare;
 		}
 
 		#endregion

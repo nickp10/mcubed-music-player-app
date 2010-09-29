@@ -167,9 +167,9 @@
 									<ListBox.ItemTemplate>
 										<DataTemplate>
 											<WrapPanel Margin="2">
-												<Path HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 0 7 L 3.5 3.5 Z" Fill="Black">
+												<Path HorizontalAlignment="Center" VerticalAlignment="Center">
 													<Path.Style>
-														<Style TargetType="{x:Type Path}">
+														<Style BasedOn="{StaticResource RightArrowPath}" TargetType="{x:Type Path}">
 															<Setter Property="Visibility" Value="Hidden"/>
 															<Style.Triggers>
 																<DataTrigger Binding="{Binding IsLoaded}" Value="True">
@@ -289,9 +289,9 @@
 											<ListBox.ItemTemplate>
 												<DataTemplate>
 													<WrapPanel Margin="2">
-														<Path HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 0 7 L 3.5 3.5 Z" Fill="Black">
+														<Path HorizontalAlignment="Center" VerticalAlignment="Center">
 															<Path.Style>
-																<Style TargetType="{x:Type Path}">
+																<Style BasedOn="{StaticResource RightArrowPath}" TargetType="{x:Type Path}">
 																	<Setter Property="Visibility" Value="Hidden"/>
 																	<Style.Triggers>
 																		<DataTrigger Binding="{Binding IsLoaded}" Value="True">

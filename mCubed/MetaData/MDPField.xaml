@@ -43,8 +43,7 @@
 			<Image Grid.Column="5" Source="{controls:Icon Type=Delete}" Height="16" Cursor="Hand"
 				  ToolTip="Delete this picture from the meta-data" MouseLeftButtonDown="OnPictureDeleted"/>
 		</Grid>
-		<Popup AllowsTransparency="True" PlacementTarget="{Binding ElementName=PicThumb}" Placement="Top"
-			  VerticalOffset="5" IsOpen="{Binding IsFullSizeOpen}" MaxWidth="400" x:Name="PicPopup">
+		<Popup AllowsTransparency="True" PlacementTarget="{Binding ElementName=PicThumb}" Placement="Top" VerticalOffset="5" MaxWidth="400" x:Name="PicPopup">
 			<Border Padding="10">
 				<Grid>
 					<Grid.RowDefinitions>

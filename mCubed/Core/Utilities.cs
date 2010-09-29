@@ -152,10 +152,22 @@ namespace mCubed.Core {
 		/// <param name="func">The function that will aggregate the given list</param>
 		/// <returns>The aggregated value based on the function applied to the given list</returns>
 		public static T AggregateIfAny<T>(this IEnumerable<T> list, Func<T, T, T> func) {
+			return AggregateIfAny(list, func, default(T));
+		}
+
+		/// <summary>
+		/// Perform the aggregation of the given list if there is any items in the list
+		/// </summary>
+		/// <typeparam name="T">The type of element to iterate through</typeparam>
+		/// <param name="list">The list to iterate through</param>
+		/// <param name="func">The function that will aggregate the given list</param>
+		/// <param name="defaultValue">The value that will be returned if there are no elements in the list</param>
+		/// <returns>The aggregated value based on the function applied to the given list</returns>
+		public static T AggregateIfAny<T>(this IEnumerable<T> list, Func<T, T, T> func, T defaultValue) {
 			if (list.Any())
 				return list.Aggregate(func);
 			else
-				return default(T);
+				return defaultValue;
 		}
 
 		/// <summary>
@@ -625,23 +637,5 @@ namespace mCubed.Core {
 		void OnSpeakerDeleted(T speaker);
 		void OnSpeakerChanging(T speaker);
 		void OnSpeakerChanged(T speaker);
-	}
-
-	[AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
-	public sealed class MetaDataAttribute : Attribute {
-		public string ColumnAlias { get; set; }
-		public string Description { get; set; }
-		public string Display { get { return (ColumnAlias ?? DisplayFormula).ToReadableString(); } }
-		public string DisplayFormula { get; set; }
-		public string Formula { get; set; }
-		public string Path { get; set; }
-		public int Priority { get; set; }
-		public PropertyInfo Property { get; set; }
-		public MetaDataAttribute(string description) {
-			Description = description;
-		}
-		public override string ToString() {
-			return Description;
-		}
 	}
 }

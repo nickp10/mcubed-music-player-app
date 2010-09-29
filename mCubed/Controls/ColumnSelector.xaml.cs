@@ -133,7 +133,6 @@ namespace mCubed.Controls {
 					OnColumnDeselected(context);
 				else
 					OnColumnSelected(context);
-				IsOpen = false;
 			}
 		}
 

@@ -1,22 +1,13 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using mCubed.Controls;
 using mCubed.Core;
 
 namespace mCubed.MetaData {
 	public partial class MDPField : UserControl {
-		#region Dependency Property: IsFullSizeOpen
-
-		public static readonly DependencyProperty IsFullSizeOpenProperty =
-			DependencyProperty.Register("IsFullSizeOpen", typeof(bool), typeof(MDPField), new UIPropertyMetadata(false));
-		public bool IsFullSizeOpen {
-			get { return (bool)GetValue(IsFullSizeOpenProperty); }
-			set { SetValue(IsFullSizeOpenProperty, value); }
-		}
-
-		#endregion
-
 		#region Dependency Property: Picture
 
 		public static readonly DependencyProperty PictureProperty =
@@ -34,10 +25,10 @@ namespace mCubed.MetaData {
 			// Setup the bindings
 			Loaded += delegate
 			{
-				MultiBinding binding = new MultiBinding { Converter = new MDPFullSizeConverter() };
+				MultiBinding binding = new MultiBinding { Converter = new PopupOpenConverter(), Mode = BindingMode.OneWay };
 				binding.Bindings.Add(new Binding { Source = PicThumb, Path = new PropertyPath("IsMouseOver") });
 				binding.Bindings.Add(new Binding { Source = PicPopup, Path = new PropertyPath("IsMouseOver") });
-				SetBinding(MDPField.IsFullSizeOpenProperty, binding);
+				PicPopup.SetBinding(Popup.IsOpenProperty, binding);
 			};
 
 			// Initialize

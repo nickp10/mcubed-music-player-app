@@ -90,6 +90,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\ColumnOrganizer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\ColumnSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -99,7 +103,6 @@
       <SubType>Designer</SubType>
     </Page>
     <None Include="DeleteMe\mCubedFolderBrowser.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </None>
     <None Include="DeleteMe\mCubedSampler.xaml">
@@ -166,16 +169,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Resources\Templates.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <None Include="DeleteMe\Templates.xaml">
       <SubType>Designer</SubType>
-    </Page>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <None Include="DeleteMe\TagEditorAudio.cs" />
+    <Compile Include="Controls\ColumnOrganizer.xaml.cs">
+      <DependentUpon>ColumnOrganizer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ColumnSelector.xaml.cs">
       <DependentUpon>ColumnSelector.xaml</DependentUpon>
     </Compile>
@@ -187,6 +192,7 @@
     <Compile Include="Core\GlobalKeyboardHook.cs" />
     <Compile Include="Core\GroupList.cs" />
     <Compile Include="Core\Library.cs" />
+    <Compile Include="Core\MetaDataAttribute.cs" />
     <Compile Include="Core\MetaDataFormula.cs" />
     <Compile Include="Core\MediaFile.cs" />
     <Compile Include="Core\MediaOrder.cs" />
@@ -302,6 +308,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Icons\arrow_down.png" />
+    <Resource Include="Icons\arrow_up.png" />
     <Content Include="References\taglib-sharp.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

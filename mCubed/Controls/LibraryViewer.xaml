@@ -16,7 +16,16 @@
 				<RowDefinition Height=".4*" x:Name="MDIRow"/>
 				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
-			<ListView Grid.Row="1" ItemsSource="{Binding Path=Library.MediaFiles.Structure}" SelectionChanged="OnSelectedMediaChanged"
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="Auto" SharedSizeGroup="GroupSortColumn"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			<controls:ColumnOrganizer Grid.Row="0" Grid.Column="0" ColumnSettings="{Binding Path=Library.ColumnSettings}" Header="Group By"  SelectedColumnGroup="GroupBy" />
+			<controls:ColumnOrganizer Grid.Row="0" Grid.Column="2" ColumnSettings="{Binding Path=Library.ColumnSettings}" Header="Sort By"  SelectedColumnGroup="SortBy" />
+			<controls:ColumnSelector Placement="MousePoint" ShowSelectedColumns="True" ColumnDeselected="OnDisplayColumnDeselected" ColumnSelected="OnDisplayColumnSelected"
+								ColumnSettings="{Binding Path=Library.ColumnSettings}" SelectedColumnGroup="Display" StaysOpen="False" x:Name="DisplayColumnSelector" />
+			<ListView Grid.Row="1" Grid.ColumnSpan="3" ItemsSource="{Binding Path=Library.MediaFiles.Structure}" SelectionChanged="OnSelectedMediaChanged"
 					GridViewColumnHeader.Click="OnGridViewColumnHeaderClicked" x:Name="SelectedMedia">
 				<ListView.Resources>
 					<controls:GroupItemIndentConverter x:Key="GroupItemIndentConverter" />
@@ -32,23 +41,6 @@
 						<MenuItem Header="Add Media" Click="OnMediaAdd"/>
 					</ContextMenu>
 				</ListView.Resources>
-				<!--<ListView.GroupStyle>
-					<GroupStyle>
-						<GroupStyle.ContainerStyle>
-							<Style TargetType="{x:Type GroupItem}">
-								<Setter Property="Template">
-									<Setter.Value>
-										<ControlTemplate TargetType="{x:Type GroupItem}">
-											<HeaderedContentControl Header="{Binding Name}" Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}, Path=ViewportWidth}">
-												<ItemsPresenter/>
-											</HeaderedContentControl>
-										</ControlTemplate>
-									</Setter.Value>
-								</Setter>
-							</Style>
-						</GroupStyle.ContainerStyle>
-					</GroupStyle>
-				</ListView.GroupStyle>-->
 				<ListView.ItemContainerStyle>
 					<Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
 						<Setter Property="controls:SelectorExtension.IsSelectable" Value="False"/>
@@ -83,9 +75,9 @@
 						<GridViewColumn>
 							<GridViewColumn.CellTemplate>
 								<DataTemplate>
-									<Path HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 0 7 L 3.5 3.5 Z" Fill="Black">
+									<Path HorizontalAlignment="Center" VerticalAlignment="Center">
 										<Path.Style>
-											<Style TargetType="{x:Type Path}">
+											<Style BasedOn="{StaticResource RightArrowPath}" TargetType="{x:Type Path}">
 												<Setter Property="Visibility" Value="Hidden"/>
 												<Style.Triggers>
 													<DataTrigger Binding="{Binding IsLoaded}" Value="True">
@@ -101,11 +93,9 @@
 					</GridView>
 				</ListView.View>
 			</ListView>
-			<controls:ColumnSelector Placement="MousePoint" ShowSelectedColumns="True" ColumnDeselected="OnDisplayColumnDeselected" ColumnSelected="OnDisplayColumnSelected"
-								ColumnSettings="{Binding Path=Library.ColumnSettings}" SelectedColumnGroup="Display" x:Name="DisplayColumnSelector" />
-			<GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="10" Background="Transparent" x:Name="MDISplitter"/>
-			<md:MDIManager Grid.Row="3" x:Name="MetaDataManager"/>
-			<controls:ProgressManager Grid.Row="4"/>
+			<GridSplitter Grid.Row="2" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="10" Background="Transparent" x:Name="MDISplitter"/>
+			<md:MDIManager Grid.IsSharedSizeScope="False" Grid.Row="3" Grid.ColumnSpan="3" x:Name="MetaDataManager"/>
+			<controls:ProgressManager Grid.Row="4" Grid.ColumnSpan="3"/>
 		</Grid>
 	</Border>
 </UserControl>

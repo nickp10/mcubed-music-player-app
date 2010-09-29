@@ -51,26 +51,6 @@ namespace mCubed.MetaData {
 	}
 
 	/// <summary>
-	/// Used to determine if the full-size picture should be displayed or not based
-	/// on whether or not the mouse is over the thumbnail-size picture [Multi-Binding, One-Way]
-	/// </summary>
-	public class MDPFullSizeConverter : IMultiValueConverter {
-		#region IMultiValueConverter Members
-
-		public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
-			// 0 == PicThumb.IsMouseOver, 1 == PicPopup.IsMouseOver
-			bool[] bools = values.OfType<bool>().ToArray();
-			return bools.Length == 2 && (bools[0] || bools[1]);
-		}
-
-		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture) {
-			return null;
-		}
-
-		#endregion
-	}
-
-	/// <summary>
 	/// Used to display the appropriate collection of meta-data pictures in the MDP manager which accounts
 	/// for the list of pictures and whether or not to include duplicates [Multi-Binding, One-Way]
 	/// </summary>

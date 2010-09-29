@@ -150,4 +150,43 @@ namespace mCubed.Controls {
 
 		#endregion
 	}
+
+	/// <summary>
+	/// Used to display the list of selected columns as a readable string for a reference
+	/// to the user as to what the organization currently is. [Binding, One-Way]
+	/// </summary>
+	public class ColumnOrganizerConverter : IValueConverter {
+		#region IValueConverter Members
+
+		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+			var columns = value as IEnumerable<ColumnVector> ?? Enumerable.Empty<ColumnVector>();
+			return columns.Select(v => v.ColumnDetail.Display).AggregateIfAny((s1, s2) => s1 += ", " + s2, "N/A");
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+			return null;
+		}
+
+		#endregion
+	}
+
+	/// <summary>
+	/// Used to determine if a popup should be open or not based on whether the mouse is 
+	/// over some invoking element or the popup element itself [Multi-Binding, One-Way]
+	/// </summary>
+	public class PopupOpenConverter : IMultiValueConverter {
+		#region IMultiValueConverter Members
+
+		public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+			// 0 == InvokingElement.IsMouseOver, 1 == PopupElement.IsMouseOver
+			bool[] bools = values.OfType<bool>().ToArray();
+			return bools.Length == 2 && (bools[0] || bools[1]);
+		}
+
+		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture) {
+			return null;
+		}
+
+		#endregion
+	}
 }

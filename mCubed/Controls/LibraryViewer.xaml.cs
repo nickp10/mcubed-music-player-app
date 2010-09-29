@@ -226,7 +226,7 @@ namespace mCubed.Controls {
 		/// <param name="sender">The object sending the request</param>
 		/// <param name="e">The arguments for the request</param>
 		private void OnGridViewColumnHeaderClicked(object sender, RoutedEventArgs e) {
-			GridViewColumnHeader headerClicked = e.OriginalSource as GridViewColumnHeader;
+			var headerClicked = e.OriginalSource as GridViewColumnHeader;
 			if (headerClicked != null && headerClicked.Role != GridViewColumnHeaderRole.Padding)
 				DisplayColumnSelector.IsOpen = true;
 		}
@@ -300,6 +300,7 @@ namespace mCubed.Controls {
 			var vectors = Library.ColumnSettings.Display.Where(vector => vector.ColumnDetail == column).ToArray();
 			foreach (var vector in vectors)
 				Library.ColumnSettings.Display.Remove(vector);
+			DisplayColumnSelector.IsOpen = false;
 		}
 
 		/// <summary>
@@ -308,6 +309,7 @@ namespace mCubed.Controls {
 		/// <param name="column">The column that has been selected</param>
 		private void OnDisplayColumnSelected(ColumnDetail column) {
 			Library.ColumnSettings.Display.Add(new ColumnVector(column));
+			DisplayColumnSelector.IsOpen = false;
 		}
 
 		#endregion
@@ -326,30 +328,5 @@ namespace mCubed.Controls {
 		}
 
 		#endregion
-
-		/// <summary>
-		/// The sorting method that handles sorting a grid view
-		/// </summary>
-		/// <param name="header">The header that was clicked</param>
-		//private void Sort(GridViewColumnHeader header) {
-		//     ICollectionView view = CollectionItems == null ? null : CollectionItems.View;
-		//     if (String.IsNullOrEmpty(header.Tag as string) || view == null)
-		//          return;
-		//     SortDescription ascending = new SortDescription(header.Tag as string, ListSortDirection.Ascending);
-		//     SortDescription descending = new SortDescription(header.Tag as string, ListSortDirection.Descending);
-		//     if (view.SortDescriptions.Contains(ascending)) {
-		//          int index = view.SortDescriptions.IndexOf(ascending);
-		//          view.SortDescriptions.RemoveAt(index);
-		//          view.SortDescriptions.Insert(index, descending);
-		//          header.ContentTemplate = Resources["GridViewHeaderDesc"] as DataTemplate;
-		//     } else if (view.SortDescriptions.Contains(descending)) {
-		//          view.SortDescriptions.Remove(descending);
-		//          header.ContentTemplate = null;
-		//     } else {
-		//          view.SortDescriptions.Add(ascending);
-		//          header.ContentTemplate = Resources["GridViewHeaderAsc"] as DataTemplate;
-		//     }
-		//     view.Refresh();
-		//}
 	}
 }

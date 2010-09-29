@@ -4,7 +4,7 @@
 	xmlns:core="clr-namespace:mCubed.Core"
 	xmlns:controls="clr-namespace:mCubed.Controls"
 	xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
-	AllowsTransparency="True" StaysOpen="False" MaxHeight="350">
+	AllowsTransparency="True" MaxHeight="350">
 	<Popup.Resources>
 		<ResourceDictionary Source="../Resources/Resources.xaml"/>
 	</Popup.Resources>
@@ -36,7 +36,7 @@
 									<ColumnDefinition Width="10"/>
 									<ColumnDefinition Width="*"/>
 								</Grid.ColumnDefinitions>
-								<Path Width="7" Height="7" Visibility="Hidden" Stroke="Black" StrokeThickness="2" Data="M 0 0 L 7 7 M 0 7 L 7 0" x:Name="CheckMark" />
+								<Path Style="{DynamicResource CheckMarkPath}" VerticalAlignment="Center" Visibility="Hidden" x:Name="CheckMark" />
 								<TextBlock Grid.Column="2" Text="{Binding Display}"/>
 							</Grid>
 						</Border>
