@@ -65,6 +65,7 @@ namespace mCubed.Controls {
 
 		#region Data Store
 
+		private bool _itemsChanging;
 		private ObservableCollection<ColumnVector> _displayColumns;
 		private GridLength _prevMDIHeight = new GridLength(.4, GridUnitType.Star);
 
@@ -83,7 +84,17 @@ namespace mCubed.Controls {
 		/// <summary>
 		/// Get the collection of currently selected items
 		/// </summary>
-		public IEnumerable<MediaFile> SelectedItems { get { return SelectedMedia.SelectedItems.OfType<MediaFile>(); } }
+		public IEnumerable<MediaFile> SelectedItems {
+			get { return SelectedMedia.SelectedItems.OfType<MediaFile>(); }
+			set {
+				_itemsChanging = true;
+				SelectedMedia.SelectedItems.Clear();
+				foreach (var file in value)
+					SelectedMedia.SelectedItems.Add(file);
+				_itemsChanging = false;
+				OnSelectedMediaChanged(SelectedMedia, null);
+			}
+		}
 
 		#endregion
 
@@ -196,7 +207,8 @@ namespace mCubed.Controls {
 		/// <param name="sender">The sender object</param>
 		/// <param name="e">The event arguments</param>
 		private void OnSelectedMediaChanged(object sender, SelectionChangedEventArgs e) {
-			SetMDIManager("Selected Media", SelectedItems.Select(mf => mf.MetaData));
+			if (!_itemsChanging)
+				SetMDIManager("Selected Media", SelectedItems.Select(mf => mf.MetaData));
 		}
 
 		/// <summary>
@@ -213,6 +225,20 @@ namespace mCubed.Controls {
 				MDIRow.Height = new GridLength();
 				MDISplitter.Visibility = Visibility.Collapsed;
 				MetaDataManager.Visibility = Visibility.Collapsed;
+			}
+		}
+
+		/// <summary>
+		/// Event that handles when a media file has been selected
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaFileSelected(object sender, MouseButtonEventArgs e) {
+			var element = sender as FrameworkElement;
+			var group = element == null ? null : element.DataContext as GroupList<MediaFile>;
+			if (group != null) {
+				SelectedItems = group;
+				e.Handled = true;
 			}
 		}
 

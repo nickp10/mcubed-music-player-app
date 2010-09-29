@@ -45,6 +45,7 @@
 					<Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
 						<Setter Property="controls:SelectorExtension.IsSelectable" Value="False"/>
 						<Setter Property="controls:SelectorExtension.IsGridViewRow" Value="False"/>
+						<EventSetter Event="PreviewMouseDown" Handler="OnMediaFileSelected"/>
 						<EventSetter Event="MouseDoubleClick" Handler="OnMediaFilePlay"/>
 						<Style.Triggers>
 							<DataTrigger Binding="{Binding Converter={StaticResource IsGroupItemConverter}}" Value="False">
