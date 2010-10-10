@@ -7,11 +7,9 @@ namespace mCubed {
 		private const string UNIQUE = "mCubed_Application_Mutex_Version_1.0";
 
 		[STAThread]
-		public static void Main(string[] args) {
+		public static void Main() {
 			if (SingleInstance<App>.InitializeAsFirstInstance(UNIQUE)) {
-				var application = new App();
-				application.InitializeComponent();
-				application.Run();
+				new App().Run();
 				SingleInstance<App>.Cleanup();
 			}
 		}
@@ -21,6 +19,16 @@ namespace mCubed {
 		/// </summary>
 		public App() {
 			InitializeComponent();
+			Startup += new StartupEventHandler(OnStartup);
+		}
+
+		/// <summary>
+		/// Event that handles when the application has started up
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		void OnStartup(object sender, StartupEventArgs e) {
+			HandleCommandLineArgs(e.Args, true);
 		}
 
 		/// <summary>
@@ -28,6 +36,15 @@ namespace mCubed {
 		/// </summary>
 		/// <param name="args">The command line arguments that were used in opening the other instance</param>
 		public void SignalExternalCommandLineArgs(string[] args) {
+			HandleCommandLineArgs(args, false);
+		}
+
+		/// <summary>
+		/// Handles the command line arguments, whether it's the first instance or if it got sent from another instance
+		/// </summary>
+		/// <param name="args">The command line arguments that should be handled</param>
+		/// <param name="isFirstInstance">True if this is the first instance, or false if this is from another instance</param>
+		private void HandleCommandLineArgs(string[] args, bool isFirstInstance) {
 		}
 	}
 }
