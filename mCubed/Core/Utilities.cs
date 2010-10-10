@@ -618,8 +618,10 @@ namespace mCubed.Core {
 
 	public enum ColumnDirection { Ascending, Descending }
 	public enum ColumnType { Formula, Property }
+	[Flags]
+	public enum LogLevel { Info = 1, Debug = 2, Error = 4, Exception = 8 }
+	public enum LogType { Playback, MetaData, Library }
 	public enum MediaAction { Play, Pause, PlayPause, Stop, Prev, Next, Restart, ToggleMDI, ToggleMini, ToggleMediaOrder, ToggleRepeat, ToggleShuffle }
-	public enum MediaFailure { Playback, AddMedia }
 	public enum MediaOrderType { Sequential, Shuffle, Custom }
 	public enum MediaRepeat { NoRepeat, RepeatMedia, RepeatLibrary }
 	public enum MediaSelect { Next, Previous }

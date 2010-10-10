@@ -143,7 +143,6 @@ namespace mCubed.Core {
 		public event Action Loaded;
 		public event Action<MediaObject> MediaObjectChanged;
 		public event Action<MediaFile> NowPlayingChanged;
-		public event Action<MediaFailure, string> Failure;
 		public event Action ShowMDIManagerChanged;
 		public event Action ShowMiniChanged;
 
@@ -559,16 +558,6 @@ namespace mCubed.Core {
 		}
 
 		/// <summary>
-		/// Event that handles when playback of media has failed
-		/// </summary>
-		/// <param name="failure">The failure type</param>
-		/// <param name="error">The error message</param>
-		public void OnFailure(MediaFailure failure, string error) {
-			if (Failure != null)
-				Failure(failure, error);
-		}
-
-		/// <summary>
 		/// Event that handles when the MDI manager should be shown or hidden
 		/// </summary>
 		private void OnShowMDIManagerChanged() {
@@ -597,7 +586,6 @@ namespace mCubed.Core {
 			Loaded = null;
 			MediaObjectChanged = null;
 			NowPlayingChanged = null;
-			Failure = null;
 			ShowMDIManagerChanged = null;
 			ShowMiniChanged = null;
 

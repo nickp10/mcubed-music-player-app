@@ -24,7 +24,7 @@ namespace mCubed {
 
 			// Hook up event handlers
 			Utilities.MainSettings.ShowMiniChanged += new Action(OnShowMiniChanged);
-			Utilities.MainSettings.Failure += new Action<MediaFailure, string>(OnFailure);
+			Logger.RegisterListener(OnLogSent);
 			Closing += new CancelEventHandler(OnClosing);
 			PreviewKeyDown += new KeyEventHandler(OnKeyDown);
 			GlobalKeyboardHook.OnKeyDown += new Action<object, Key>(OnGlobalKeyDown);
@@ -97,24 +97,23 @@ namespace mCubed {
 		}
 
 		/// <summary>
-		/// Event that handles when the playback has failed
+		/// Event that handles when a log has been sent
 		/// </summary>
-		/// <param name="failure">The failure type that occurred</param>
-		/// <param name="error">The error message for the failed playback</param>
-		private void OnFailure(MediaFailure failure, string error) {
-			string display = "Garbage in, garbage out!";
-			switch (failure) {
-				case MediaFailure.AddMedia:
-					display += " Actually, this media file is corrupt. It cannot be played, nor " +
+		/// <param name="log">The log that has been sent</param>
+		private void OnLogSent(Log log) {
+			string display = string.Empty;
+			switch (log.Type) {
+				case LogType.Library:
+					display += "This media file is corrupt. It cannot be played, nor " +
 						"can the meta-data information be modified; therefore, this file will not " +
 						"be added. The file that caused this error:";
 					break;
-				case MediaFailure.Playback:
-					display += " Actually, the playback of this file type is currently not " +
+				case LogType.Playback:
+					display += "The playback of this file type is currently not " +
 						"supported by mCubed; therefore, this file will be skipped. The exact details:";
 					break;
 			}
-			MessageBox.Show(display + "\n\n" + error, "Media Failure", MessageBoxButton.OK, MessageBoxImage.Error);
+			MessageBox.Show(display + "\n\n" + log.Message, "Media Failure", MessageBoxButton.OK, MessageBoxImage.Error);
 		}
 
 		/// <summary>

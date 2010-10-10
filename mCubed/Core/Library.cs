@@ -172,7 +172,7 @@ namespace mCubed.Core {
 			MediaObject.MediaEnded += () => Select(MediaSelect.Next, true, true);
 			MediaObject.MediaFailed += delegate(string error)
 			{
-				Utilities.MainSettings.OnFailure(MediaFailure.Playback, error);
+				Logger.Log(LogLevel.Error, LogType.Playback, error);
 				Select(MediaSelect.Next, RepeatStatus == MediaRepeat.RepeatMedia ? MediaRepeat.NoRepeat : RepeatStatus, true, true);
 			};
 			MediaFiles.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e)
@@ -514,11 +514,11 @@ namespace mCubed.Core {
 					file.MetaData.PropertyChanged += new PropertyChangedEventHandler(OnMediaFilePropertyChanged);
 					NextMediaIndex++;
 					return file;
-				} catch {
+				} catch (Exception e) {
 					foreach (MediaOrder mediaOrder in MediaOrders) {
 						mediaOrder.RemoveMediaIndex(NextMediaIndex);
 					}
-					Utilities.MainSettings.OnFailure(MediaFailure.AddMedia, path);
+					Logger.Log(LogLevel.Error, LogType.Library, e, path);
 				}
 			}
 			return null;

@@ -54,11 +54,15 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>mCubed.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -86,10 +90,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
+    <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </ApplicationDefinition>
+    </Page>
     <Page Include="Controls\ColumnOrganizer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -192,11 +196,13 @@
     <Compile Include="Core\GlobalKeyboardHook.cs" />
     <Compile Include="Core\GroupList.cs" />
     <Compile Include="Core\Library.cs" />
+    <Compile Include="Core\Logger.cs" />
     <Compile Include="Core\MetaDataAttribute.cs" />
     <Compile Include="Core\MetaDataFormula.cs" />
     <Compile Include="Core\MediaFile.cs" />
     <Compile Include="Core\MediaOrder.cs" />
     <Compile Include="Core\ProcessManager.cs" />
+    <Compile Include="Core\SingleInstance.cs" />
     <Compile Include="Core\Utilities.cs" />
     <Compile Include="Controls\LibraryViewer.xaml.cs">
       <DependentUpon>LibraryViewer.xaml</DependentUpon>
