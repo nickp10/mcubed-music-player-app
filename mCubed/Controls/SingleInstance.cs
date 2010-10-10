@@ -23,7 +23,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace Microsoft.Shell {
+namespace mCubed.Core {
 	internal enum WM {
 		NULL = 0x0000,
 		CREATE = 0x0001,
@@ -445,3 +445,5 @@ namespace Microsoft.Shell {
 		#endregion
 	}
 }
+
+//f

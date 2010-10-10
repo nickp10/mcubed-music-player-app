@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows;
-using Microsoft.Shell;
+using mCubed.Core;
 
 namespace mCubed {
 	public partial class App : Application, ISingleInstanceApp {
