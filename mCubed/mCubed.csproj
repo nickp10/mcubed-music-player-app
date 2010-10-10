@@ -202,7 +202,7 @@
     <Compile Include="Core\MediaFile.cs" />
     <Compile Include="Core\MediaOrder.cs" />
     <Compile Include="Core\ProcessManager.cs" />
-    <Compile Include="Controls\SingleInstance.cs" />
+    <Compile Include="Core\SingleInstance.cs" />
     <Compile Include="Core\Utilities.cs" />
     <Compile Include="Controls\LibraryViewer.xaml.cs">
       <DependentUpon>LibraryViewer.xaml</DependentUpon>
