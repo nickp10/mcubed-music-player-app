@@ -170,11 +170,7 @@ namespace mCubed.Core {
 			// Set up event handlers
 			Directories.CollectionChanged += new NotifyCollectionChangedEventHandler(OnDirectoriesChanged);
 			MediaObject.MediaEnded += () => Select(MediaSelect.Next, true, true);
-			MediaObject.MediaFailed += delegate(string error)
-			{
-				Logger.Log(LogLevel.Error, LogType.Playback, error);
-				Select(MediaSelect.Next, RepeatStatus == MediaRepeat.RepeatMedia ? MediaRepeat.NoRepeat : RepeatStatus, true, true);
-			};
+			MediaObject.MediaFailed += new Action<string>(OnPlaybackError);
 			MediaFiles.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e)
 			{
 				if (sender == MediaFiles && e.PropertyName == "Structure")
@@ -314,6 +310,22 @@ namespace mCubed.Core {
 
 			// Update the selects
 			UpdateSelects();
+		}
+
+		/// <summary>
+		/// Event that handles when a playback error has occurred
+		/// </summary>
+		/// <param name="error">The playback error</param>
+		private void OnPlaybackError(string error) {
+			var batchLog = new BatchLog(LogLevel.Error, LogType.Playback, "The following files have failed to play and have been automatically skipped:\n", 5, TimeSpan.FromMilliseconds(2500));
+			Logger.BeginBatch(batchLog);
+			Logger.Log(LogLevel.Error, LogType.Playback, MediaFileCurrent.MetaData.FileName);
+			if (!Logger.IsBatchLimitReached(batchLog)) {
+				Select(MediaSelect.Next, RepeatStatus == MediaRepeat.RepeatMedia ? MediaRepeat.NoRepeat : RepeatStatus, true, true);
+			} else {
+				MediaObject.State = MediaState.Stop;
+				Logger.EndBatch(batchLog);
+			}
 		}
 
 		/// <summary>
@@ -518,7 +530,9 @@ namespace mCubed.Core {
 					foreach (MediaOrder mediaOrder in MediaOrders) {
 						mediaOrder.RemoveMediaIndex(NextMediaIndex);
 					}
-					Logger.Log(LogLevel.Error, LogType.Library, e, path);
+					Logger.Log(LogLevel.Error, LogType.Library, e, "This media file is corrupt. It cannot be played, nor " +
+						"can the meta-data information be modified; therefore, this file will not " +
+						"be added. The file that caused this error:\n\n\t" + path);
 				}
 			}
 			return null;

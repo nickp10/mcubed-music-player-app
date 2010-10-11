@@ -4,15 +4,31 @@ using mCubed.Core;
 
 namespace mCubed {
 	public partial class App : Application, ISingleInstanceApp {
+		#region Data Store
+
 		private const string UNIQUE = "mCubed_Application_Mutex_Version_1.0";
+
+		#endregion
+
+		#region Main
 
 		[STAThread]
 		public static void Main() {
 			if (SingleInstance<App>.InitializeAsFirstInstance(UNIQUE)) {
-				new App().Run();
-				SingleInstance<App>.Cleanup();
+				try {
+					new App().Run();
+				} catch (Exception e) {
+					Logger.Log(LogLevel.Exception, LogType.Application, e);
+					throw;
+				} finally {
+					SingleInstance<App>.Cleanup();
+				}
 			}
 		}
+
+		#endregion
+
+		#region Constructor
 
 		/// <summary>
 		/// Creates the new application by initializing the component
@@ -21,6 +37,10 @@ namespace mCubed {
 			InitializeComponent();
 			Startup += new StartupEventHandler(OnStartup);
 		}
+
+		#endregion
+
+		#region Event Handlers
 
 		/// <summary>
 		/// Event that handles when the application has started up
@@ -46,5 +66,7 @@ namespace mCubed {
 		/// <param name="isFirstInstance">True if this is the first instance, or false if this is from another instance</param>
 		private void HandleCommandLineArgs(string[] args, bool isFirstInstance) {
 		}
+
+		#endregion
 	}
 }

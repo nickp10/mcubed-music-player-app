@@ -272,20 +272,20 @@ namespace mCubed.Core {
 		/// Event that handles when the media file is changing
 		/// </summary>
 		private void OnMediaFileChanging() {
-			if (MediaFile != null) {
+			if (MetaData != null)
 				MetaData.PropertyChanged -= OnPropertyChanged;
+			if (MediaObject != null)
 				MediaObject.PropertyChanged -= OnPropertyChanged;
-			}
 		}
 
 		/// <summary>
 		/// Event that handles when the media file changed
 		/// </summary>
 		private void OnMediaFileChanged() {
-			if (MediaFile != null) {
+			if (MetaData != null)
 				MetaData.PropertyChanged += OnPropertyChanged;
+			if (MediaObject != null)
 				MediaObject.PropertyChanged += OnPropertyChanged;
-			}
 			ChangeValue();
 		}
 

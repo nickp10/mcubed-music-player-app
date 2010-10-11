@@ -620,7 +620,7 @@ namespace mCubed.Core {
 	public enum ColumnType { Formula, Property }
 	[Flags]
 	public enum LogLevel { Info = 1, Debug = 2, Error = 4, Exception = 8 }
-	public enum LogType { Playback, MetaData, Library }
+	public enum LogType { Application, Playback, MetaData, Library }
 	public enum MediaAction { Play, Pause, PlayPause, Stop, Prev, Next, Restart, ToggleMDI, ToggleMini, ToggleMediaOrder, ToggleRepeat, ToggleShuffle }
 	public enum MediaOrderType { Sequential, Shuffle, Custom }
 	public enum MediaRepeat { NoRepeat, RepeatMedia, RepeatLibrary }

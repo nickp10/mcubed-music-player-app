@@ -1,13 +1,4 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="SingleInstance.cs" company="Microsoft">
-//     Copyright (c) Microsoft Corporation.  All rights reserved.
-// </copyright>
-// <summary>
-//     This class checks to make sure that only one instance of 
-//     this application is running at a time.
-// </summary>
-//-----------------------------------------------------------------------
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -445,5 +436,3 @@ namespace mCubed.Core {
 		#endregion
 	}
 }
-
-//f

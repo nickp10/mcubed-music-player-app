@@ -23,8 +23,8 @@ namespace mCubed {
 			InitializeComponent();
 
 			// Hook up event handlers
+			Logger.RegisterListener(OnLogSent, LogLevel.Error);
 			Utilities.MainSettings.ShowMiniChanged += new Action(OnShowMiniChanged);
-			Logger.RegisterListener(OnLogSent);
 			Closing += new CancelEventHandler(OnClosing);
 			PreviewKeyDown += new KeyEventHandler(OnKeyDown);
 			GlobalKeyboardHook.OnKeyDown += new Action<object, Key>(OnGlobalKeyDown);
@@ -101,19 +101,7 @@ namespace mCubed {
 		/// </summary>
 		/// <param name="log">The log that has been sent</param>
 		private void OnLogSent(Log log) {
-			string display = string.Empty;
-			switch (log.Type) {
-				case LogType.Library:
-					display += "This media file is corrupt. It cannot be played, nor " +
-						"can the meta-data information be modified; therefore, this file will not " +
-						"be added. The file that caused this error:";
-					break;
-				case LogType.Playback:
-					display += "The playback of this file type is currently not " +
-						"supported by mCubed; therefore, this file will be skipped. The exact details:";
-					break;
-			}
-			MessageBox.Show(display + "\n\n" + log.Message, "Media Failure", MessageBoxButton.OK, MessageBoxImage.Error);
+			MessageBox.Show(log.ToStringMessageOnly(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 		}
 
 		/// <summary>
