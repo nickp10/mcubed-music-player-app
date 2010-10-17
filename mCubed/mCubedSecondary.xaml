@@ -450,8 +450,10 @@
 							<LineBreak/>
 							<LineBreak/>
 							After nearly 2 years in development, I finally decided to release an official beta version of the application. This beta release
-							marked the first major milestone in the life of mCubed. With the first milestone accomplished, the future of mCubed only holds
-							improvement.
+							marked the first major milestone in the life of mCubed. Nearly 7 months later, the second beta of the application was released.
+							This particular beta added many great features and improvements, but still lacked perfection, and it also included the biggest
+							feature in mCubed's history: the greatly improved library viewer. This marked the second major milestone in its ongoing history.
+							With these milestones accomplished, the future of mCubed only holds room for improvement.
 						</TextBlock>
 					</ScrollViewer>
 				</TabItem>
