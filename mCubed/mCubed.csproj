@@ -106,13 +106,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <None Include="DeleteMe\mCubedFolderBrowser.xaml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="DeleteMe\mCubedSampler.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </None>
     <Page Include="Controls\PlayerControls.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -121,18 +114,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <None Include="DeleteMe\TagEditor.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="DeleteMe\TagEditorInfo.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="DeleteMe\TagEditorPic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </None>
     <Page Include="mCubedError.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -177,15 +158,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <None Include="DeleteMe\Templates.xaml">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <None Include="DeleteMe\TagEditorAudio.cs" />
     <Compile Include="Controls\ColumnOrganizer.xaml.cs">
       <DependentUpon>ColumnOrganizer.xaml</DependentUpon>
     </Compile>
@@ -211,12 +188,6 @@
     <Compile Include="Controls\LibraryViewer.xaml.cs">
       <DependentUpon>LibraryViewer.xaml</DependentUpon>
     </Compile>
-    <None Include="DeleteMe\mCubedFolderBrowser.xaml.cs">
-      <DependentUpon>mCubedFolderBrowser.xaml</DependentUpon>
-    </None>
-    <None Include="DeleteMe\mCubedSampler.xaml.cs">
-      <DependentUpon>mCubedSampler.xaml</DependentUpon>
-    </None>
     <Compile Include="Core\MediaObject.cs" />
     <Compile Include="Controls\PlayerControls.xaml.cs">
       <DependentUpon>PlayerControls.xaml</DependentUpon>
@@ -225,16 +196,6 @@
       <DependentUpon>ProgressManager.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ProgressSlider.cs" />
-    <None Include="DeleteMe\TagEditor.xaml.cs">
-      <DependentUpon>TagEditor.xaml</DependentUpon>
-    </None>
-    <None Include="DeleteMe\TagEditorGroupBox.cs" />
-    <None Include="DeleteMe\TagEditorInfo.xaml.cs">
-      <DependentUpon>TagEditorInfo.xaml</DependentUpon>
-    </None>
-    <None Include="DeleteMe\TagEditorPic.xaml.cs">
-      <DependentUpon>TagEditorPic.xaml</DependentUpon>
-    </None>
     <Compile Include="mCubedError.xaml.cs">
       <DependentUpon>mCubedError.xaml</DependentUpon>
     </Compile>
