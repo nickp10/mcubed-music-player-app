@@ -101,7 +101,14 @@ namespace mCubed {
 		/// </summary>
 		/// <param name="log">The log that has been sent</param>
 		private void OnLogSent(Log log) {
-			MessageBox.Show(log.ToStringMessageOnly(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+			Dispatcher.Invoke(new Action(() =>
+			{
+				new mCubedError
+				{
+					Owner = this,
+					Message = log.ToStringMessageOnly()
+				}.ShowDialog();
+			}));
 		}
 
 		/// <summary>

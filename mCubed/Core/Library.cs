@@ -317,7 +317,7 @@ namespace mCubed.Core {
 		/// </summary>
 		/// <param name="error">The playback error</param>
 		private void OnPlaybackError(string error) {
-			var batchLog = new BatchLog(LogLevel.Error, LogType.Playback, "The following files have failed to play and have been automatically skipped:\n", 5, TimeSpan.FromMilliseconds(2500));
+			var batchLog = new BatchLog(LogLevel.Error, LogType.Playback, "The following file(s) have failed to play and have been automatically skipped:\n", 5, TimeSpan.FromSeconds(2));
 			Logger.BeginBatch(batchLog);
 			Logger.Log(LogLevel.Error, LogType.Playback, MediaFileCurrent.MetaData.FileName);
 			if (!Logger.IsBatchLimitReached(batchLog)) {

@@ -133,6 +133,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </None>
+    <Page Include="mCubedError.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="mCubedSecondary.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -231,6 +235,9 @@
     <None Include="DeleteMe\TagEditorPic.xaml.cs">
       <DependentUpon>TagEditorPic.xaml</DependentUpon>
     </None>
+    <Compile Include="mCubedError.xaml.cs">
+      <DependentUpon>mCubedError.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MetaData\Converters.cs" />
     <Compile Include="mCubedSecondary.xaml.cs">
       <DependentUpon>mCubedSecondary.xaml</DependentUpon>

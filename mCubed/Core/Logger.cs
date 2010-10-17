@@ -89,10 +89,8 @@ namespace mCubed.Core {
 		/// </summary>
 		/// <param name="log">The batch log that should be logged</param>
 		private static void LogBatch(BatchLog log) {
-			if (log.Logs.Count > 1)
+			if (log.Logs.Count > 0)
 				Log(log);
-			else if (log.Logs.Count == 1)
-				Log(log.Logs[0]);
 		}
 
 		#endregion
