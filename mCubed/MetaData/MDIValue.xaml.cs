@@ -24,6 +24,7 @@ namespace mCubed.MetaData {
 		private bool _customSelect = false;
 		private int _selectionLength;
 		private int _selectionStart;
+		private double _scrollOffset;
 
 		#endregion
 
@@ -106,6 +107,7 @@ namespace mCubed.MetaData {
 		public MDIValue() {
 			// Hook up event handlers
 			GotKeyboardFocus += new KeyboardFocusChangedEventHandler(OnGotKeyboardFocus);
+			LostKeyboardFocus += new KeyboardFocusChangedEventHandler(OnLostKeyboardFocus);
 			Loaded += new RoutedEventHandler(OnLoaded);
 			AddHandler(UserControl.KeyDownEvent, new KeyEventHandler(OnMDIKeyDown), true);
 
@@ -123,8 +125,22 @@ namespace mCubed.MetaData {
 		/// <param name="sender">The sender object</param>
 		/// <param name="e">The event arguments</param>
 		private void OnGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) {
-			if (Mouse.LeftButton == MouseButtonState.Released && !_customSelect)
-				ValueTextBox.SelectAll();
+			if (Mouse.LeftButton == MouseButtonState.Released && !_customSelect) {
+				if (e.OldFocus != null) {
+					ValueTextBox.SelectAll();
+				} else if (ValueTextBox.Text.Length > 0) {
+					ValueTextBox.ScrollToHorizontalOffset(_scrollOffset);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Event that handles when the value control has lost keyboard focus
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) {
+			_scrollOffset = ValueTextBox.HorizontalOffset;
 		}
 
 		/// <summary>

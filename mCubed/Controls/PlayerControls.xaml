@@ -74,7 +74,18 @@
 						</Style>
 					</Button.Style>
 				</Button>
-				<Button Content="S" Tag="ToggleShuffle" ToolTip="Toggle the shuffle order of the loaded library on and off" Click="MediaButton_Clicked" Style="{StaticResource NormalMediaButton}"/>
+				<Button Content="S" Tag="ToggleShuffle" Click="MediaButton_Clicked">
+					<Button.Style>
+						<Style TargetType="{x:Type Button}" BasedOn="{StaticResource NormalMediaButton}">
+							<Setter Property="ToolTip" Value="Shuffle mode is off. Click to turn shuffle mode on." />
+							<Style.Triggers>
+								<DataTrigger Binding="{Binding Path=MediaOrderCurrent.Type}" Value="Shuffle">
+									<Setter Property="ToolTip" Value="Shuffle mode is on. Click to turn shuffle mode off." />
+								</DataTrigger>
+							</Style.Triggers>
+						</Style>
+					</Button.Style>
+				</Button>
 			</WrapPanel>
 			<WrapPanel Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
 				<Button Content="9" Tag="Prev" ToolTip="Play the media previous to the current media" Click="MediaButton_Clicked" Style="{StaticResource MediaButton}" IsEnabled="{Binding Path=SelectPrevExists}"/>

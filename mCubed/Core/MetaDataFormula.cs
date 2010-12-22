@@ -9,7 +9,7 @@ namespace mCubed.Core {
 		#region Static: Formula Population
 
 		/// <summary>
-		/// Get a collectin of all the formula properties
+		/// Get a collection of all the formula properties
 		/// </summary>
 		public static IEnumerable<MetaDataAttribute> FormulaProperties { get; private set; }
 
@@ -321,8 +321,13 @@ namespace mCubed.Core {
 						break;
 					}
 				}
-				if (items.Any(f => f.Formula == formula.ToUpper()))
-					retValue = GetValue(items.First(f => f.Formula == formula.ToUpper()));
+				var formulaParts = formula.Split(':');
+				var padding = 0;
+				if (formulaParts.Length >= 2)
+					padding = formulaParts[1].TryParse<int>();
+				var attribute = items.FirstOrDefault(f => f.Formula.Equals(formulaParts[0], StringComparison.CurrentCultureIgnoreCase));
+				if (attribute != null)
+					retValue = GetValue(attribute, padding);
 			}
 			return retValue;
 		}
@@ -333,10 +338,24 @@ namespace mCubed.Core {
 		/// <param name="property">The property to generate a value for</param>
 		/// <returns>The value from the property</returns>
 		private string GetValue(MetaDataAttribute property) {
+			return GetValue(property, 0);
+		}
+
+		/// <summary>
+		/// Get a value out of the given formula property
+		/// </summary>
+		/// <param name="property">The property to generate a value for</param>
+		/// <param name="minPadding">The minimum number of characters that will be returned, spaces for strings and zeros for numbers</param>
+		/// <returns>The value from the property</returns>
+		private string GetValue(MetaDataAttribute property, int minPadding) {
 			object obj = GetType().GetProperty(property.Path).GetValue(this, null);
 			object value = property.Property.GetValue(obj, null);
-			string retValue = value == null ? null : value.ToString();
-			return retValue ?? "";
+			if (value == null)
+				return "".PadLeft(minPadding);
+			string retValue = value.ToString() ?? "";
+			char paddingChar = value.GetType().IsNumericType() ? '0' : ' ';
+			retValue = retValue.PadLeft(minPadding, paddingChar);
+			return retValue;
 		}
 
 		/// <summary>
@@ -347,11 +366,19 @@ namespace mCubed.Core {
 				Value = Parent.FallbackValue;
 			} else {
 				string newValue = Parent.Formula;
-				foreach (var match in Regex.Matches(Parent.Formula, @"%([\w\.]*)%").OfType<Match>()) {
+				foreach (var match in Regex.Matches(Parent.Formula, @"%([\w\.\?\:]*)%").OfType<Match>()) {
 					var matchString = match.Value;
-					var replaceString = GetValue(match.Groups[1].Value);
-					if (replaceString == null)
-						replaceString = matchString;
+					var replaceString = matchString;
+					var formulaProps = match.Groups[1].Value.Split('?');
+					foreach (var formulaProp in formulaProps) {
+						var tempString = GetValue(formulaProp);
+						if (!String.IsNullOrEmpty(tempString)) {
+							replaceString = tempString;
+							break;
+						} else {
+							replaceString = "";
+						}
+					}
 					newValue = newValue.Replace(matchString, replaceString);
 				}
 				Value = newValue;

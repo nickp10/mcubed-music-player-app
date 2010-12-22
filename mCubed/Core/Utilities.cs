@@ -13,6 +13,7 @@ namespace mCubed.Core {
 
 		private static readonly ProcessManager _mainProcessManager = new ProcessManager();
 		private static readonly Settings _mainSettings = new Settings();
+		private static Type[] numericTypes;
 
 		#endregion
 
@@ -441,6 +442,19 @@ namespace mCubed.Core {
 		}
 
 		/// <summary>
+		/// Determines if the given type is a numeric type, meaning it is represented with numbers
+		/// </summary>
+		/// <param name="type">The type to check to see if it is a numeric type or not</param>
+		/// <returns>True if the given type is a numeric type, or false otherwise</returns>
+		public static bool IsNumericType(this Type type) {
+			if (numericTypes == null) {
+				numericTypes = new[] { typeof(byte), typeof(decimal), typeof(double), typeof(float), typeof(int), 
+					typeof(long), typeof(sbyte), typeof(short), typeof(uint), typeof(ulong), typeof(ushort) };
+			}
+			return type != null && numericTypes.Contains(type);
+		}
+
+		/// <summary>
 		/// Retrieve the image mime-type from an array of bytes that make up an image
 		/// </summary>
 		/// <param name="data">The array of bytes to get the mime-type from</param>
@@ -483,9 +497,9 @@ namespace mCubed.Core {
 		public static T TryParse<T>(this object obj) {
 			// Attempt to parse the value
 			if (obj is IEnumerable && !(obj is string) && Utilities.IsTypeIEnumerable(typeof(T)))
-				obj = ((IEnumerable)obj).OfType<object>().Select(o => o.ToString()).Parse(Utilities.EnumerableType(typeof(T)));
+				return (T)((IEnumerable)obj).OfType<object>().Select(o => o.ToString()).Parse(Utilities.EnumerableType(typeof(T)));
 			else if (obj != null)
-				obj = obj.ToString().Parse<T>();
+				return obj.ToString().Parse<T>();
 			return default(T);
 		}
 
@@ -581,8 +595,9 @@ namespace mCubed.Core {
 					return (T)(object)parse.Invoke(null, new[] { str });
 
 				// Attempt to parse it into an enum
-				if (typeof(T).IsEnum)
-					return (T)(object)Enum.Parse(typeof(T), str);
+				Type type = typeof(T);
+				if (type.IsEnum)
+					return (T)(object)Enum.Parse(type, str);
 			} catch { }
 			return defaultValue;
 		}
