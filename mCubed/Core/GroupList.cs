@@ -1162,7 +1162,9 @@ namespace mCubed.Core {
 		/// <param name="array">The array in which the items will be copied to</param>
 		/// <param name="arrayIndex">The array index in which to start copying the items</param>
 		public void CopyTo(T[] array, int arrayIndex) {
-			List<T> items = new List<T>(this);
+			List<T> items = new List<T>();
+			foreach (T item in this)
+				items.Add(item);
 			items.CopyTo(array, arrayIndex);
 		}
 

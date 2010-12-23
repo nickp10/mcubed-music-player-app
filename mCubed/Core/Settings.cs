@@ -208,11 +208,13 @@ namespace mCubed.Core {
 		private Library GenerateLibrary(XElement element) {
 			var library = new Library
 			{
+				AutoRenameOnUpdates = element.Parse("AutoRenameOnUpdates", false),
 				DisplayName = element.Parse<string>("DisplayName"),
 				IsLoaded = element.Parse("IsLoaded", false),
 				IsShuffled = element.Parse("IsShuffled", false),
 				RepeatStatus = element.Parse("RepeatStatus", MediaRepeat.NoRepeat)
 			};
+			library.FilenameFormula = element.Parse("FilenameFormula", library.FilenameFormula);
 			library.MediaObject.Balance = element.Parse("MOBalance", library.MediaObject.Balance);
 			library.MediaObject.PlaybackSpeed = element.Parse("MOPlaybackSpeed", library.MediaObject.PlaybackSpeed);
 			library.MediaObject.Volume = element.Parse("MOVolume", library.MediaObject.Volume);
@@ -279,7 +281,9 @@ namespace mCubed.Core {
 		/// <returns>The XML library that is generated</returns>
 		private XElement GenerateLibrary(Library library) {
 			return new XElement("Library",
+				new XAttribute("AutoRenameOnUpdates", library.AutoRenameOnUpdates),
 				new XAttribute("DisplayName", library.DisplayName ?? ""),
+				new XAttribute("FilenameFormula", library.FilenameFormula ?? ""),
 				new XAttribute("IsLoaded", library.IsLoaded),
 				new XAttribute("IsShuffled", library.IsShuffled),
 				new XAttribute("RepeatStatus", library.RepeatStatus),

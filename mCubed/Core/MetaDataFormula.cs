@@ -192,17 +192,29 @@ namespace mCubed.Core {
 		#region Static Members
 
 		/// <summary>
+		/// Get the value for a media file with the given formula
+		/// </summary>
+		/// <param name="formula">The formula to retrieve the value for</param>
+		/// <param name="file">The file to retrieve information out of</param>
+		/// <returns>The value of a formula being applied to a given file</returns>
+		public static string GetValue(string formula, MediaFile file) {
+			using (MDFFile mdf = new MDFFile(formula)) {
+				mdf.MediaFile = file;
+				return mdf.Value;
+			}
+		}
+
+		/// <summary>
 		/// Get the value for a media file with the given meta data formula
 		/// </summary>
 		/// <param name="formula">The formula to retrieve the value for</param>
 		/// <param name="file">The file to retrieve information out of</param>
 		/// <returns>The value of a formula being applied to a given file</returns>
 		public static string GetValue(MetaDataFormula formula, MediaFile file) {
-			MDFFile mdf = new MDFFile(formula);
-			mdf.MediaFile = file;
-			string value = mdf.Value;
-			mdf.Dispose();
-			return value;
+			using (MDFFile mdf = new MDFFile(formula)) {
+				mdf.MediaFile = file;
+				return mdf.Value;
+			}
 		}
 
 		#endregion
@@ -258,6 +270,16 @@ namespace mCubed.Core {
 		#endregion
 
 		#region Constructor
+
+		public MDFFile(string formula) {
+			Parent = new MetaDataFormula()
+			{
+				FallbackValue = "",
+				Formula = formula,
+				Type = MetaDataFormulaType.Custom
+			};
+			Parent.ValueChanged += new Action(ChangeValue);
+		}
 
 		public MDFFile(MetaDataFormula parent) {
 			Parent = parent;
@@ -348,7 +370,7 @@ namespace mCubed.Core {
 		/// <param name="minPadding">The minimum number of characters that will be returned, spaces for strings and zeros for numbers</param>
 		/// <returns>The value from the property</returns>
 		private string GetValue(MetaDataAttribute property, int minPadding) {
-			object obj = GetType().GetProperty(property.Path).GetValue(this, null);
+			object obj = typeof(MDFFile).GetProperty(property.Path).GetValue(this, null);
 			object value = property.Property.GetValue(obj, null);
 			if (value == null)
 				return "".PadLeft(minPadding);
@@ -359,11 +381,12 @@ namespace mCubed.Core {
 		}
 
 		/// <summary>
-		/// Regenerate the value using the formula and provided information
+		/// Gets the new value that will be used for the formula
 		/// </summary>
-		private void ChangeValue() {
+		/// <returns>The new value to be used for the formula</returns>
+		private string GetValue() {
 			if (MediaFile == null || Parent.Formula == null) {
-				Value = Parent.FallbackValue;
+				return Parent.FallbackValue;
 			} else {
 				string newValue = Parent.Formula;
 				foreach (var match in Regex.Matches(Parent.Formula, @"%([\w\.\?\:]*)%").OfType<Match>()) {
@@ -381,8 +404,15 @@ namespace mCubed.Core {
 					}
 					newValue = newValue.Replace(matchString, replaceString);
 				}
-				Value = newValue;
+				return newValue;
 			}
+		}
+
+		/// <summary>
+		/// Regenerate the value using the formula and provided information
+		/// </summary>
+		private void ChangeValue() {
+			Value = GetValue();
 		}
 
 		#endregion

@@ -58,6 +58,7 @@
     <StartupObject>mCubed.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -174,6 +175,7 @@
     <Compile Include="Controls\Icon.cs" />
     <Compile Include="Controls\SelectorExtension.cs" />
     <Compile Include="Core\ColumnDetail.cs" />
+    <Compile Include="Core\FileUtilities.cs" />
     <Compile Include="Core\GlobalKeyboardHook.cs" />
     <Compile Include="Core\GroupList.cs" />
     <Compile Include="Core\Library.cs" />

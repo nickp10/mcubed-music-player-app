@@ -19,9 +19,11 @@ namespace mCubed.Core {
 		private static IEnumerable<string> _repeatTypes =
 			Enum.GetNames(typeof(MediaRepeat)).
 			Select(s => s.ToReadableString()).ToArray();
+		private bool _autoRenameOnUpdates;
 		private readonly ColumnSettings _columnSettings = new ColumnSettings();
 		private string _displayName;
 		private readonly ObservableCollection<string> _directories = new ObservableCollection<string>();
+		private string _filenameForumla = "%FirstAlbumPerformer?FirstPerformer%" + Path.DirectorySeparatorChar + "%Album%" + Path.DirectorySeparatorChar + "%Track:2% %Title%";
 		private bool _isLoaded;
 		private bool _isShuffled;
 		private readonly GroupList<MediaFile> _mediaFiles = new GroupList<MediaFile>();
@@ -39,6 +41,14 @@ namespace mCubed.Core {
 		#region Bindable Properties
 
 		/// <summary>
+		/// Get/set whether or not updates to media files within this library will auto-rename the associated file [Bindable]
+		/// </summary>
+		public bool AutoRenameOnUpdates {
+			get { return _autoRenameOnUpdates; }
+			set { this.SetAndNotify(ref _autoRenameOnUpdates, value, "AutoRenameOnUpdates"); }
+		}
+
+		/// <summary>
 		/// Get the column settings for this library for how the media will be grouped, sorted, and displayed [Bindable]
 		/// </summary>
 		public ColumnSettings ColumnSettings { get { return _columnSettings; } }
@@ -54,6 +64,14 @@ namespace mCubed.Core {
 		public string DisplayName {
 			get { return _displayName; }
 			set { this.SetAndNotify(ref _displayName, value, "DisplayName"); }
+		}
+
+		/// <summary>
+		/// Get/set the formula that will be used to generate the filename for the media files in the library [Bindable]
+		/// </summary>
+		public string FilenameFormula {
+			get { return _filenameForumla; }
+			set { this.SetAndNotify(ref _filenameForumla, value, "FilenameFormula"); }
 		}
 
 		/// <summary>

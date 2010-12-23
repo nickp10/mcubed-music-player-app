@@ -7,7 +7,7 @@ namespace mCubed.Core {
 	public class MediaObject : INotifyPropertyChanged, IDisposable {
 		#region MediaObjectState
 
-		public struct MediaObjectState {
+		public class MediaObjectState {
 			public string Path { get; set; }
 			public double Progress { get; set; }
 			public MediaState State { get; set; }
@@ -322,13 +322,13 @@ namespace mCubed.Core {
 		/// Restore the state of the media file that was previously unloaded
 		/// </summary>
 		/// <param name="state">The state of the file that was previously unloaded</param>
-		public void RestoreState(MediaObjectState? state) {
+		public void RestoreState(MediaObjectState state) {
 			// Check if the state has a value
 			if (state != null && string.IsNullOrEmpty(Path)) {
 				// Restore the information
-				_seekValue = state.Value.Progress;
-				Path = state.Value.Path;
-				State = state.Value.State;
+				_seekValue = state.Progress;
+				Path = state.Path;
+				State = state.State;
 			}
 		}
 
@@ -349,7 +349,7 @@ namespace mCubed.Core {
 		/// </summary>
 		/// <param name="path">The file path that will be unlocked</param>
 		/// <returns>The state of the file so it can be reloaded or null if the file is not locked</returns>
-		public MediaObjectState? UnlockFile(string path) {
+		public MediaObjectState UnlockFile(string path) {
 			// Check if the file is locked
 			if (path != Path)
 				return null;

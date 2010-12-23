@@ -7,13 +7,7 @@ using System.Linq;
 using System.Reflection;
 
 namespace mCubed.Core {
-	public abstract class MetaDataInfo : INotifyPropertyChanged, IDisposable {
-		#region INotifyPropertyChanged Members
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		#endregion
-
+	public abstract class MetaDataInfo : INotifyPropertyChanged, INotifyPropertyChanging, IDisposable {
 		#region Data Store
 
 		private string _album;
@@ -148,12 +142,12 @@ namespace mCubed.Core {
 		public string FileName { get { return System.IO.Path.GetFileName(FilePath); } }
 
 		/// <summary>
-		/// Get the filepath [Bindable]
+		/// Get/set the filepath [Bindable]
 		/// </summary>
 		[MetaData("The full filepath to the media location.")]
 		public string FilePath {
 			get { return _filePath; }
-			protected set { this.SetAndNotify(ref _filePath, value, "FilePath", "FileName"); }
+			set { this.SetAndNotify(ref _filePath, value, "FilePath", "FileName"); }
 		}
 
 		/// <summary>
@@ -345,6 +339,12 @@ namespace mCubed.Core {
 			if (!IsReadOnly) {
 				var obj = Parent.Parent.MediaObject.UnlockFile(FilePath);
 				Save(null);
+				if (Parent.Parent.AutoRenameOnUpdates) {
+					FileUtilities.Rename(Parent);
+					if (obj != null) {
+						obj.Path = FilePath;
+					}
+				}
 				Parent.Parent.MediaObject.RestoreState(obj);
 			}
 		}
@@ -366,7 +366,7 @@ namespace mCubed.Core {
 				return Enumerable.Empty<string>().ToArray();
 
 			// Return the value
-			return Utilities.IsTypeIEnumerable(property.PropertyType) ? ((IEnumerable)value).OfType<object>().Where(o => o != null).Select(o => o.ToString()).ToArray() : new string[] { (value ?? "").ToString() };
+			return Utilities.IsTypeIEnumerable(value.GetType()) ? ((IEnumerable)value).OfType<object>().Where(o => o != null).Select(o => o.ToString()).ToArray() : new string[] { (value ?? "").ToString() };
 		}
 
 		/// <summary>
@@ -384,7 +384,7 @@ namespace mCubed.Core {
 		/// <param name="propertyName">The name of the property to set</param>
 		/// <param name="propertyValue">The value to set to</param>
 		public void SetProperty(string propertyName, IEnumerable<string> propertyValue) {
-			if (Utilities.IsTypeIEnumerable(typeof(MetaDataInfo).GetProperty(propertyName).PropertyType)) {
+			if (Utilities.IsTypeIEnumerable(GetType().GetProperty(propertyName).PropertyType)) {
 				SetProperty(propertyName, propertyValue, (s, t) => Utilities.Parse(s, t));
 			} else if (propertyValue != null && propertyValue.Count() <= 1) {
 				SetProperty(propertyName, propertyValue.SingleOrDefault() ?? "");
@@ -431,6 +431,26 @@ namespace mCubed.Core {
 
 		#endregion
 
+		#region IExternalNotifyPropertyChanged Members
+
+		public PropertyChangedEventHandler PropertyChangedHandler {
+			get { return PropertyChanged; }
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanging Members
+
+		public PropertyChangingEventHandler PropertyChangingHandler {
+			get { return PropertyChanging; }
+		}
+
+		public event PropertyChangingEventHandler PropertyChanging;
+
+		#endregion
+
 		#region IDisposable Members
 
 		/// <summary>
@@ -439,6 +459,7 @@ namespace mCubed.Core {
 		public void Dispose() {
 			// Unsubscribe others from its events
 			PropertyChanged = null;
+			PropertyChanging = null;
 		}
 
 		#endregion
@@ -476,58 +497,61 @@ namespace mCubed.Core {
 		/// </summary>
 		/// <param name="obj">This object will ALWAYS be null for sake of overloading purposes</param>
 		protected override void Save(object obj) {
-			var tlFile = TagLib.File.Create(FilePath);
-			tlFile.RemoveTags(TagLib.TagTypes.Id3v1);
-			tlFile.RemoveTags(TagLib.TagTypes.Id3v2);
-			tlFile.Save();
-			tlFile = TagLib.File.Create(FilePath);
-			tlFile.Tag.Album = Album;
-			tlFile.Tag.AlbumArtists = AlbumArtists;
-			tlFile.Tag.BeatsPerMinute = BeatsPerMinute;
-			tlFile.Tag.Comment = Comment;
-			tlFile.Tag.Composers = Composers;
-			tlFile.Tag.Conductor = Conductor;
-			tlFile.Tag.Copyright = Copyright;
-			tlFile.Tag.Disc = Disc;
-			tlFile.Tag.DiscCount = DiscCount;
-			tlFile.Tag.Genres = Genres;
-			tlFile.Tag.Grouping = Grouping;
-			tlFile.Tag.Lyrics = Lyrics;
-			tlFile.Tag.Performers = Performers;
-			tlFile.Tag.Pictures = (Pictures ?? new MetaDataPic[0]).Select(p => p.GenerateTagLib()).ToArray();
-			tlFile.Tag.Title = Title;
-			tlFile.Tag.Track = Track;
-			tlFile.Tag.TrackCount = TrackCount;
-			tlFile.Tag.Year = Year;
-			tlFile.Save();
+			using (var tlFile = TagLib.File.Create(FilePath)) {
+				tlFile.RemoveTags(TagLib.TagTypes.Id3v1);
+				tlFile.RemoveTags(TagLib.TagTypes.Id3v2);
+				tlFile.Save();
+			}
+			using (var tlFile = TagLib.File.Create(FilePath)) {
+				tlFile.Tag.Album = Album;
+				tlFile.Tag.AlbumArtists = AlbumArtists;
+				tlFile.Tag.BeatsPerMinute = BeatsPerMinute;
+				tlFile.Tag.Comment = Comment;
+				tlFile.Tag.Composers = Composers;
+				tlFile.Tag.Conductor = Conductor;
+				tlFile.Tag.Copyright = Copyright;
+				tlFile.Tag.Disc = Disc;
+				tlFile.Tag.DiscCount = DiscCount;
+				tlFile.Tag.Genres = Genres;
+				tlFile.Tag.Grouping = Grouping;
+				tlFile.Tag.Lyrics = Lyrics;
+				tlFile.Tag.Performers = Performers;
+				tlFile.Tag.Pictures = (Pictures ?? new MetaDataPic[0]).Select(p => p.GenerateTagLib()).ToArray();
+				tlFile.Tag.Title = Title;
+				tlFile.Tag.Track = Track;
+				tlFile.Tag.TrackCount = TrackCount;
+				tlFile.Tag.Year = Year;
+				tlFile.Save();
+			}
 		}
 
 		/// <summary>
 		/// Load the information from the media
 		/// </summary>
 		protected override void Load() {
-			var tlFile = TagLib.File.Create(FilePath);
-			Album = tlFile.Tag.Album ?? string.Empty;
-			AlbumArtists = tlFile.Tag.AlbumArtists ?? new string[0];
-			AudioBitrate = tlFile.Properties.AudioBitrate;
-			AudioSampleRate = tlFile.Properties.AudioSampleRate;
-			BeatsPerMinute = tlFile.Tag.BeatsPerMinute;
-			Comment = tlFile.Tag.Comment ?? string.Empty;
-			Composers = tlFile.Tag.Composers ?? new string[0];
-			Conductor = tlFile.Tag.Conductor ?? string.Empty;
-			Copyright = tlFile.Tag.Copyright ?? string.Empty;
-			Disc = tlFile.Tag.Disc;
-			DiscCount = tlFile.Tag.DiscCount;
-			Genres = tlFile.Tag.Genres ?? new string[0];
-			Grouping = tlFile.Tag.Grouping ?? string.Empty;
-			Length = tlFile.Properties.Duration;
-			Lyrics = tlFile.Tag.Lyrics ?? string.Empty;
-			Performers = tlFile.Tag.Performers ?? new string[0];
-			Pictures = (tlFile.Tag.Pictures ?? new TagLib.IPicture[0]).Select(p => new MetaDataPic(p)).ToArray();
-			Title = tlFile.Tag.Title ?? string.Empty;
-			Track = tlFile.Tag.Track;
-			TrackCount = tlFile.Tag.TrackCount;
-			Year = tlFile.Tag.Year;
+			using (var tlFile = TagLib.File.Create(FilePath)) {
+				Album = tlFile.Tag.Album ?? string.Empty;
+				AlbumArtists = tlFile.Tag.AlbumArtists ?? new string[0];
+				AudioBitrate = tlFile.Properties.AudioBitrate;
+				AudioSampleRate = tlFile.Properties.AudioSampleRate;
+				BeatsPerMinute = tlFile.Tag.BeatsPerMinute;
+				Comment = tlFile.Tag.Comment ?? string.Empty;
+				Composers = tlFile.Tag.Composers ?? new string[0];
+				Conductor = tlFile.Tag.Conductor ?? string.Empty;
+				Copyright = tlFile.Tag.Copyright ?? string.Empty;
+				Disc = tlFile.Tag.Disc;
+				DiscCount = tlFile.Tag.DiscCount;
+				Genres = tlFile.Tag.Genres ?? new string[0];
+				Grouping = tlFile.Tag.Grouping ?? string.Empty;
+				Length = tlFile.Properties.Duration;
+				Lyrics = tlFile.Tag.Lyrics ?? string.Empty;
+				Performers = tlFile.Tag.Performers ?? new string[0];
+				Pictures = (tlFile.Tag.Pictures ?? new TagLib.IPicture[0]).Select(p => new MetaDataPic(p)).ToArray();
+				Title = tlFile.Tag.Title ?? string.Empty;
+				Track = tlFile.Tag.Track;
+				TrackCount = tlFile.Tag.TrackCount;
+				Year = tlFile.Tag.Year;
+			}
 		}
 
 		#endregion
