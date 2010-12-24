@@ -154,10 +154,7 @@ namespace mCubed.Core {
 		/// <param name="file">The media file to be renamed</param>
 		/// <returns>The new full path to the media file, or null if the rename failed</returns>
 		public static string Rename(MediaFile file) {
-			if (file.IsValidFile()) {
-				return Move(file, file.GetFileSourceDirectory());
-			}
-			return null;
+			return Move(file, file.GetFileSourceDirectory());
 		}
 
 		/// <summary>
@@ -167,14 +164,25 @@ namespace mCubed.Core {
 		/// <param name="destDirectory">The directory that the media file will be moved to</param>
 		/// <returns>The new full path to the media file, or null if the move failed</returns>
 		public static string Move(MediaFile file, string destDirectory) {
+			return Move(file, file.Parent, destDirectory);
+		}
+
+		/// <summary>
+		/// Moves the given media file to its proper location within the given destination directory
+		/// </summary>
+		/// <param name="file">The media file that will be moved to the destination directory</param>
+		/// <param name="destLibrary">The library that will be the destination for the media file</param>
+		/// <param name="destDirectory">The directory that the media file will be moved to</param>
+		/// <returns>The new full path to the media file, or null if the move failed</returns>
+		public static string Move(MediaFile file, Library destLibrary, string destDirectory) {
 			// Validate the parameters
-			if (!file.IsValidFile() || !destDirectory.IsValidDir()) {
+			if (!file.IsValidFile() || destLibrary == null || !destDirectory.IsValidDir()) {
 				return null;
 			}
 
 			// Copy the file over, making sure it succeeded
 			string oldLocation = file.MetaData.FilePath;
-			string newLocation = InternalCopy(file, destDirectory);
+			string newLocation = InternalCopy(file, destDirectory, destLibrary.FilenameFormula);
 			if (newLocation == null) {
 				return null;
 			}
@@ -183,6 +191,12 @@ namespace mCubed.Core {
 			if (!FileEquals(oldLocation, newLocation)) {
 				InternalDelete(file, false);
 				file.MetaData.FilePath = newLocation;
+			}
+			
+			// Alter the libraries accordingly
+			if (file.Parent != destLibrary) {
+				file.Parent.RemoveMedia(new[] { file });
+				destLibrary.AddMedia(new[] { destLibrary.GenerateMedia(newLocation) });
 			}
 			return newLocation;
 		}
@@ -194,10 +208,34 @@ namespace mCubed.Core {
 		/// <param name="destDirectory">The directory that the media file will be copied to</param>
 		/// <returns>The new full path to the media file, or null if the copy failed</returns>
 		public static string Copy(MediaFile file, string destDirectory) {
-			if (file.IsValidFile() && destDirectory.IsValidDir()) {
-				return InternalCopy(file, destDirectory);
+			return Copy(file, file.Parent, destDirectory);
+		}
+
+		/// <summary>
+		/// Copies the given media file to its proper location within the given destination directory
+		/// </summary>
+		/// <param name="file">The media file that will be copied to the destination directory</param>
+		/// <param name="destLibrary">The library that will be the destination for the media file</param>
+		/// <param name="destDirectory">The directory that the media file will be copied to</param>
+		/// <returns>The new full path to the media file, or null if the copy failed</returns>
+		public static string Copy(MediaFile file, Library destLibrary, string destDirectory) {
+			// Validate the parameters
+			if (!file.IsValidFile() || destLibrary == null || !destDirectory.IsValidDir()) {
+				return null;
 			}
-			return null;
+
+			// Copy the file over, making sure it succeeded
+			string oldLocation = file.MetaData.FilePath;
+			string newLocation = InternalCopy(file, destDirectory, destLibrary.FilenameFormula);
+			if (newLocation == null) {
+				return null;
+			}
+
+			// Alter the libraries accordingly
+			if (!FileEquals(oldLocation, newLocation) || file.Parent != destLibrary) {
+				destLibrary.AddMedia(new[] { destLibrary.GenerateMedia(newLocation) });
+			}
+			return newLocation;
 		}
 
 		/// <summary>
@@ -230,6 +268,17 @@ namespace mCubed.Core {
 		/// <param name="destDirectory">The directory that the media file will be copied to</param>
 		/// <returns>The new full path to the media file, or null if the copy failed</returns>
 		private static string InternalCopy(MediaFile file, string destDirectory) {
+			return InternalCopy(file, destDirectory, file.Parent.FilenameFormula);
+		}
+
+		/// <summary>
+		/// Copies the given media file to its proper location within the given destination directory for internal uses
+		/// </summary>
+		/// <param name="file">The media file that will be copied</param>
+		/// <param name="destDirectory">The directory that the media file will be copied to</param>
+		/// <param name="destFormula">The formula to generate the destination filename for the file</param>
+		/// <returns>The new full path to the media file, or null if the copy failed</returns>
+		private static string InternalCopy(MediaFile file, string destDirectory, string destFormula) {
 			// Ensure the file exists
 			var filePath = new FileInfo(file.MetaData.FilePath);
 			if (!filePath.Exists) {
@@ -237,13 +286,12 @@ namespace mCubed.Core {
 			}
 
 			// Ensure a proper formula
-			var formula = file.Parent.FilenameFormula;
-			if (string.IsNullOrEmpty(formula)) {
+			if (string.IsNullOrEmpty(destFormula)) {
 				return null;
 			}
 
 			// Finish setup
-			var formulaParts = formula.Split(Path.DirectorySeparatorChar);
+			var formulaParts = destFormula.Split(Path.DirectorySeparatorChar);
 			var curDirectory = new DirectoryInfo(destDirectory);
 			var i = 0;
 

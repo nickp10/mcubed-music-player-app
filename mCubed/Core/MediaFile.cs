@@ -12,6 +12,7 @@ namespace mCubed.Core {
 		#region Data Store
 
 		private bool _isLoaded;
+		private bool _isUnlocked;
 		private MetaDataInfo _metaData;
 		private int _orderKey;
 
@@ -101,6 +102,42 @@ namespace mCubed.Core {
 			Parent.IsLoaded = true;
 			Parent.MediaObject.State = MediaState.Play;
 			Parent.MediaObject.Seek(0);
+		}
+
+		/// <summary>
+		/// Renames the media file so that it's in its proper location
+		/// </summary>
+		public void Rename() {
+			var state = UnlockFile();
+			FileUtilities.Rename(this);
+			if (state != null) {
+				state.Path = MetaData.FilePath;
+			}
+			RestoreState(state);
+		}
+
+		/// <summary>
+		/// Unlocks the media file so the actually disk file made be modified
+		/// </summary>
+		/// <returns>The state of the current media file, so it can be restored</returns>
+		public MediaObject.MediaObjectState UnlockFile() {
+			if (_isUnlocked)
+				return null;
+			var state = Parent.MediaObject.UnlockFile(MetaData.FilePath);
+			if (state != null)
+				_isUnlocked = true;
+			return state;
+		}
+
+		/// <summary>
+		/// Restores the media file back to the state that it previously was before the disk file was modified
+		/// </summary>
+		/// <param name="state">The previous state of the media file, for it to be restored to</param>
+		public void RestoreState(MediaObject.MediaObjectState state) {
+			if (state != null) {
+				_isUnlocked = false;
+				Parent.MediaObject.RestoreState(state);
+			}
 		}
 
 		#endregion

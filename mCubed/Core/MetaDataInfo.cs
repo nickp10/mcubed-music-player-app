@@ -337,15 +337,12 @@ namespace mCubed.Core {
 		/// </summary>
 		public void Save() {
 			if (!IsReadOnly) {
-				var obj = Parent.Parent.MediaObject.UnlockFile(FilePath);
+				var state = Parent.UnlockFile();
 				Save(null);
 				if (Parent.Parent.AutoRenameOnUpdates) {
-					FileUtilities.Rename(Parent);
-					if (obj != null) {
-						obj.Path = FilePath;
-					}
+					Parent.Rename();
 				}
-				Parent.Parent.MediaObject.RestoreState(obj);
+				Parent.RestoreState(state);
 			}
 		}
 
