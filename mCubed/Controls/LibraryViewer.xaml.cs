@@ -173,6 +173,40 @@ namespace mCubed.Controls {
 		}
 
 		/// <summary>
+		/// Event that handles when the selected media should be copied to a new location
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaCopyTo(object sender, RoutedEventArgs e) {
+			string destDir = GetDestinationDirectory(sender);
+			if (destDir != null) {
+				Library destLib = GetDestinationLibrary(sender);
+				if (destLib != null) {
+					foreach (var item in SelectedItems.ToArray()) {
+						FileUtilities.Copy(item, destLib, destDir);
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Event that handles when the selected media should be moved to a new location
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaMoveTo(object sender, RoutedEventArgs e) {
+			string destDir = GetDestinationDirectory(sender);
+			if (destDir != null) {
+				Library destLib = GetDestinationLibrary(sender);
+				if (destLib != null) {
+					foreach (var item in SelectedItems.ToArray()) {
+						FileUtilities.Move(item, destLib, destDir);
+					}
+				}
+			}
+		}
+
+		/// <summary>
 		/// Event that handles when the media should be played directly
 		/// </summary>
 		/// <param name="sender">The sender object</param>
@@ -341,6 +375,54 @@ namespace mCubed.Controls {
 		#endregion
 
 		#region Members
+
+		/// <summary>
+		/// Retrieves the selected destination directory from the selected menu item
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <returns>The selected destination directory from the selected menu item</returns>
+		private string GetDestinationDirectory(object sender) {
+			// Retrieve the menu item
+			var menu = sender as MenuItem;
+			if (menu == null || menu.Role != MenuItemRole.SubmenuItem) {
+				return null;
+			}
+
+			// Return the data context if it's a string
+			var dir = menu.DataContext as string;
+			if (dir != null) {
+				return dir;
+			}
+
+			// Return the library's first directory
+			var lib = menu.DataContext as Library;
+			if (lib != null && lib.Directories.Count > 0) {
+				return lib.Directories[0];
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Retrieves the selected destination library from the selected menu item
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <returns>The selected destination library from the selected menu item</returns>
+		private Library GetDestinationLibrary(object sender) {
+			// Retrieve the menu item
+			var menu = sender as MenuItem;
+			if (menu == null || menu.Role != MenuItemRole.SubmenuItem) {
+				return null;
+			}
+
+			// Return the data context if it's a library
+			var lib = menu.DataContext as Library;
+			if (lib != null) {
+				return lib;
+			}
+
+			// Return the tag if it's a library
+			return menu.Tag as Library;
+		}
 
 		/// <summary>
 		/// Set a collection of meta-data information in the meta-data manager

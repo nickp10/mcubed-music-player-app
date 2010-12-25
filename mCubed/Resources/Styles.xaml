@@ -121,7 +121,7 @@
 				<ContentPresenter x:Name="HeaderHost" Grid.Column="1" ContentSource="Header" RecognizesAccessKey="True"/>
 				<TextBlock x:Name="InputGestureText" Grid.Column="3" Text="{TemplateBinding InputGestureText}" HorizontalAlignment="Right"/>
 				<Path x:Name="Path" Grid.Column="4" Style="{DynamicResource RightArrowPath}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-				<Popup x:Name="Popup" Placement="Right" HorizontalOffset="-5" IsOpen="{TemplateBinding IsSubmenuOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade">
+				<Popup x:Name="Popup" Placement="Right" HorizontalOffset="-5" VerticalOffset="-6" IsOpen="{TemplateBinding IsSubmenuOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade">
 					<Border x:Name="SubmenuBorder" Style="{StaticResource {x:Type Border}}">
 						<StackPanel IsItemsHost="True"/>
 					</Border>

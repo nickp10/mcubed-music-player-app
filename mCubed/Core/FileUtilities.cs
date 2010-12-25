@@ -187,16 +187,36 @@ namespace mCubed.Core {
 				return null;
 			}
 
-			// Delete the old file, if it changed
-			if (!FileEquals(oldLocation, newLocation)) {
-				InternalDelete(file, false);
+			// If the library didn't change, reuse the given media file
+			if (file.Parent == destLibrary) {
+				// Unlock the media file
+				var state = file.UnlockFile();
+
+				// Delete the old file, if it changed
+				if (!FileEquals(oldLocation, newLocation)) {
+					InternalDelete(file, false);
+				}
+
+				// Update the path
 				file.MetaData.FilePath = newLocation;
+				if (state != null) {
+					state.Path = newLocation;
+				}
+
+				// Restore the media file
+				file.RestoreState(state);
 			}
-			
-			// Alter the libraries accordingly
-			if (file.Parent != destLibrary) {
+
+			// Otherwise, start fresh with a new media file
+			else {
+				// Alter the libraries accordingly
 				file.Parent.RemoveMedia(new[] { file });
 				destLibrary.AddMedia(new[] { destLibrary.GenerateMedia(newLocation) });
+
+				// Delete the old file, if it changed
+				if (!FileEquals(oldLocation, newLocation)) {
+					InternalDelete(file, false);
+				}
 			}
 			return newLocation;
 		}

@@ -82,6 +82,67 @@ namespace mCubed.Controls {
 	}
 
 	/// <summary>
+	/// Used to specify the array of directories that will be used in which one of the following conditions will be met:
+	/// 0 items returns null, 1 item returns an empty array, 2 or more items returns an array of those items [Binding, One-Way]
+	/// </summary>
+	public class DirectoryArrayConverter : IValueConverter {
+		#region IValueConverter Members
+
+		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+			// Convert the value to directories
+			var directories = value as IEnumerable<string>;
+			if (directories == null) {
+				return null;
+			}
+
+			// 0 items returns null
+			var items = directories.ToArray();
+			if (items.Length == 0) {
+				return null;
+			}
+
+			// 1 item returns an empty array
+			if (items.Length == 1) {
+				return new string[0];
+			}
+
+			// 2 or more items returns the array
+			return items;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+			return null;
+		}
+
+		#endregion
+	}
+
+	/// <summary>
+	/// Used to specify whether a library should be enabled or not in which 0 directories in the
+	/// library returns false and 1 or more directories returns true [Binding, One-Way]
+	/// </summary>
+	public class DirectoryCountConverter : IValueConverter {
+		#region IValueConverter Members
+
+		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+			// Convert the value to directories
+			var directories = value as IEnumerable<string>;
+			if (directories == null) {
+				return false;
+			}
+			
+			// 1 or more items returns true, otherwise false
+			return directories.Any();
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+			return null;
+		}
+
+		#endregion
+	}
+
+	/// <summary>
 	/// Used to specify the collection of columns to be able to select from. It should filter out the
 	/// already selected columns if the selected columns should not be shown. [Multi-Binding, One-Way]
 	/// </summary>

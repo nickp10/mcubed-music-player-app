@@ -105,18 +105,6 @@ namespace mCubed.Core {
 		}
 
 		/// <summary>
-		/// Renames the media file so that it's in its proper location
-		/// </summary>
-		public void Rename() {
-			var state = UnlockFile();
-			FileUtilities.Rename(this);
-			if (state != null) {
-				state.Path = MetaData.FilePath;
-			}
-			RestoreState(state);
-		}
-
-		/// <summary>
 		/// Unlocks the media file so the actually disk file made be modified
 		/// </summary>
 		/// <returns>The state of the current media file, so it can be restored</returns>
@@ -153,9 +141,6 @@ namespace mCubed.Core {
 
 			// Dispose all disposable references it created
 			MetaData.Dispose();
-
-			// Clear children references to ensure no cyclic references
-			MetaData = null;
 		}
 
 		#endregion

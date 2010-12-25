@@ -18,7 +18,10 @@ namespace mCubed {
 				try {
 					new App().Run();
 				} catch (Exception e) {
-					Logger.Log(LogLevel.Exception, LogType.Application, e);
+					while (e != null) {
+						Logger.Log(LogLevel.Exception, LogType.Application, e);
+						e = e.InnerException;
+					}
 					throw;
 				} finally {
 					SingleInstance<App>.Cleanup();

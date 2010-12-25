@@ -339,9 +339,7 @@ namespace mCubed.Core {
 			if (!IsReadOnly) {
 				var state = Parent.UnlockFile();
 				Save(null);
-				if (Parent.Parent.AutoRenameOnUpdates) {
-					Parent.Rename();
-				}
+				FileUtilities.Rename(Parent);
 				Parent.RestoreState(state);
 			}
 		}
@@ -457,6 +455,9 @@ namespace mCubed.Core {
 			// Unsubscribe others from its events
 			PropertyChanged = null;
 			PropertyChanging = null;
+
+			// Ensure no cyclic references
+			Parent = null;
 		}
 
 		#endregion
