@@ -114,6 +114,161 @@ namespace mCubed.Controls {
 
 		#endregion
 
+		#region Media Event Handlers
+
+		/// <summary>
+		/// Event that handles when the media should be played directly
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaFilePlay(object sender, RoutedEventArgs e) {
+			OnMediaFilePlay(sender, (MouseButtonEventArgs)null);
+		}
+
+		/// <summary>
+		/// Event that handles when the media should be played directly
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaFilePlay(object sender, MouseButtonEventArgs e) {
+			var ele = sender as FrameworkElement;
+			var file = ele == null ? null : ele.DataContext as MediaFile;
+			if (file != null)
+				file.Play();
+		}
+
+		/// <summary>
+		/// Event that handles when the selected media should be copied to a new location
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaCopyTo(object sender, RoutedEventArgs e) {
+			string destDir = GetDestinationDirectory(sender);
+			if (destDir != null) {
+				Library destLib = GetDestinationLibrary(sender);
+				if (destLib != null) {
+					var items = SelectedItems.ToArray();
+					Utilities.MainProcessManager.AddProcess(process =>
+					{
+						foreach (var item in items) {
+							FileUtilities.Copy(item, destLib, destDir);
+							process.CompletedCount++;
+						}
+					}, "Copying files", items.Length);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Event that handles when the selected media should be moved to a new location
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaMoveTo(object sender, RoutedEventArgs e) {
+			string destDir = GetDestinationDirectory(sender);
+			if (destDir != null) {
+				Library destLib = GetDestinationLibrary(sender);
+				if (destLib != null) {
+					var items = SelectedItems.ToArray();
+					Utilities.MainProcessManager.AddProcess(process =>
+					{
+						foreach (var item in items) {
+							FileUtilities.Move(item, destLib, destDir);
+							process.CompletedCount++;
+						}
+					}, "Moving files", items.Length);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Event that handles when media should be removed from the library
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaRemove(object sender, RoutedEventArgs e) {
+			var items = SelectedItems.ToArray();
+			Library.RemoveMedia(items);
+		}
+
+		/// <summary>
+		/// Event that handles when media should be removed from the library and the computer
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaRemoveComputer(object sender, RoutedEventArgs e) {
+			var items = SelectedItems.ToArray();
+			Library.RemoveMedia(items);
+			foreach (var item in items) {
+				FileUtilities.Delete(item);
+			}
+		}
+
+		/// <summary>
+		/// Event that handles when media should be added to the library
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaAdd(object sender, RoutedEventArgs e) {
+			Library.AddMedia(Library.GenerateMedia());
+		}
+
+		/// <summary>
+		/// Event that handles when the current library should be reloaded
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaReload(object sender, RoutedEventArgs e) {
+			Library.Reload();
+		}
+
+		/// <summary>
+		/// Event that handles when the selected items' track numbers should be auto-populated from 1 to N, where N is the number of selected items
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaAutoPopulateTrack(object sender, RoutedEventArgs e) {
+			var items = SelectedItems.ToArray();
+			Utilities.MainProcessManager.AddProcess(process =>
+			{
+				uint currentTrack = 1;
+				foreach (var item in items) {
+					item.Parent.MediaFiles.BeginTransaction();
+					item.MetaData.Track = currentTrack++;
+					item.MetaData.Save();
+					item.Parent.MediaFiles.EndTransaction();
+					process.CompletedCount++;
+				}
+			}, "Auto-populating track numbers", items.Length);
+		}
+
+		/// <summary>
+		/// Event that handles when the selected items should be auto-renamed and located in their proper location
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaAutoRename(object sender, RoutedEventArgs e) {
+			var items = SelectedItems.ToArray();
+			Utilities.MainProcessManager.AddProcess(process =>
+			{
+				foreach (var item in items) {
+					FileUtilities.Rename(item);
+					process.CompletedCount++;
+				}
+			}, "Auto-renaming files", items.Length);
+		}
+
+		/// <summary>
+		/// Event that handles when the selected media should be loaded into the meta-data manager
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaLoaded(object sender, RoutedEventArgs e) {
+			SetMDIManager("Manually Loaded Media", SelectedItems.Select(mf => mf.MetaData));
+		}
+
+		#endregion
+
 		#region Event Handlers
 
 		/// <summary>
@@ -143,88 +298,6 @@ namespace mCubed.Controls {
 				DisplayColumns = newLibrary.ColumnSettings.Display;
 				DisplayColumns.CollectionChanged += new NotifyCollectionChangedEventHandler(OnDisplayCollectionChanged);
 			}
-		}
-
-		/// <summary>
-		/// Event that handles when media should be added to the library
-		/// </summary>
-		/// <param name="sender">The sender object</param>
-		/// <param name="e">The event arguments</param>
-		private void OnMediaAdd(object sender, RoutedEventArgs e) {
-			Library.AddMedia(Library.GenerateMedia());
-		}
-
-		/// <summary>
-		/// Event that handles when media should be removed from the library
-		/// </summary>
-		/// <param name="sender">The sender object</param>
-		/// <param name="e">The event arguments</param>
-		private void OnMediaRemove(object sender, RoutedEventArgs e) {
-			Library.RemoveMedia(SelectedItems);
-		}
-
-		/// <summary>
-		/// Event that handles when the selected media should be loaded into the meta-data manager
-		/// </summary>
-		/// <param name="sender">The sender object</param>
-		/// <param name="e">The event arguments</param>
-		private void OnMediaLoaded(object sender, RoutedEventArgs e) {
-			SetMDIManager("Manually Loaded Media", SelectedItems.Select(mf => mf.MetaData));
-		}
-
-		/// <summary>
-		/// Event that handles when the selected media should be copied to a new location
-		/// </summary>
-		/// <param name="sender">The sender object</param>
-		/// <param name="e">The event arguments</param>
-		private void OnMediaCopyTo(object sender, RoutedEventArgs e) {
-			string destDir = GetDestinationDirectory(sender);
-			if (destDir != null) {
-				Library destLib = GetDestinationLibrary(sender);
-				if (destLib != null) {
-					foreach (var item in SelectedItems.ToArray()) {
-						FileUtilities.Copy(item, destLib, destDir);
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// Event that handles when the selected media should be moved to a new location
-		/// </summary>
-		/// <param name="sender">The sender object</param>
-		/// <param name="e">The event arguments</param>
-		private void OnMediaMoveTo(object sender, RoutedEventArgs e) {
-			string destDir = GetDestinationDirectory(sender);
-			if (destDir != null) {
-				Library destLib = GetDestinationLibrary(sender);
-				if (destLib != null) {
-					foreach (var item in SelectedItems.ToArray()) {
-						FileUtilities.Move(item, destLib, destDir);
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// Event that handles when the media should be played directly
-		/// </summary>
-		/// <param name="sender">The sender object</param>
-		/// <param name="e">The event arguments</param>
-		private void OnMediaFilePlay(object sender, RoutedEventArgs e) {
-			OnMediaFilePlay(sender, (MouseButtonEventArgs)null);
-		}
-
-		/// <summary>
-		/// Event that handles when the media should be played directly
-		/// </summary>
-		/// <param name="sender">The sender object</param>
-		/// <param name="e">The event arguments</param>
-		private void OnMediaFilePlay(object sender, MouseButtonEventArgs e) {
-			var ele = sender as FrameworkElement;
-			var file = ele == null ? null : ele.DataContext as MediaFile;
-			if (file != null)
-				file.Play();
 		}
 
 		/// <summary>

@@ -219,12 +219,14 @@ namespace mCubed.Core {
 			// Add all the added directories
 			if (e.NewItems != null) {
 				foreach (string item in e.NewItems.OfType<string>())
-					foreach (MediaFile file in AddDirectory(item))
-						MediaFiles.Add(file);
+					AddMedia(AddDirectory(item));
 			}
 
 			// Finalize
 			MediaFiles.EndTransaction();
+
+			// Send property changed notification
+			this.OnPropertyChanged("Directories");
 		}
 
 		/// <summary>
@@ -633,6 +635,15 @@ namespace mCubed.Core {
 		#endregion
 
 		#region Members
+
+		/// <summary>
+		/// Reloads the library, by re-adding all the directories in the library
+		/// </summary>
+		public void Reload() {
+			ClearMedia();
+			foreach (var directory in Directories)
+				AddMedia(AddDirectory(directory));
+		}
 
 		/// <summary>
 		/// Reshuffle all the media orders marked with the type of shuffle

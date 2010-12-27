@@ -235,7 +235,7 @@ namespace mCubed.MetaData {
 
 			// Queue the save process in the progress manager
 			if (updateMDF.Count > 0 || updateMDP != null) {
-				Utilities.MainProcessManager.AddProcess(delegate(Process process)
+				Utilities.MainProcessManager.AddProcess(process =>
 				{
 					// Update each MDI and save it
 					foreach (var mdi in updateMDI) {

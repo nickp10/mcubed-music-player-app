@@ -90,18 +90,18 @@
 							</MenuItem.ItemContainerStyle>
 						</MenuItem>
 						<MenuItem Header="Remove from Library" Click="OnMediaRemove"/>
-						<!--<MenuItem Header="Remove from Library & Computer" Click="OnMediaRemoveComputer"/>-->
-						<Separator/>
-
-						<!-- Selected Meta-Data Options -->
-						<!--<MenuItem Header="Auto-Populate Track Numbers" Click="OnMediaAutoPopulateTrack"/>-->
-						<!--<MenuItem Header="Auto-Rename" Click="OnMediaAutoRename"/>-->
-						<MenuItem Header="Load into Manager" Click="OnMediaLoaded"/>
+						<MenuItem Header="Remove from Library &amp; Computer" Click="OnMediaRemoveComputer"/>
 						<Separator/>
 
 						<!-- Library Options -->
 						<MenuItem Header="Add..." Click="OnMediaAdd"/>
-						<!--<MenuItem Header="Reload Library" Click="OnMediaReload"/>-->
+						<MenuItem Header="Reload Library" Click="OnMediaReload"/>
+						<Separator/>
+
+						<!-- Selected Meta-Data Options -->
+						<MenuItem Header="Auto-Populate Track Numbers" Click="OnMediaAutoPopulateTrack"/>
+						<MenuItem Header="Auto-Rename" Click="OnMediaAutoRename"/>
+						<MenuItem Header="Load into Manager" Click="OnMediaLoaded"/>
 					</ContextMenu>
 				</ListView.Resources>
 				<ListView.ItemContainerStyle>
