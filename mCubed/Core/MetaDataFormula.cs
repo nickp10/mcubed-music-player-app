@@ -222,7 +222,7 @@ namespace mCubed.Core {
 		#region Data Store
 
 		private MediaFile _mediaFile;
-		private string _value;
+		private string _value = "";
 
 		#endregion
 
@@ -282,6 +282,7 @@ namespace mCubed.Core {
 		}
 
 		public MDFFile(MetaDataFormula parent) {
+			Value = parent.FallbackValue;
 			Parent = parent;
 			Parent.ValueChanged += new Action(ChangeValue);
 		}

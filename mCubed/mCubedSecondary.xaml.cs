@@ -129,7 +129,7 @@ namespace mCubed {
 			if (Settings.LibrarySelected != null) {
 				var directory = OnBrowseDirectory(Settings.DirectoryMediaDefault);
 				if(directory != null)
-					Settings.LibrarySelected.Directories.Add(directory);
+					Settings.LibrarySelected.AddDirectory(directory);
 			}
 		}
 
@@ -140,7 +140,7 @@ namespace mCubed {
 		/// <param name="e">The event arguments</param>
 		private void LibrarySettings_RemoveDirectory(object sender, RoutedEventArgs e) {
 			if (Settings.LibrarySelected != null && DirectorySelection.SelectedItem is string)
-				Settings.LibrarySelected.Directories.Remove((string)DirectorySelection.SelectedItem);
+				Settings.LibrarySelected.RemoveDirectory((string)DirectorySelection.SelectedItem);
 		}
 
 		/// <summary>

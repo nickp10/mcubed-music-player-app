@@ -15,7 +15,10 @@
 				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
 			<TextBlock FontWeight="Bold" Text="{Binding Message}" TextWrapping="Wrap" />
-			<Button Grid.Row="2" Content="Close" Padding="10,5" HorizontalAlignment="Center" Click="OnCloseClicked" />
+			<WrapPanel Grid.Row="2" HorizontalAlignment="Center">
+				<Button Content="Continue" Padding="10,5" Margin="5,0" Click="OnContinueClicked" x:Name="ContinueButton" />
+				<Button Content="Cancel" Padding="10,5" Margin="5,0" Click="OnCancelClicked" x:Name="CancelButton" />
+			</WrapPanel>
 		</Grid>
 	</Border>
 </Window>

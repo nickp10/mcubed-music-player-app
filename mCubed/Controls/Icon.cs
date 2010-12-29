@@ -8,7 +8,7 @@ namespace mCubed.Controls {
 	public class Icon : MarkupExtension {
 		#region IconType
 
-		public enum IconType { Accept, Add, Arrow_Down, Arrow_Up, Delete, Disk, Page_Copy, Pencil }
+		public enum IconType { Accept, Add, Arrow_Down, Arrow_Up, Delete, Disk, Page_Copy, Pencil, Refresh }
 
 		#endregion
 

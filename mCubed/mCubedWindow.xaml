@@ -45,12 +45,18 @@
 				<ColumnDefinition Width="Auto" SharedSizeGroup="GroupSortColumn"/>
 				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
-			<ComboBox Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200"
-					ItemsSource="{Binding Path=Libraries}" SelectedItem="{Binding Path=LibrarySelected, Mode=TwoWay}">
+			<ComboBox Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200" HorizontalContentAlignment="Stretch"
+					ItemsSource="{Binding Path=Libraries}" SelectedItem="{Binding Path=LibrarySelected, Mode=TwoWay}" Tag="EnableHitTest">
 				<ComboBox.ItemTemplate>
 					<DataTemplate>
-						<WrapPanel Margin="2">
-							<Path HorizontalAlignment="Center" VerticalAlignment="Center">
+						<Grid Margin="2">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="5"/>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+							<Path Grid.Column="0" IsHitTestVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center">
 								<Path.Style>
 									<Style BasedOn="{StaticResource RightArrowPath}" TargetType="{x:Type Path}">
 										<Setter Property="Visibility" Value="Hidden"/>
@@ -62,10 +68,17 @@
 									</Style>
 								</Path.Style>
 							</Path>
-							<TextBlock Margin="5,0,0,0" Text="{Binding DisplayName}"/>
-						</WrapPanel>
+							<TextBlock Grid.Column="2" IsHitTestVisible="False" Text="{Binding DisplayName}"/>
+							<Image Grid.Column="3" Source="{controls:Icon Type=Refresh}" Height="16" Cursor="Hand"
+								  ToolTip="Reload the library" MouseLeftButtonDown="OnLibraryReloaded" />
+						</Grid>
 					</DataTemplate>
 				</ComboBox.ItemTemplate>
+				<ComboBox.ItemContainerStyle>
+					<Style TargetType="{x:Type ComboBoxItem}" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+						<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+					</Style>
+				</ComboBox.ItemContainerStyle>
 			</ComboBox>
 			<WrapPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
 				<Button Content="Help/Settings" Click="OnShowSecondary" Padding="10,5"/>

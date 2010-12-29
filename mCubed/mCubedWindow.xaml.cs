@@ -87,8 +87,8 @@ namespace mCubed {
 		/// <param name="sender">The sender object</param>
 		/// <param name="e">The event arguments</param>
 		private void OnClosing(object sender, CancelEventArgs e) {
-			if (Utilities.MainProcessManager.IsProcessActive) {
-				MessageBox.Show("There is currently one or more processes running. Please wait until they have completed");
+			if (Utilities.MainProcessManager.IsProcessActive && 
+				!mCubedError.ShowConfirm("There is currently one or more processes running. Closing the application now may corrupt data. Continue?")) {
 				e.Cancel = true;
 			} else {
 				Utilities.MainSettings.Save();
@@ -101,14 +101,11 @@ namespace mCubed {
 		/// </summary>
 		/// <param name="log">The log that has been sent</param>
 		private void OnLogSent(Log log) {
-			Dispatcher.Invoke(new Action(() =>
-			{
-				new mCubedError
-				{
-					Owner = this,
-					Message = log.ToStringMessageOnly()
-				}.ShowDialog();
-			}));
+			if (Dispatcher.CheckAccess()) {
+				mCubedError.ShowDisplay(log.ToStringMessageOnly());
+			} else {
+				Dispatcher.Invoke(new Action<Log>(OnLogSent), log);
+			}
 		}
 
 		/// <summary>
@@ -148,6 +145,19 @@ namespace mCubed {
 		/// <param name="e">The event arguments</param>
 		private void OnClose(object sender, RoutedEventArgs e) {
 			Close();
+		}
+
+		/// <summary>
+		/// Event that handles when the library should be reloaded
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnLibraryReloaded(object sender, MouseButtonEventArgs e) {
+			var element = sender as FrameworkElement;
+			var library = element == null ? null : element.DataContext as Library;
+			if (library != null) {
+				library.Reload();
+			}
 		}
 
 		/// <summary>

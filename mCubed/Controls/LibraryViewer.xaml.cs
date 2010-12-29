@@ -198,9 +198,11 @@ namespace mCubed.Controls {
 		/// <param name="e">The event arguments</param>
 		private void OnMediaRemoveComputer(object sender, RoutedEventArgs e) {
 			var items = SelectedItems.ToArray();
-			Library.RemoveMedia(items);
-			foreach (var item in items) {
-				FileUtilities.Delete(item);
+			if (items.Length > 0 && mCubedError.ShowConfirm(string.Format("Are you sure you want to permanently remove the {0} selected file(s)?", items.Length))) {
+				Library.RemoveMedia(items);
+				foreach (var item in items) {
+					FileUtilities.Delete(item);
+				}
 			}
 		}
 
@@ -469,8 +471,8 @@ namespace mCubed.Controls {
 
 			// Return the library's first directory
 			var lib = menu.DataContext as Library;
-			if (lib != null && lib.Directories.Count > 0) {
-				return lib.Directories[0];
+			if (lib != null) {
+				return lib.Directories.FirstOrDefault();
 			}
 			return null;
 		}
@@ -503,9 +505,13 @@ namespace mCubed.Controls {
 		/// <param name="key">The key for the collection to belong to</param>
 		/// <param name="info">The collection of meta-data information</param>
 		private void SetMDIManager(string key, IEnumerable<MetaDataInfo> info) {
-			var manager = FindName("MetaDataManager") as MDIManager;
-			if (manager != null)
-				manager[key] = info;
+			if (Dispatcher.CheckAccess()) {
+				var manager = FindName("MetaDataManager") as MDIManager;
+				if (manager != null)
+					manager[key] = info;
+			} else {
+				Dispatcher.Invoke(new Action<string, IEnumerable<MetaDataInfo>>(SetMDIManager), key, info);
+			}
 		}
 
 		#endregion

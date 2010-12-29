@@ -220,6 +220,10 @@
 											<RowDefinition Height="Auto"/>
 											<RowDefinition Height="10"/>
 											<RowDefinition Height="Auto"/>
+											<RowDefinition Height="10"/>
+											<RowDefinition Height="Auto"/>
+											<RowDefinition Height="10"/>
+											<RowDefinition Height="Auto"/>
 											<RowDefinition Height="*"/>
 										</Grid.RowDefinitions>
 										<Grid.ColumnDefinitions>
@@ -227,10 +231,14 @@
 											<ColumnDefinition Width="20"/>
 											<ColumnDefinition Width="*"/>
 										</Grid.ColumnDefinitions>
-										<TextBlock Grid.Row="0" Grid.Column="0" Text="Auto-Rename:" VerticalAlignment="Center"/>
-										<CheckBox Grid.Row="0" Grid.Column="2" Content="Auto-rename files on meta-data update" IsChecked="{Binding Path=AutoRenameOnUpdates}"/>
-										<TextBlock Grid.Row="2" Grid.Column="0" Text="Filename Formula:"/>
-										<TextBox Grid.Row="2" Grid.Column="2" Text="{Binding Path=FilenameFormula, UpdateSourceTrigger=PropertyChanged}"/>
+										<TextBlock Grid.Row="0" Grid.Column="0" Text="Load on Startup:" VerticalAlignment="Center"/>
+										<CheckBox Grid.Row="0" Grid.Column="2" Content="Load the library media when the application starts" IsChecked="{Binding Path=LoadOnStartup}"/>
+										<TextBlock Grid.Row="2" Grid.Column="0" Text="Save Library:" VerticalAlignment="Center"/>
+										<CheckBox Grid.Row="2" Grid.Column="2" Content="Save the library, or discard it when the application exits" IsChecked="{Binding Path=SaveLibrary}"/>
+										<TextBlock Grid.Row="4" Grid.Column="0" Text="Auto-Rename:" VerticalAlignment="Center"/>
+										<CheckBox Grid.Row="4" Grid.Column="2" Content="Auto-rename files on meta-data update" IsChecked="{Binding Path=AutoRenameOnUpdates}"/>
+										<TextBlock Grid.Row="6" Grid.Column="0" Text="Filename Formula:"/>
+										<TextBox Grid.Row="6" Grid.Column="2" Text="{Binding Path=FilenameFormula, UpdateSourceTrigger=PropertyChanged}"/>
 									</Grid>
 								</TabItem>
 								<TabItem Header="Playback">

@@ -421,7 +421,7 @@
 								    IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
 						<ContentPresenter x:Name="ContentSite" IsHitTestVisible="False" Content="{TemplateBinding SelectionBoxItem}" 
 									   ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-									   Margin="3,3,23,3" VerticalAlignment="Center" HorizontalAlignment="Left" />
+									   Margin="3,3,23,3" VerticalAlignment="Center" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
 						<TextBox x:Name="PART_EditableTextBox" Margin="3,3,23,3" VerticalAlignment="Center" HorizontalAlignment="Left"
 							    Background="Transparent" BorderThickness="0" Visibility="Hidden" IsReadOnly="{TemplateBinding IsReadOnly}"/>
 						<Popup x:Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
@@ -444,6 +444,9 @@
 							<Setter Property="IsTabStop" Value="False"/>
 							<Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
 							<Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+						</Trigger>
+						<Trigger Property="Tag" Value="EnableHitTest">
+							<Setter TargetName="ContentSite" Property="IsHitTestVisible" Value="True"/>
 						</Trigger>
 					</ControlTemplate.Triggers>
 				</ControlTemplate>

@@ -172,7 +172,9 @@ namespace mCubed.Core {
 		/// <param name="sender">The sender object</param>
 		/// <param name="e">The event arguments</param>
 		private void OnMediaOpened(object sender, EventArgs e) {
-			Length = _player.NaturalDuration.TimeSpan;
+			var timespan =  _player.NaturalDuration;
+			if (timespan.HasTimeSpan)
+				Length = timespan.TimeSpan;
 			if (_seekValue != 0) {
 				Seek(_seekValue);
 				_seekValue = 0;
@@ -324,11 +326,22 @@ namespace mCubed.Core {
 		/// <param name="state">The state of the file that was previously unloaded</param>
 		public void RestoreState(MediaObjectState state) {
 			// Check if the state has a value
-			if (state != null && string.IsNullOrEmpty(Path)) {
-				// Restore the information
-				_seekValue = state.Progress;
+			if (state != null) {
+				// Seek appropriately
+				bool postSeek = true;
+				if (string.IsNullOrEmpty(Path)) {
+					_seekValue = state.Progress;
+					postSeek = false;
+				}
+
+				// Restore the path and state
 				Path = state.Path;
 				State = state.State;
+
+				// Post seek appropriately
+				if (postSeek) {
+					Seek(state.Progress);
+				}
 			}
 		}
 
@@ -374,7 +387,11 @@ namespace mCubed.Core {
 		/// </summary>
 		/// <param name="action">The action that needs to be performed</param>
 		private void PerformAction(Action<MediaPlayer> action) {
-			_player.Dispatcher.Invoke(action, _player);
+			if (_player.Dispatcher.CheckAccess()) {
+				action(_player);
+			} else {
+				_player.Dispatcher.Invoke(action, _player);
+			}
 		}
 
 		#endregion

@@ -208,18 +208,21 @@ namespace mCubed.Core {
 		private Library GenerateLibrary(XElement element) {
 			var library = new Library
 			{
-				AutoRenameOnUpdates = element.Parse("AutoRenameOnUpdates", false),
 				DisplayName = element.Parse<string>("DisplayName"),
 				IsLoaded = element.Parse("IsLoaded", false),
 				IsShuffled = element.Parse("IsShuffled", false),
 				RepeatStatus = element.Parse("RepeatStatus", MediaRepeat.NoRepeat)
 			};
+			library.AutoRenameOnUpdates = element.Parse("AutoRenameOnUpdates", library.AutoRenameOnUpdates);
 			library.FilenameFormula = element.Parse("FilenameFormula", library.FilenameFormula);
+			library.LoadOnStartup = element.Parse("LoadOnStartup", library.LoadOnStartup);
 			library.MediaObject.Balance = element.Parse("MOBalance", library.MediaObject.Balance);
 			library.MediaObject.PlaybackSpeed = element.Parse("MOPlaybackSpeed", library.MediaObject.PlaybackSpeed);
 			library.MediaObject.Volume = element.Parse("MOVolume", library.MediaObject.Volume);
-			foreach (var item in element.Elements("Directory").Select(ele => ele.Value))
-				library.Directories.Add(item);
+			if (library.LoadOnStartup)
+				library.AddDirectory(element.Elements("Directory").Select(ele => ele.Value));
+			else
+				library.Directories.AddRange(element.Elements("Directory").Select(ele => ele.Value).Distinct());
 			library.ColumnSettings.GenerateCollections(element);
 			return library;
 		}
@@ -286,6 +289,7 @@ namespace mCubed.Core {
 				new XAttribute("FilenameFormula", library.FilenameFormula ?? ""),
 				new XAttribute("IsLoaded", library.IsLoaded),
 				new XAttribute("IsShuffled", library.IsShuffled),
+				new XAttribute("LoadOnStartup", library.LoadOnStartup),
 				new XAttribute("RepeatStatus", library.RepeatStatus),
 				new XAttribute("MOBalance", library.MediaObject.Balance),
 				new XAttribute("MOPlaybackSpeed", library.MediaObject.PlaybackSpeed),
@@ -308,7 +312,7 @@ namespace mCubed.Core {
 				new XAttribute("DirectoryPictureDefault", DirectoryPictureDefault ?? ""),
 				new XAttribute("SelectedTab", SelectedTabEnum.ToString() ?? ""),
 				new XElement("Formulas", Formulas.Select(f => GenerateFormula(f))),
-				new XElement("Libraries", Libraries.Select(l => GenerateLibrary(l))),
+				new XElement("Libraries", Libraries.Where(l => l.SaveLibrary).Select(l => GenerateLibrary(l))),
 				new XElement("Columns", AllColumns.Select(c => GenerateColumn(c, id++)))
 			);
 		}
@@ -440,7 +444,7 @@ namespace mCubed.Core {
 		/// <returns>A default library that may be used</returns>
 		public Library GenerateDefaultLibrary() {
 			Library library = new Library { DisplayName = "Default Library" };
-			library.Directories.Add(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic));
+			library.AddDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic));
 			return library;
 		}
 

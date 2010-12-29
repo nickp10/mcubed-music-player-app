@@ -590,12 +590,12 @@ namespace mCubed.Core {
 					return (T)(object)str;
 
 				// Attempt to get the parse method
-				var parse = typeof(T).GetMethod("Parse", new[] { typeof(string) });
+				var type = typeof(T);
+				var parse = type.GetMethod("Parse", new[] { typeof(string) });
 				if (parse != null && parse.IsStatic)
 					return (T)(object)parse.Invoke(null, new[] { str });
 
 				// Attempt to parse it into an enum
-				Type type = typeof(T);
 				if (type.IsEnum)
 					return (T)(object)Enum.Parse(type, str);
 			} catch { }

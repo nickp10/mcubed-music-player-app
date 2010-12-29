@@ -286,6 +286,7 @@
   <ItemGroup>
     <Resource Include="Icons\arrow_down.png" />
     <Resource Include="Icons\arrow_up.png" />
+    <Resource Include="Icons\refresh.png" />
     <Content Include="References\taglib-sharp.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

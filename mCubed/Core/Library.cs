@@ -22,10 +22,11 @@ namespace mCubed.Core {
 		private bool _autoRenameOnUpdates;
 		private readonly ColumnSettings _columnSettings = new ColumnSettings();
 		private string _displayName;
-		private readonly ObservableCollection<string> _directories = new ObservableCollection<string>();
+		private readonly List<string> _directories = new List<string>();
 		private string _filenameForumla = "%FirstAlbumPerformer?FirstPerformer%" + Path.DirectorySeparatorChar + "%Album%" + Path.DirectorySeparatorChar + "%Track:2% %Title%";
 		private bool _isLoaded;
 		private bool _isShuffled;
+		private bool _loadOnStartup = true;
 		private readonly GroupList<MediaFile> _mediaFiles = new GroupList<MediaFile>();
 		private MediaFile _mediaFileCurrent;
 		private readonly MediaObject _mediaObject = new MediaObject();
@@ -33,6 +34,7 @@ namespace mCubed.Core {
 		private MediaOrder _mediaOrderCurrent;
 		private int _nextMediaIndex = 1;
 		private MediaRepeat _repeatStatus = MediaRepeat.NoRepeat;
+		private bool _saveLibrary = true;
 		private bool _selectNextExists;
 		private bool _selectPrevExists;
 
@@ -56,7 +58,7 @@ namespace mCubed.Core {
 		/// <summary>
 		/// Get the list of directories that make up this library [Bindable]
 		/// </summary>
-		public ObservableCollection<string> Directories { get { return _directories; } }
+		public List<string> Directories { get { return _directories; } }
 
 		/// <summary>
 		/// Get/set the display name for this library [Bindable]
@@ -88,6 +90,14 @@ namespace mCubed.Core {
 		public bool IsShuffled {
 			get { return _isShuffled; }
 			set { this.SetAndNotify(ref _isShuffled, value, null, OnShuffleChanged, "IsShuffled"); }
+		}
+
+		/// <summary>
+		/// Get/set whether or not the library should be loaded on startup of the application [Bindable]
+		/// </summary>
+		public bool LoadOnStartup {
+			get { return _loadOnStartup; }
+			set { this.SetAndNotify(ref _loadOnStartup, value, "LoadOnStartup"); }
 		}
 
 		/// <summary>
@@ -159,6 +169,14 @@ namespace mCubed.Core {
 		}
 
 		/// <summary>
+		/// Get/set whether or not the library will be persisted when the application opens up again [Bindable]
+		/// </summary>
+		public bool SaveLibrary {
+			get { return _saveLibrary; }
+			set { this.SetAndNotify(ref _saveLibrary, value, "SaveLibrary"); }
+		}
+
+		/// <summary>
 		/// Get whether or not selecting next media exists [Bindable]
 		/// </summary>
 		public bool SelectNextExists {
@@ -186,7 +204,6 @@ namespace mCubed.Core {
 			MediaFiles.SubscribeSortBy(ColumnSettings.SortBy);
 
 			// Set up event handlers
-			Directories.CollectionChanged += new NotifyCollectionChangedEventHandler(OnDirectoriesChanged);
 			MediaObject.MediaEnded += () => Select(MediaSelect.Next, true, true);
 			MediaObject.MediaFailed += new Action<string>(OnPlaybackError);
 			MediaFiles.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e)
@@ -199,35 +216,6 @@ namespace mCubed.Core {
 		#endregion
 
 		#region Event Handlers
-
-		/// <summary>
-		/// Event that handles when the collection of directories changed
-		/// </summary>
-		/// <param name="sender">The sender object</param>
-		/// <param name="e">The event arguments</param>
-		private void OnDirectoriesChanged(object sender, NotifyCollectionChangedEventArgs e) {
-			// Setup
-			MediaFiles.BeginTransaction();
-
-			// Remove all the removed directories
-			if (e.OldItems != null) {
-				foreach (string item in e.OldItems.OfType<string>())
-					foreach (MediaFile file in RemoveDirectory(MediaFiles, item))
-						MediaFiles.Remove(file);
-			}
-
-			// Add all the added directories
-			if (e.NewItems != null) {
-				foreach (string item in e.NewItems.OfType<string>())
-					AddMedia(AddDirectory(item));
-			}
-
-			// Finalize
-			MediaFiles.EndTransaction();
-
-			// Send property changed notification
-			this.OnPropertyChanged("Directories");
-		}
 
 		/// <summary>
 		/// Event that handles when the library has been loaded or unloaded
@@ -415,7 +403,7 @@ namespace mCubed.Core {
 			// Calculate the new order key
 			int moveCount = repeat == MediaRepeat.RepeatMedia ? 0 : (select == MediaSelect.Next ? 1 : -1);
 			int newOrderKey = MediaOrderCurrent.OrderKeyForMediaIndex(MediaFileCurrent.Index) + moveCount;
-			if (repeat == MediaRepeat.RepeatLibrary && !MediaOrderCurrent.OrderKeyExists(newOrderKey)) {
+			if (repeat == MediaRepeat.RepeatLibrary && !MediaOrderCurrent.OrderKeyExists(newOrderKey) && MediaOrderCurrent.Count > 0) {
 				while (newOrderKey >= MediaOrderCurrent.Count)
 					newOrderKey -= MediaOrderCurrent.Count;
 				while (newOrderKey < 0)
@@ -441,21 +429,125 @@ namespace mCubed.Core {
 		#region Directory Members
 
 		/// <summary>
+		/// Adds the given directory to the list of directories for the library
+		/// </summary>
+		/// <param name="directory">The directory to add to the library</param>
+		public void AddDirectory(string directory) {
+			AddDirectory(new[] { directory });
+		}
+
+		/// <summary>
+		/// Adds the given collection of directories to the list of directories for the library
+		/// </summary>
+		/// <param name="directories">The collection of directories to add</param>
+		public void AddDirectory(IEnumerable<string> directories) {
+			// Ensure directories are being added
+			if (directories != null) {
+				// Start a process
+				var tempDirs = directories.Distinct().Where(d => !Directories.Contains(d)).ToArray();
+				Utilities.MainProcessManager.AddProcess(process =>
+				{
+					// Setup
+					bool changed = false;
+					MediaFiles.BeginTransaction();
+
+					// Iterate over the directories
+					foreach (var directory in tempDirs) {
+						// Generate the media
+						var items = GenerateDirectoryMedia(directory);
+						if (items != null) {
+							// Add the directory
+							Directories.Add(directory);
+							changed = true;
+
+							// Add the media
+							foreach (var item in items) {
+								MediaFiles.Add(item);
+							}
+						}
+						process.CompletedCount++;
+					}
+
+					// Finalize
+					MediaFiles.EndTransaction();
+					if (changed) {
+						this.OnPropertyChanged("Directories");
+					}
+				}, string.Format("Updating library \"{0}\"", DisplayName), tempDirs.Length);
+			}
+		}
+
+		/// <summary>
+		/// Removes the given directory from the list of directories for the library
+		/// </summary>
+		/// <param name="directory">The directory to remove from the library</param>
+		public void RemoveDirectory(string directory) {
+			RemoveDirectory(new[] { directory });
+		}
+
+		/// <summary>
+		/// Removes the given collection of directories from the list of directories for the library
+		/// </summary>
+		/// <param name="directories">The collection of directories to remove</param>
+		public void RemoveDirectory(IEnumerable<string> directories) {
+			// Ensure directories are being removed
+			if (directories != null) {
+				// Start a process
+				var tempDirs = directories.Where(d => Directories.Contains(d)).ToArray();
+				Utilities.MainProcessManager.AddProcess(process =>
+				{
+					// Setup
+					bool changed = false;
+					MediaFiles.BeginTransaction();
+
+					// Iterate over the directories
+					foreach (var directory in tempDirs) {
+						// Remove the media
+						var items = PrepareRemoveDirectory(MediaFiles, directory);
+						if (items != null) {
+							// Remove the directory
+							Directories.Remove(directory);
+							changed = true;
+
+							// Remove the media
+							foreach (var item in items) {
+								MediaFiles.Remove(item);
+							}
+						}
+						process.CompletedCount++;
+					}
+
+					// Finalize
+					MediaFiles.EndTransaction();
+					if (changed) {
+						this.OnPropertyChanged("Directories");
+					}
+				}, string.Format("Updating library \"{0}\"", DisplayName), tempDirs.Length);
+			}
+		}
+
+		/// <summary>
 		/// Adds a directory to the library and its associated media files
 		/// </summary>
 		/// <param name="directory">The directory to add</param>
-		private IEnumerable<MediaFile> AddDirectory(string directory) {
+		private IEnumerable<MediaFile> GenerateDirectoryMedia(string directory) {
 			// Check if the directory exists first
-			var items = Enumerable.Empty<MediaFile>();
+			IEnumerable<MediaFile> items = null;
 			if (!String.IsNullOrEmpty(directory) && Directory.Exists(directory)) {
 				// Add all the directories recursively
-				foreach (string dir in Directory.GetDirectories(directory))
-					items = items.Union(AddDirectory(dir));
+				items = Directory.GetDirectories(directory).
+					Select(GenerateDirectoryMedia).
+					Where(i => i != null).
+					SelectMany(i => i);
 
 				// Add all the files in the current directory
 				string[] validExtensions = Utilities.ExtensionsMusic;
-				var allFiles = Directory.GetFiles(directory).Where(file => validExtensions.Contains(Path.GetExtension(file).ToLower()));
-				items = items.Union(GenerateMedia(allFiles));
+				items = items.Union(
+					Directory.GetFiles(directory).
+					Where(file => validExtensions.Contains(Path.GetExtension(file).ToLower())).
+					Select(GenerateMedia).
+					Where(file => file != null)
+				);
 			}
 			return items;
 		}
@@ -466,7 +558,7 @@ namespace mCubed.Core {
 		/// <param name="list">The items in which to search which items to be removing</param>
 		/// <param name="directory">The directory to remove</param>
 		/// <returns>The list of items that need to be removed from the collection</returns>
-		private IEnumerable<MediaFile> RemoveDirectory(IEnumerable<MediaFile> list, string directory) {
+		private IEnumerable<MediaFile> PrepareRemoveDirectory(IEnumerable<MediaFile> list, string directory) {
 			// Check the directory first
 			var items = Enumerable.Empty<MediaFile>();
 			if (!String.IsNullOrEmpty(directory)) {
@@ -640,9 +732,37 @@ namespace mCubed.Core {
 		/// Reloads the library, by re-adding all the directories in the library
 		/// </summary>
 		public void Reload() {
-			ClearMedia();
-			foreach (var directory in Directories)
-				AddMedia(AddDirectory(directory));
+			// Setup
+			var tempDirs = Directories.ToArray();
+
+			// Add a process
+			Utilities.MainProcessManager.AddProcess(process =>
+			{
+				// Cache the current state
+				var file = MediaFileCurrent;
+				var state = file == null ? null : file.UnlockFile();
+
+				// Clear the media
+				ClearMedia();
+
+				// Add all the media again
+				foreach (var directory in Directories) {
+					var items = GenerateDirectoryMedia(directory);
+					if (items != null) {
+						AddMedia(items);
+					}
+					process.CompletedCount++;
+				}
+
+				// Reload the state
+				if (state != null) {
+					file = MediaFiles.FirstOrDefault(f => f.MetaData.FilePath == state.Path);
+					if (file != null) {
+						MediaFileCurrent = file;
+						file.RestoreState(state);
+					}
+				}
+			}, string.Format("Reloading library \"{0}\"", DisplayName), tempDirs.Length);
 		}
 
 		/// <summary>
@@ -690,9 +810,6 @@ namespace mCubed.Core {
 		/// Dispose of the library properly
 		/// </summary>
 		public void Dispose() {
-			// Unsubscribe from delegates
-			Directories.CollectionChanged -= new NotifyCollectionChangedEventHandler(OnDirectoriesChanged);
-
 			// Unsubscribe others from its events
 			PropertyChanged = null;
 

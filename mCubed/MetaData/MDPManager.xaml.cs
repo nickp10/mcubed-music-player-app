@@ -191,7 +191,7 @@ namespace mCubed.MetaData {
 			// Check if there are hidden duplicates and ask permission to delete them
 			int count = MetaDataPics.Count(p => p.Equals(speaker)) - 1;
 			if (!IsDupsHidden || count <= 0 ||
-			    MessageBox.Show("This will remove " + count.ToString() + " duplicate(s) as well, continue?", "Remove Duplicates", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes) {
+				mCubedError.ShowConfirm(string.Format("This will remove {0} duplicate(s) as well. Continue?", count))) {
 				MetaDataPics = GetPicList(speaker, false);
 			}
 		}
