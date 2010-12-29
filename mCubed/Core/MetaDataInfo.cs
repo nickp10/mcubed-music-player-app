@@ -367,35 +367,11 @@ namespace mCubed.Core {
 		}
 
 		/// <summary>
-		/// Set a property value on this object by attempting to parse the value into the appropriate type
+		/// Set a property value on this object
 		/// </summary>
 		/// <param name="propertyName">The name of the property to set</param>
 		/// <param name="propertyValue">The value to set to</param>
-		private void SetProperty(string propertyName, string propertyValue) {
-			SetProperty(propertyName, propertyValue, (s, t) => Utilities.Parse(s, t));
-		}
-
-		/// <summary>
-		/// Set a property value on this object by attempting to parse the value into the appropriate type
-		/// </summary>
-		/// <param name="propertyName">The name of the property to set</param>
-		/// <param name="propertyValue">The value to set to</param>
-		public void SetProperty(string propertyName, IEnumerable<string> propertyValue) {
-			if (Utilities.IsTypeIEnumerable(GetType().GetProperty(propertyName).PropertyType)) {
-				SetProperty(propertyName, propertyValue, (s, t) => Utilities.Parse(s, t));
-			} else if (propertyValue != null && propertyValue.Count() <= 1) {
-				SetProperty(propertyName, propertyValue.SingleOrDefault() ?? "");
-			}
-		}
-
-		/// <summary>
-		/// Set a property value on this object by attempting to parse the value into the appropriate type
-		/// </summary>
-		/// <typeparam name="T">The object type that is being parsed</typeparam>
-		/// <param name="propertyName">The name of the property to set</param>
-		/// <param name="propertyValue">The vlaue to set to</param>
-		/// <param name="parser">The parser method that attempts to convert the given value into the appropriate property type</param>
-		private void SetProperty<T>(string propertyName, T propertyValue, Func<T, Type, object> parser) {
+		public void SetProperty(string propertyName, object propertyValue) {
 			// Get the property
 			PropertyInfo property = GetType().GetProperty(propertyName);
 			if (property == null)
@@ -406,9 +382,8 @@ namespace mCubed.Core {
 			if (setMethod == null || setMethod.IsPrivate)
 				return;
 
-			// Set the value
-			Type type = !(propertyValue is string) && propertyValue is IEnumerable ? Utilities.EnumerableType(property.PropertyType) : property.PropertyType;
-			setMethod.Invoke(this, new object[] { parser(propertyValue, type) });
+			// Set the property
+			setMethod.Invoke(this, new object[] { propertyValue });
 		}
 
 		#endregion

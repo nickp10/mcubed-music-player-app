@@ -220,16 +220,15 @@ namespace mCubed.MetaData {
 		private void OnSave(object sender, RoutedEventArgs e) {
 			// Retrieve the information necessary to process the save
 			var updateMDI = MetaDataInfo.Where(mdi => mdi.Status == MetaDataStatus.Edit).ToArray();
-			var updateMDF = new Dictionary<string, IEnumerable<string>>();
+			var updateMDF = new Dictionary<string, object>();
 			MetaDataPic[] updateMDP = null;
 			if (MDPManager.IsNewValue)
 				updateMDP = MDPManager.PicListControl.ItemsSource.OfType<MetaDataPic>().Select(p => new MetaDataPic(p)).ToArray();
 			foreach (var item in MetaDataFields) {
 				item.Refresh();
 				if (item.IsNewValue) {
-					var tempItem = item.NewValue.Select(vc => vc.Value).DistinctUnordered().ToArray();
-					updateMDF.Add(item.PropertyName, tempItem);
-					item.SetValue(tempItem, true);
+					updateMDF.Add(item.PropertyName, item.GetValue());
+					item.Reset();
 				}
 			}
 
