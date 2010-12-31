@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -299,6 +300,28 @@ namespace mCubed.Controls {
 			if (newLibrary != null) {
 				DisplayColumns = newLibrary.ColumnSettings.Display;
 				DisplayColumns.CollectionChanged += new NotifyCollectionChangedEventHandler(OnDisplayCollectionChanged);
+			}
+		}
+
+		/// <summary>
+		/// Event that handles when media is dragged and dropped into the library viewer
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaFileDrop(object sender, DragEventArgs e) {
+			// Read the data
+			var data = e.Data.GetData(DataFormats.FileDrop);
+			var files = data as string[];
+			if (files == null) {
+				var tempFiles = data as FileInfo[];
+				if (tempFiles != null) {
+					files = tempFiles.Select(f => f.FullName).ToArray();
+				}
+			}
+
+			// Generate the media
+			if (files != null) {
+				Library.GenerateMediaFromDragDrop(files);
 			}
 		}
 

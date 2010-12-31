@@ -68,6 +68,7 @@ namespace mCubed {
 		/// <param name="args">The command line arguments that should be handled</param>
 		/// <param name="isFirstInstance">True if this is the first instance, or false if this is from another instance</param>
 		private void HandleCommandLineArgs(string[] args, bool isFirstInstance) {
+			Library.GenerateMediaFromCommandLine(args);
 		}
 
 		#endregion

@@ -29,7 +29,7 @@ namespace mCubed.Core {
 		/// <param name="left">The first directory to compare</param>
 		/// <param name="right">The second directory to compare</param>
 		/// <returns>True if the directories are the same, or false otherwise</returns>
-		private static bool DirEquals(string left, string right) {
+		public static bool DirEquals(string left, string right) {
 			return String.Equals(
 				Path.GetFullPath(left).TrimEnd(Path.DirectorySeparatorChar),
 				Path.GetFullPath(right).TrimEnd(Path.DirectorySeparatorChar),
@@ -42,7 +42,7 @@ namespace mCubed.Core {
 		/// <param name="left">The first directory to compare</param>
 		/// <param name="right">The second directory to compare</param>
 		/// <returns>True if the directories are the same, or false otherwise</returns>
-		private static bool DirEquals(this DirectoryInfo left, DirectoryInfo right) {
+		public static bool DirEquals(this DirectoryInfo left, DirectoryInfo right) {
 			return String.Equals(
 				left.FullName.TrimEnd(Path.DirectorySeparatorChar),
 				right.FullName.TrimEnd(Path.DirectorySeparatorChar),
@@ -82,7 +82,7 @@ namespace mCubed.Core {
 		/// <param name="left">The first file to compare</param>
 		/// <param name="right">The second file to compare</param>
 		/// <returns>True if the files are the same, or false otherwise</returns>
-		private static bool FileEquals(string left, string right) {
+		public static bool FileEquals(string left, string right) {
 			return String.Equals(left, right, StringComparison.InvariantCultureIgnoreCase);
 		}
 
@@ -92,7 +92,7 @@ namespace mCubed.Core {
 		/// <param name="left">The first file to compare</param>
 		/// <param name="right">The second file to compare</param>
 		/// <returns>True if the files are the same, or false otherwise</returns>
-		private static bool FileEquals(this FileInfo left, FileInfo right) {
+		public static bool FileEquals(this FileInfo left, FileInfo right) {
 			return FileEquals(left.FullName, right.FullName);
 		}
 

@@ -1,16 +1,112 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 
 namespace mCubed.Core {
-	public class Library : INotifyPropertyChanged, IDisposable {
-		#region INotifyPropertyChanged Members
+	public class Library : INotifyPropertyChanged, INotifyPropertyChanging, IDisposable {
+		#region Static Members
 
-		public event PropertyChangedEventHandler PropertyChanged;
+		/// <summary>
+		/// Generate the media for the given paths and places them in the "Now Playing" library
+		/// </summary>
+		/// <param name="paths">The paths to generate the media for</param>
+		public static void GenerateMediaFromCommandLine(IEnumerable<string> paths) {
+			var destLibrary = Utilities.MainSettings.Libraries.FirstOrDefault(l => l.DisplayName == "Now Playing");
+			GenerateMediaFromPaths(paths, destLibrary, false);
+			var slctLibrary = Utilities.MainSettings.Libraries.FirstOrDefault(l => l.DisplayName == "Now Playing");
+			if (slctLibrary != null) {
+				Utilities.MainSettings.LibrarySelected = slctLibrary;
+			}
+		}
+
+		/// <summary>
+		/// Generate the media for the given paths and places them in the selected library (using drag & drop business logic)
+		/// </summary>
+		/// <param name="paths">The paths to generate media for</param>
+		public static void GenerateMediaFromDragDrop(IEnumerable<string> paths) {
+			GenerateMediaFromDragDrop(paths, Utilities.MainSettings.LibrarySelected);
+		}
+
+		/// <summary>
+		/// Generate the media for the given paths and places them in the destination library (using drag & drop business logic)
+		/// </summary>
+		/// <param name="paths">The paths to generate media for</param>
+		/// <param name="destLibrary">The destination library for the media, or null to create a "Now Playing" library</param>
+		public static void GenerateMediaFromDragDrop(IEnumerable<string> paths, Library destLibrary) {
+			GenerateMediaFromPaths(paths, destLibrary, true);
+		}
+
+		/// <summary>
+		/// Generates the media for the given paths and places them in the destination library
+		/// </summary>
+		/// <param name="paths">The paths to generate media for</param>
+		/// <param name="destLibrary">The destination library for the meida, or null to create a "Now Playing" library</param>
+		/// <param name="copyTo">True if the files should be copied to the library's first directory, or false otherwise</param>
+		private static void GenerateMediaFromPaths(IEnumerable<string> paths, Library destLibrary, bool copyTo) {
+			// Ensure we have paths first
+			if (paths == null) {
+				return;
+			}
+			paths = paths.Where(s => !string.IsNullOrEmpty(s));
+			if (!paths.Any()) {
+				return;
+			}
+
+			// Fix the library so one exists
+			var addedLibrary = false;
+			if (destLibrary == null) {
+				destLibrary = new Library
+				{
+					DisplayName = "Now Playing",
+					SaveLibrary = false
+				};
+				Utilities.MainSettings.AddLibrary(destLibrary);
+				addedLibrary = true;
+			}
+
+			// Copy the files, or just add them
+			var addedMedia = false;
+			var addMedia = new List<MediaFile>();
+			var files = paths.Select(p => destLibrary.GenerateMedia(p, 0)).Where(p => p != null);
+			if (copyTo && destLibrary.Directories.Any()) {
+				// Setup the copy
+				var destDirectory = destLibrary.Directories.First();
+
+				// Copy all the files, and add all the files that aren't added by the Copy utility
+				foreach (var file in files) {
+					var location = FileUtilities.Copy(file, destLibrary, destDirectory);
+					if (FileUtilities.FileEquals(file.MetaData.FilePath, location)) {
+						addMedia.Add(file);
+					} else {
+						destLibrary.PrepareRemove(file);
+						addedMedia = true;
+					}
+				}
+			} else {
+				addMedia.AddRange(files);
+			}
+
+			// Check to make sure media was added
+			if (addedMedia || addMedia.Any()) {
+				// Add the media
+				destLibrary.AddMedia(destLibrary.GenerateMedia(addMedia));
+
+				// Load the library now
+				destLibrary.IsLoaded = true;
+
+				// Change the state
+				if (destLibrary.MediaObject.State == MediaState.Stop) {
+					destLibrary.MediaObject.State = MediaState.Play;
+				}
+			}
+
+			// Otherwise, remove the library if we added it
+			else if (addedLibrary) {
+				Utilities.MainSettings.RemoveLibrary(destLibrary);
+			}
+		}
 
 		#endregion
 
@@ -22,7 +118,7 @@ namespace mCubed.Core {
 		private bool _autoRenameOnUpdates;
 		private readonly ColumnSettings _columnSettings = new ColumnSettings();
 		private string _displayName;
-		private readonly List<string> _directories = new List<string>();
+		private IEnumerable<string> _directories = Enumerable.Empty<string>();
 		private string _filenameForumla = "%FirstAlbumPerformer?FirstPerformer%" + Path.DirectorySeparatorChar + "%Album%" + Path.DirectorySeparatorChar + "%Track:2% %Title%";
 		private bool _isLoaded;
 		private bool _isShuffled;
@@ -58,7 +154,10 @@ namespace mCubed.Core {
 		/// <summary>
 		/// Get the list of directories that make up this library [Bindable]
 		/// </summary>
-		public List<string> Directories { get { return _directories; } }
+		public IEnumerable<string> Directories {
+			get { return _directories; }
+			private set { this.SetAndNotify(ref _directories, (value ?? Enumerable.Empty<string>()).ToArray(), "Directories"); }
+		}
 
 		/// <summary>
 		/// Get/set the display name for this library [Bindable]
@@ -448,7 +547,7 @@ namespace mCubed.Core {
 				Utilities.MainProcessManager.AddProcess(process =>
 				{
 					// Setup
-					bool changed = false;
+					var addDirs = new List<string>();
 					MediaFiles.BeginTransaction();
 
 					// Iterate over the directories
@@ -457,8 +556,7 @@ namespace mCubed.Core {
 						var items = GenerateDirectoryMedia(directory);
 						if (items != null) {
 							// Add the directory
-							Directories.Add(directory);
-							changed = true;
+							addDirs.Add(directory);
 
 							// Add the media
 							foreach (var item in items) {
@@ -470,11 +568,17 @@ namespace mCubed.Core {
 
 					// Finalize
 					MediaFiles.EndTransaction();
-					if (changed) {
-						this.OnPropertyChanged("Directories");
-					}
+					Directories = Directories.Union(addDirs);
 				}, string.Format("Updating library \"{0}\"", DisplayName), tempDirs.Length);
 			}
+		}
+
+		/// <summary>
+		/// Adds the given collection of directories to the directory list without generating media for it
+		/// </summary>
+		/// <param name="directories">The directories that should be added without generating media</param>
+		public void AddDirectories(IEnumerable<string> directories) {
+			Directories = Directories.Union(directories);
 		}
 
 		/// <summary>
@@ -497,7 +601,7 @@ namespace mCubed.Core {
 				Utilities.MainProcessManager.AddProcess(process =>
 				{
 					// Setup
-					bool changed = false;
+					var removeDirs = new List<string>();
 					MediaFiles.BeginTransaction();
 
 					// Iterate over the directories
@@ -506,8 +610,7 @@ namespace mCubed.Core {
 						var items = PrepareRemoveDirectory(MediaFiles, directory);
 						if (items != null) {
 							// Remove the directory
-							Directories.Remove(directory);
-							changed = true;
+							removeDirs.Add(directory);
 
 							// Remove the media
 							foreach (var item in items) {
@@ -519,9 +622,7 @@ namespace mCubed.Core {
 
 					// Finalize
 					MediaFiles.EndTransaction();
-					if (changed) {
-						this.OnPropertyChanged("Directories");
-					}
+					Directories = Directories.Except(removeDirs);
 				}, string.Format("Updating library \"{0}\"", DisplayName), tempDirs.Length);
 			}
 		}
@@ -545,7 +646,7 @@ namespace mCubed.Core {
 				items = items.Union(
 					Directory.GetFiles(directory).
 					Where(file => validExtensions.Contains(Path.GetExtension(file).ToLower())).
-					Select(GenerateMedia).
+					Select(file => GenerateMedia(file)).
 					Where(file => file != null)
 				);
 			}
@@ -626,28 +727,44 @@ namespace mCubed.Core {
 		/// <returns>The media file that is generated for the library</returns>
 		public MediaFile GenerateMedia(string path) {
 			// Check if the file exists first
+			MediaFile file = null;
 			if (File.Exists(path = Path.GetFullPath(path))) {
 				// Add the media to the media orders
 				foreach (MediaOrder mediaOrder in MediaOrders) {
 					mediaOrder.AddMediaIndex(NextMediaIndex);
 				}
 
-				// Setup the media file and return it
-				try {
-					var file = new MediaFile(path, NextMediaIndex, this);
-					file.MetaData.PropertyChanged += new PropertyChangedEventHandler(OnMediaFilePropertyChanged);
-					NextMediaIndex++;
-					return file;
-				} catch (Exception e) {
+				// Generate the file
+				file = GenerateMedia(path, NextMediaIndex);
+
+				// Ensure one was created
+				if (file == null) {
 					foreach (MediaOrder mediaOrder in MediaOrders) {
 						mediaOrder.RemoveMediaIndex(NextMediaIndex);
 					}
-					Logger.Log(LogLevel.Error, LogType.Library, e, "This media file is corrupt. It cannot be played, nor " +
-						"can the meta-data information be modified; therefore, this file will not " +
-						"be added. The file that caused this error:\n\n\t" + path);
+				} else {
+					file.MetaData.PropertyChanged += new PropertyChangedEventHandler(OnMediaFilePropertyChanged);
+					NextMediaIndex++;
 				}
 			}
-			return null;
+			return file;
+		}
+
+		/// <summary>
+		/// Generate a new media file for use in the library with the given media index
+		/// </summary>
+		/// <param name="path">The path to the file to generate from</param>
+		/// <param name="nextMediaIndex">The media index for the given file</param>
+		/// <returns>The media file that is generated for the library</returns>
+		private MediaFile GenerateMedia(string path, int mediaIndex) {
+			try {
+				return new MediaFile(path, mediaIndex, this);
+			} catch (Exception e) {
+				Logger.Log(LogLevel.Error, LogType.Library, e, "This media file is corrupt. It cannot be played, nor " +
+					"can the meta-data information be modified; therefore, this file will not " +
+					"be added. The file that caused this error:\n\n\t" + path);
+				return null;
+			}
 		}
 
 		/// <summary>
@@ -804,6 +921,26 @@ namespace mCubed.Core {
 
 		#endregion
 
+		#region IExternalNotifyPropertyChanged Members
+
+		public PropertyChangedEventHandler PropertyChangedHandler {
+			get { return PropertyChanged; }
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanging Members
+
+		public PropertyChangingEventHandler PropertyChangingHandler {
+			get { return PropertyChanging; }
+		}
+
+		public event PropertyChangingEventHandler PropertyChanging;
+
+		#endregion
+
 		#region IDisposable Members
 
 		/// <summary>
@@ -812,6 +949,7 @@ namespace mCubed.Core {
 		public void Dispose() {
 			// Unsubscribe others from its events
 			PropertyChanged = null;
+			PropertyChanging = null;
 
 			// Dispose all disposable references it created
 			foreach (MediaOrder order in MediaOrders)

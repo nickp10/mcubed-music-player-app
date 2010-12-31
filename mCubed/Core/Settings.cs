@@ -222,7 +222,7 @@ namespace mCubed.Core {
 			if (library.LoadOnStartup)
 				library.AddDirectory(element.Elements("Directory").Select(ele => ele.Value));
 			else
-				library.Directories.AddRange(element.Elements("Directory").Select(ele => ele.Value).Distinct());
+				library.AddDirectories(element.Elements("Directory").Select(ele => ele.Value).Distinct());
 			library.ColumnSettings.GenerateCollections(element);
 			return library;
 		}

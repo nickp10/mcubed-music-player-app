@@ -27,7 +27,7 @@
 			<controls:ColumnSelector Placement="MousePoint" ShowSelectedColumns="True" ColumnDeselected="OnDisplayColumnDeselected" ColumnSelected="OnDisplayColumnSelected"
 								ColumnSettings="{Binding Path=Library.ColumnSettings}" SelectedColumnGroup="Display" StaysOpen="False" x:Name="DisplayColumnSelector" />
 			<ListView Grid.Row="1" Grid.ColumnSpan="3" ItemsSource="{Binding Path=Library.MediaFiles.Structure}" SelectionChanged="OnSelectedMediaChanged"
-					GridViewColumnHeader.Click="OnGridViewColumnHeaderClicked" x:Name="SelectedMedia">
+					GridViewColumnHeader.Click="OnGridViewColumnHeaderClicked" AllowDrop="True" Drop="OnMediaFileDrop" x:Name="SelectedMedia">
 				<ListView.Resources>
 					<controls:GroupItemIndentConverter x:Key="GroupItemIndentConverter" />
 					<controls:GroupItemMarginConverter x:Key="GroupItemMarginConverter" />
