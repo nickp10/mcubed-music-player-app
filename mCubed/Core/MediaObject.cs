@@ -29,7 +29,7 @@ namespace mCubed.Core {
 		private double _playbackSpeed = 1;
 		private MediaPlayer _player = new MediaPlayer { Volume = 1 };
 		private TimeSpan _position;
-		private MediaState _savedState = MediaState.Stop;
+		private MediaObjectState _savedState;
 		private double _seekValue;
 		private MediaState _state = MediaState.Stop;
 		private Timer _timer = new Timer(500);
@@ -311,13 +311,14 @@ namespace mCubed.Core {
 		#region State Preservation Members
 
 		/// <summary>
-		/// Restore the state of the media file that is currently being played
+		/// Restore the state of the media file that was being played
 		/// </summary>
 		public void RestoreState() {
-			// Resume if was playing and a file is still loaded
-			if (!string.IsNullOrEmpty(Path) && _savedState == MediaState.Play)
-				State = MediaState.Play;
-			_savedState = MediaState.Stop;
+			// Restore the saved state
+			RestoreState(_savedState);
+
+			// Clear the saved state
+			_savedState = null;
 		}
 
 		/// <summary>
@@ -349,12 +350,15 @@ namespace mCubed.Core {
 		/// Save the state of the media file that is currently being played
 		/// </summary>
 		public void SaveState() {
-			// Save the state
-			_savedState = State;
+			_savedState = UnlockFile();
+		}
 
-			// Pause if playing
-			if (State == MediaState.Play)
-				State = MediaState.Pause;
+		/// <summary>
+		/// Unlocks the file that is currently playing so it can be reloaded
+		/// </summary>
+		/// <returns>The state of the file that is currently playing so it can be reloaded</returns>
+		public MediaObjectState UnlockFile() {
+			return UnlockFile(Path);
 		}
 
 		/// <summary>

@@ -340,7 +340,11 @@ namespace mCubed.Core {
 				var state = Parent.UnlockFile();
 				Save(null);
 				if (Parent.Parent.AutoRenameOnUpdates) {
-					FileUtilities.Rename(Parent);
+					string newLocation = FileUtilities.Rename(Parent);
+					FilePath = newLocation;
+					if (state != null) {
+						state.Path = newLocation;
+					}
 				}
 				Parent.RestoreState(state);
 			}

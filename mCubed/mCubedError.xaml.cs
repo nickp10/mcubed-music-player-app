@@ -28,7 +28,9 @@ namespace mCubed {
 				Message = message
 			};
 			error.ContinueButton.Content = continueText;
+			error.ContinueButton.IsDefault = true;
 			error.CancelButton.Content = cancelText;
+			error.CancelButton.IsCancel = true;
 			var result = error.ShowDialog();
 			return result.HasValue && result.Value;
 		}
@@ -54,6 +56,8 @@ namespace mCubed {
 			};
 			error.ContinueButton.Visibility = Visibility.Collapsed;
 			error.CancelButton.Content = buttonText;
+			error.CancelButton.IsDefault = true;
+			error.CancelButton.IsCancel = true;
 			error.ShowDialog();
 		}
 
