@@ -445,7 +445,7 @@ namespace mCubed.Core {
 		/// <param name="library">The library to add to the collection of libraries</param>
 		public void AddLibrary(Library library) {
 			if (library != null) {
-				library.MediaFiles.PropertyChanged += (s, e) => OnLibraryMediaCollectionChanged(library, e);
+				library.MediaFiles.PropertyChanged += (s, e) => OnLibraryMediaCollectionChanged(library, s, e);
 				library.MediaFilePropertyChanged += OnMediaFilePropertyChanged;
 				Libraries = Libraries.Concat(new[] { library });
 			}
@@ -519,10 +519,11 @@ namespace mCubed.Core {
 		/// Event that handles when a library's media files collection has changed
 		/// </summary>
 		/// <param name="sender">The library whose media files property has changed</param>
+		/// <param name="library">The sender object</param>
 		/// <param name="e">The event arguments</param>
-		private void OnLibraryMediaCollectionChanged(Library library, PropertyChangedEventArgs e) {
+		private void OnLibraryMediaCollectionChanged(Library library, object sender, PropertyChangedEventArgs e) {
 			var tempHandler = LibraryMediaCollectionChanged;
-			if (tempHandler != null && e.PropertyName == "Items") {
+			if (tempHandler != null && library.MediaFiles == sender && e.PropertyName == "Items") {
 				tempHandler(library);
 			}
 		}

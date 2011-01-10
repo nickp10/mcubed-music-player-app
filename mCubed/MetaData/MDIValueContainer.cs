@@ -3,13 +3,7 @@ using System.ComponentModel;
 using mCubed.Core;
 
 namespace mCubed.MetaData {
-	public class MDIValueContainer : INotifyPropertyChanged, IComparable, IComparable<MDIValueContainer>, IEquatable<MDIValueContainer> {
-		#region INotifyPropertyChanged Members
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		#endregion
-
+	public class MDIValueContainer : IComparable, IComparable<MDIValueContainer>, IEquatable<MDIValueContainer>, IExternalNotifyPropertyChanged, IExternalNotifyPropertyChanging {
 		#region Data Store
 
 		private bool _isSuggestion;
@@ -75,6 +69,26 @@ namespace mCubed.MetaData {
 		public bool Equals(MDIValueContainer other) {
 			return other != null && other.Value == Value;
 		}
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanged Members
+
+		public PropertyChangedEventHandler PropertyChangedHandler {
+			get { return PropertyChanged; }
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanging Members
+
+		public PropertyChangingEventHandler PropertyChangingHandler {
+			get { return PropertyChanging; }
+		}
+
+		public event PropertyChangingEventHandler PropertyChanging;
 
 		#endregion
 	}

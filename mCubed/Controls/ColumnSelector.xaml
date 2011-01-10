@@ -29,7 +29,7 @@
 			<ItemsControl ItemsSource="{Binding Source={StaticResource ColumnCollection}}">
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
-						<Border Style="{DynamicResource AutoCompleteItem}" Padding="5,3" Cursor="Hand" MouseLeftButtonUp="OnColumnMouseUp">
+						<Border Style="{DynamicResource HoverItem}" Padding="5,3" Cursor="Hand" MouseLeftButtonUp="OnColumnMouseUp">
 							<Grid>
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="Auto"/>

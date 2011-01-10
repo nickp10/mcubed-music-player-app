@@ -9,10 +9,24 @@ using System.Windows.Input;
 using mCubed.Core;
 
 namespace mCubed.MetaData {
-	public partial class MDIField : UserControl, INotifyPropertyChanged {
-		#region INotifyPropertyChanged Members
+	public partial class MDIField : UserControl, IExternalNotifyPropertyChanged, IExternalNotifyPropertyChanging {
+		#region IExternalNotifyPropertyChanged Members
+
+		public PropertyChangedEventHandler PropertyChangedHandler {
+			get { return PropertyChanged; }
+		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanging Members
+
+		public PropertyChangingEventHandler PropertyChangingHandler {
+			get { return PropertyChanging; }
+		}
+
+		public event PropertyChangingEventHandler PropertyChanging;
 
 		#endregion
 

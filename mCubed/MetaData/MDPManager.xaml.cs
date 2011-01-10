@@ -8,13 +8,7 @@ using System.Windows.Input;
 using mCubed.Core;
 
 namespace mCubed.MetaData {
-	public partial class MDPManager : UserControl, IListener<MetaDataPic>, INotifyPropertyChanged {
-		#region INotifyPropertyChanged Members
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		#endregion
-
+	public partial class MDPManager : UserControl, IListener<MetaDataPic>, IExternalNotifyPropertyChanged, IExternalNotifyPropertyChanging {
 		#region Data Store
 
 		private bool _isDupsHidden = true;
@@ -178,6 +172,26 @@ namespace mCubed.MetaData {
 				IsValueChanged = false;
 			}
 		}
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanged Members
+
+		public PropertyChangedEventHandler PropertyChangedHandler {
+			get { return PropertyChanged; }
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanging Members
+
+		public PropertyChangingEventHandler PropertyChangingHandler {
+			get { return PropertyChanging; }
+		}
+
+		public event PropertyChangingEventHandler PropertyChanging;
 
 		#endregion
 

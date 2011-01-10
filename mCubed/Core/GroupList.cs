@@ -221,17 +221,11 @@ namespace mCubed.Core {
 		/// </summary>
 		/// <param name="properties">The name of the property or properties that has or have changed</param>
 		private void OnPropertyChangedInternal(params string[] properties) {
-			// Determine if the properties should be cached or actually be notified
-			Action<GroupListNotification<T>> func = GroupList<T>.OnPropertyChangedInternal;
-			if (IsNotificationSuppressed)
-				func = Root.AddSuppressedNotification;
-			else if (Root.IsInTransaction)
-				func = Root.Transaction.AddProperties;
-
 			// Notify up the chain of each property, using "this" as the sender
+			List<GroupListNotification<T>> notifications = new List<GroupListNotification<T>>();
 			GroupList<T> propertyChanged = this;
 			while (propertyChanged != null) {
-				func(new GroupListNotification<T>
+				notifications.Add(new GroupListNotification<T>
 				{
 					Properties = properties,
 					PropertyChanged = propertyChanged,
@@ -239,10 +233,38 @@ namespace mCubed.Core {
 				});
 				propertyChanged = propertyChanged.Parent;
 			}
+			OnPropertyChangedInternal(notifications.ToArray());
+		}
+
+		/// <summary>
+		/// Event that handles when a property has changed, for internal purposes only
+		/// </summary>
+		/// <param name="notifications">The notifications for the properties that have changed</param>
+		private void OnPropertyChangedInternal(GroupListNotification<T>[] notifications) {
+			// Determine if the properties should be cached or actually be notified
+			Action<GroupListNotification<T>> func = GroupList<T>.OnPropertyChangedInternal;
+			if (IsNotificationSuppressed)
+				func = Root.AddSuppressedNotification;
+			else if (Root.IsInTransaction)
+				func = Root.Transaction.AddProperties;
+
+			// Send the notificatoins
+			foreach (var notification in notifications) {
+				func(notification);
+			}
 
 			// Let the root notify itself
-			if (!IsRoot)
-				Root.OnPropertyChanged(properties);
+			if (!IsRoot) {
+				List<string> properties = new List<string>();
+				foreach (GroupListNotification<T> notification in notifications) {
+					foreach (string notificationProperty in notification.Properties) {
+						if (!properties.Contains(notificationProperty)) {
+							properties.Add(notificationProperty);
+						}
+					}
+				}
+				Root.OnPropertyChanged(properties.ToArray());
+			}
 		}
 
 		/// <summary>
@@ -281,8 +303,7 @@ namespace mCubed.Core {
 		/// Notify all the suppressed notifications
 		/// </summary>
 		private void NotifySuppressedNotifications() {
-			foreach (GroupListNotification<T> notification in _suppressNotifyCache)
-				GroupList<T>.OnPropertyChangedInternal(notification);
+			OnPropertyChangedInternal(_suppressNotifyCache.ToArray());
 			ClearSuppressedNotifications();
 		}
 

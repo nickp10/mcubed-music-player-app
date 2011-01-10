@@ -7,6 +7,28 @@ using mCubed.Core;
 
 namespace mCubed.Controls {
 	/// <summary>
+	/// Used to display the time of which the progress slider will seek to
+	/// in a human readable format [Multi-Binding, OneWay]
+	/// </summary>
+	public class ProgressSliderToolTipConverter : IMultiValueConverter {
+		#region IMultiValueConverter Members
+
+		public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+			var value = values.OfType<double>().ToArray();
+			if (value.Length == 2) {
+				return TimeSpan.FromMilliseconds(value[0] * value[1]).Format();
+			}
+			return null;
+		}
+
+		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture) {
+			return null;
+		}
+
+		#endregion
+	}
+
+	/// <summary>
 	/// Used to determine if the given object is an instance of a
 	/// group item or not [Binding, One-Way]
 	/// </summary>

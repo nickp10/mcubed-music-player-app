@@ -81,9 +81,7 @@
 						</ItemsControl.GroupStyle>
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
-								<Border Style="{DynamicResource AutoCompleteItem}" Padding="5,0" Cursor="Hand" MouseLeftButtonDown="OnValueSelected">
-									<TextBlock Text="{Binding Value}"/>
-								</Border>
+								<ListBoxItem Style="{DynamicResource AutoCompleteItem}" Cursor="Hand" MouseLeftButtonDown="OnValueSelected" Content="{Binding Value}" />
 							</DataTemplate>
 						</ItemsControl.ItemTemplate>
 					</ItemsControl>

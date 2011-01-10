@@ -476,12 +476,28 @@
 		</Setter>
 	</Style>
 
-	<!-- Custom Auto-Complete Item -->
-	<Style TargetType="{x:Type Border}" BasedOn="{StaticResource {x:Type Border}}" x:Key="AutoCompleteItem">
+	<!-- Custom Hover Item -->
+	<Style TargetType="{x:Type Border}" BasedOn="{StaticResource {x:Type Border}}" x:Key="HoverItem">
 		<Setter Property="Background" Value="Transparent"/>
 		<Setter Property="BorderBrush" Value="Transparent"/>
 		<Style.Triggers>
 			<Trigger Property="IsMouseOver" Value="True">
+				<Setter Property="Background" Value="{DynamicResource SelectorBrush}"/>
+				<Setter Property="BorderBrush" Value="{DynamicResource SelectorOutline}"/>
+			</Trigger>
+		</Style.Triggers>
+	</Style>
+
+	<!-- Custom Auto-Complete Item -->
+	<Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}" x:Key="AutoCompleteItem">
+		<Setter Property="Background" Value="Transparent"/>
+		<Setter Property="BorderBrush" Value="Transparent"/>
+		<Style.Triggers>
+			<Trigger Property="IsMouseOver" Value="True">
+				<Setter Property="Background" Value="{DynamicResource SelectorBrush}"/>
+				<Setter Property="BorderBrush" Value="{DynamicResource SelectorOutline}"/>
+			</Trigger>
+			<Trigger Property="IsSelected" Value="True">
 				<Setter Property="Background" Value="{DynamicResource SelectorBrush}"/>
 				<Setter Property="BorderBrush" Value="{DynamicResource SelectorOutline}"/>
 			</Trigger>

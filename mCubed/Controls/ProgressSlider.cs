@@ -10,10 +10,24 @@ using System.Windows.Media;
 using mCubed.Core;
 
 namespace mCubed.Controls {
-	public class ProgressSlider : Slider, INotifyPropertyChanged {
-		#region INotifyPropertyChanged Members
+	public class ProgressSlider : Slider, IExternalNotifyPropertyChanged, IExternalNotifyPropertyChanging {
+		#region IExternalNotifyPropertyChanged Members
+
+		public PropertyChangedEventHandler PropertyChangedHandler {
+			get { return PropertyChanged; }
+		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanging Members
+
+		public PropertyChangingEventHandler PropertyChangingHandler {
+			get { return PropertyChanging; }
+		}
+
+		public event PropertyChangingEventHandler PropertyChanging;
 
 		#endregion
 
@@ -234,24 +248,6 @@ namespace mCubed.Controls {
 			// Seek, if requested
 			if (invokeSeek)
 				OnSeek();
-		}
-
-		#endregion
-	}
-
-	public class ProgressSliderToolTipConverter : IMultiValueConverter {
-		#region IMultiValueConverter Members
-
-		public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
-			var value = values.OfType<double>().ToArray();
-			if (value.Length == 2) {
-				return TimeSpan.FromMilliseconds(value[0] * value[1]).Format();
-			}
-			return null;
-		}
-
-		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture) {
-			return null;
 		}
 
 		#endregion
