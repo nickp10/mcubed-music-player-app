@@ -100,8 +100,7 @@ namespace mCubed.Core {
 		public void Play() {
 			IsLoaded = true;
 			Parent.IsLoaded = true;
-			Parent.MediaObject.State = MediaState.Play;
-			Parent.MediaObject.Seek(0);
+			Parent.MediaObject.RestoreState(MetaData.FilePath, MediaState.Play, 0);
 		}
 
 		/// <summary>

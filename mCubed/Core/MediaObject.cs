@@ -328,21 +328,31 @@ namespace mCubed.Core {
 		public void RestoreState(MediaObjectState state) {
 			// Check if the state has a value
 			if (state != null) {
-				// Seek appropriately
-				bool postSeek = true;
-				if (string.IsNullOrEmpty(Path)) {
-					_seekValue = state.Progress;
-					postSeek = false;
-				}
+				RestoreState(state.Path, state.State, state.Progress);
+			}
+		}
 
-				// Restore the path and state
-				Path = state.Path;
-				State = state.State;
+		/// <summary>
+		/// Restore the state of the media file that is specified
+		/// </summary>
+		/// <param name="path">The path to the media file to restore</param>
+		/// <param name="state">The state of which to restore it to</param>
+		/// <param name="progress">The progress of which to seek in the file</param>
+		public void RestoreState(string path, MediaState state, double progress) {
+			// Seek appropriately
+			bool postSeek = true;
+			if (string.IsNullOrEmpty(Path)) {
+				_seekValue = progress;
+				postSeek = false;
+			}
 
-				// Post seek appropriately
-				if (postSeek) {
-					Seek(state.Progress);
-				}
+			// Restore the path and state
+			Path = path;
+			State = state;
+
+			// Post seek appropriately
+			if (postSeek) {
+				Seek(progress);
 			}
 		}
 

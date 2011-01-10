@@ -96,6 +96,7 @@
 						<!-- Library Options -->
 						<MenuItem Header="Add..." Click="OnMediaAdd"/>
 						<MenuItem Header="Reload Library" Click="OnMediaReload"/>
+						<MenuItem Header="Seek to Now Playing" Click="OnMediaSeekToNowPlaying"/>
 						<Separator/>
 
 						<!-- Selected Meta-Data Options -->

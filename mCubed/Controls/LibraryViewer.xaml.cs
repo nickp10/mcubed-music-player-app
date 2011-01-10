@@ -226,6 +226,19 @@ namespace mCubed.Controls {
 		}
 
 		/// <summary>
+		/// Event that handles when the now playing media should be scrolled into view
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaSeekToNowPlaying(object sender, RoutedEventArgs e) {
+			var nowPlaying = Library.MediaFileCurrent;
+			if (nowPlaying != null) {
+				SelectedMedia.ScrollIntoView(nowPlaying);
+				SelectedMedia.SelectedItem = nowPlaying;
+			}
+		}
+
+		/// <summary>
 		/// Event that handles when the selected items' track numbers should be auto-populated from 1 to N, where N is the number of selected items
 		/// </summary>
 		/// <param name="sender">The sender object</param>
