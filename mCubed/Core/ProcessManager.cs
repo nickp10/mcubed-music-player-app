@@ -143,6 +143,7 @@ namespace mCubed.Core {
 		public void Dispose() {
 			// Unsubscribe others from its events
 			PropertyChanged = null;
+			PropertyChanging = null;
 
 			// Dispose all disposable references it created
 			TotalProcess.Dispose();
@@ -283,6 +284,7 @@ namespace mCubed.Core {
 		public void Dispose() {
 			// Unsubscribe others from its events
 			PropertyChanged = null;
+			PropertyChanging = null;
 
 			// Dispose the worker
 			if (_worker != null) {

@@ -197,6 +197,7 @@ namespace mCubed.Core {
 
 			// Unsubscribe others from its events
 			PropertyChanged = null;
+			PropertyChanging = null;
 		}
 
 		#endregion
@@ -351,6 +352,7 @@ namespace mCubed.Core {
 		public void Dispose() {
 			// Unsubscribe others from its events
 			PropertyChanged = null;
+			PropertyChanging = null;
 			Reset = null;
 
 			// Unsubscribe its delegates from other events

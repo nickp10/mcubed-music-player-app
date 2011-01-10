@@ -51,7 +51,7 @@
 		<Popup PlacementTarget="{Binding ElementName=ValueTextBox}" Placement="Bottom" PopupAnimation="Scroll" AllowsTransparency="True" IsOpen="{Binding IsAutoCompleteOpen}">
 			<Border>
 				<ScrollViewer MinHeight="100" MaxHeight="200" Width="300" Focusable="False" IsTabStop="False" VerticalScrollBarVisibility="Auto">
-					<ItemsControl ItemsSource="{Binding Source={StaticResource AltCVS}}" Focusable="False" IsTabStop="False">
+					<ItemsControl ItemsSource="{Binding Source={StaticResource AltCVS}}" Focusable="False" IsTabStop="False" x:Name="AutoCompleteItems">
 						<ItemsControl.GroupStyle>
 							<GroupStyle HidesIfEmpty="True">
 								<GroupStyle.ContainerStyle>
@@ -81,7 +81,7 @@
 						</ItemsControl.GroupStyle>
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
-								<ListBoxItem Style="{DynamicResource AutoCompleteItem}" Cursor="Hand" MouseLeftButtonDown="OnValueSelected" Content="{Binding Value}" />
+								<ListBoxItem Style="{DynamicResource AutoCompleteItem}" Cursor="Hand" IsSelected="{Binding IsSelected}" MouseEnter="OnValueMouseEnter" MouseLeftButtonUp="OnValueSelected" Content="{Binding Value}" />
 							</DataTemplate>
 						</ItemsControl.ItemTemplate>
 					</ItemsControl>

@@ -651,6 +651,7 @@ namespace mCubed.Core {
 		public void Dispose() {
 			// Unsubscribe others from its events
 			PropertyChanged = null;
+			PropertyChanging = null;
 			LibraryMediaCollectionChanged = null;
 			Loaded = null;
 			MediaFilePropertyChanged = null;
@@ -874,6 +875,7 @@ namespace mCubed.Core {
 		public void Dispose() {
 			// Unsubscribe others from its events
 			PropertyChanged = null;
+			PropertyChanging = null;
 
 			// Dispose of the resources it created while unregistering from events
 			foreach (var collection in _collections) {

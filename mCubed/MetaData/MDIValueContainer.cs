@@ -6,12 +6,21 @@ namespace mCubed.MetaData {
 	public class MDIValueContainer : IComparable, IComparable<MDIValueContainer>, IEquatable<MDIValueContainer>, IExternalNotifyPropertyChanged, IExternalNotifyPropertyChanging {
 		#region Data Store
 
+		private bool _isSelected;
 		private bool _isSuggestion;
 		private string _value;
 
 		#endregion
 
 		#region Bindable Properties
+
+		/// <summary>
+		/// Get/set whether or not this value is selected or not [Bindable]
+		/// </summary>
+		public bool IsSelected {
+			get { return _isSelected; }
+			set { this.SetAndNotify(ref _isSelected, value, "IsSelected"); }
+		}
 
 		/// <summary>
 		/// Get/set whether or not this value is a suggestion or not [Bindable]

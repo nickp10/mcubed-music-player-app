@@ -151,6 +151,7 @@ namespace mCubed.Core {
 		public void Dispose() {
 			// Unsubscribe others from its events
 			PropertyChanged = null;
+			PropertyChanging = null;
 
 			// Dispose all disposable references it created
 			MetaData.Dispose();

@@ -94,6 +94,28 @@ namespace mCubed.MetaData {
 
 		#endregion
 
+		#region Properties
+
+		/// <summary>
+		/// Get/set the item that is currently selected within the auto-complete
+		/// </summary>
+		public MDIValueContainer SelectedAutoCompleteItem {
+			get {
+				var cachedAlts = Alternatives;
+				return cachedAlts == null ? null : cachedAlts.SingleOrDefault(a => a.IsSelected);
+			}
+			set {
+				var cachedAlts = Alternatives;
+				if (cachedAlts != null && cachedAlts.Contains(value)) {
+					foreach (var alternative in cachedAlts.Where(a => a.IsSelected))
+						alternative.IsSelected = false;
+					value.IsSelected = true;
+				}
+			}
+		}
+
+		#endregion
+
 		#region Events
 
 		public event Action<MDIValue> StatusChanged;
@@ -184,8 +206,20 @@ namespace mCubed.MetaData {
 				} else {
 					handled = false;
 				}
-			} else if (e.Key == Key.Escape) {
-				IsAutoCompleteOpen = false;
+			} else if (IsAutoCompleteOpen) {
+				if (e.Key == Key.Escape) {
+					IsAutoCompleteOpen = false;
+				} else if (e.Key == Key.Up) {
+					SelectedAutoCompleteItem = Alternatives.ElementBefore(SelectedAutoCompleteItem, true);
+					((FrameworkElement)AutoCompleteItems.ItemContainerGenerator.ContainerFromItem(SelectedAutoCompleteItem)).BringIntoView();
+				} else if (e.Key == Key.Down) {
+					SelectedAutoCompleteItem = Alternatives.ElementAfter(SelectedAutoCompleteItem, true);
+					((FrameworkElement)AutoCompleteItems.ItemContainerGenerator.ContainerFromItem(SelectedAutoCompleteItem)).BringIntoView();
+				} else if (e.Key == Key.Enter && SelectedAutoCompleteItem != null) {
+					Value.Value = SelectedAutoCompleteItem.Value;
+					IsAutoCompleteOpen = false;
+					handled = false;
+				}
 			} else {
 				handled = false;
 			}
@@ -231,6 +265,19 @@ namespace mCubed.MetaData {
 		private void OnValueDeleted(object sender, MouseButtonEventArgs e) {
 			if (ValueDeleted != null)
 				ValueDeleted(this);
+		}
+
+		/// <summary>
+		/// Event that handles when the mouse enters a given auto-complete item
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnValueMouseEnter(object sender, MouseEventArgs e) {
+			var element = sender as FrameworkElement;
+			var container = element == null ? null : element.DataContext as MDIValueContainer;
+			if (container != null) {
+				SelectedAutoCompleteItem = container;
+			}
 		}
 
 		/// <summary>

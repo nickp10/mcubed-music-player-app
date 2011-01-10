@@ -190,6 +190,7 @@ namespace mCubed.Core {
 			// Unsubscribe others from its events
 			FormulaChanged = null;
 			PropertyChanged = null;
+			PropertyChanging = null;
 			ValueChanged = null;
 		}
 
@@ -458,6 +459,7 @@ namespace mCubed.Core {
 
 			// Unsubscribe others from its events
 			PropertyChanged = null;
+			PropertyChanging = null;
 		}
 
 		#endregion

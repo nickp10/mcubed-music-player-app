@@ -493,10 +493,6 @@
 		<Setter Property="Background" Value="Transparent"/>
 		<Setter Property="BorderBrush" Value="Transparent"/>
 		<Style.Triggers>
-			<Trigger Property="IsMouseOver" Value="True">
-				<Setter Property="Background" Value="{DynamicResource SelectorBrush}"/>
-				<Setter Property="BorderBrush" Value="{DynamicResource SelectorOutline}"/>
-			</Trigger>
 			<Trigger Property="IsSelected" Value="True">
 				<Setter Property="Background" Value="{DynamicResource SelectorBrush}"/>
 				<Setter Property="BorderBrush" Value="{DynamicResource SelectorOutline}"/>
