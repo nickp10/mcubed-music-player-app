@@ -4,13 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 
 namespace mCubed.Core {
-	public class ColumnDetail : INotifyPropertyChanged, IDisposable {
-		#region INotifyPropertyChanged Members
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		#endregion
-
+	public class ColumnDetail : IExternalNotifyPropertyChanged, IExternalNotifyPropertyChanging, IDisposable {
 		#region Data Store
 
 		private string _display;
@@ -171,6 +165,26 @@ namespace mCubed.Core {
 
 		#endregion
 
+		#region IExternalNotifyPropertyChanged Members
+
+		public PropertyChangedEventHandler PropertyChangedHandler {
+			get { return PropertyChanged; }
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanging Members
+
+		public PropertyChangingEventHandler PropertyChangingHandler {
+			get { return PropertyChanging; }
+		}
+
+		public event PropertyChangingEventHandler PropertyChanging;
+
+		#endregion
+
 		#region IDisposable Members
 
 		/// <summary>
@@ -188,13 +202,7 @@ namespace mCubed.Core {
 		#endregion
 	}
 
-	public class ColumnVector : IKeyProvider<MediaFile>, IComparer<MediaFile>, IResettable<MediaFile>, INotifyPropertyChanged, IDisposable {
-		#region INotifyPropertyChanged Members
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		#endregion
-
+	public class ColumnVector : IKeyProvider<MediaFile>, IComparer<MediaFile>, IResettable<MediaFile>, IExternalNotifyPropertyChanged, IExternalNotifyPropertyChanging, IDisposable {
 		#region Data Store
 
 		private readonly ColumnDetail _columnDetail;
@@ -312,6 +320,26 @@ namespace mCubed.Core {
 		#region IResettable<MediaFile> Members
 
 		public event Action<IComparer<MediaFile>> Reset;
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanged Members
+
+		public PropertyChangedEventHandler PropertyChangedHandler {
+			get { return PropertyChanged; }
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanging Members
+
+		public PropertyChangingEventHandler PropertyChangingHandler {
+			get { return PropertyChanging; }
+		}
+
+		public event PropertyChangingEventHandler PropertyChanging;
 
 		#endregion
 

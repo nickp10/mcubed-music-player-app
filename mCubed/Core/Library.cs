@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 
 namespace mCubed.Core {
-	public class Library : INotifyPropertyChanged, INotifyPropertyChanging, IDisposable {
+	public class Library : IExternalNotifyPropertyChanged, IExternalNotifyPropertyChanging, IDisposable {
 		#region Static Members
 
 		/// <summary>
@@ -293,6 +293,12 @@ namespace mCubed.Core {
 
 		#endregion
 
+		#region Events
+
+		public event Action<MediaFile, string> MediaFilePropertyChanged;
+
+		#endregion
+
 		#region Constructor
 
 		public Library() {
@@ -343,9 +349,21 @@ namespace mCubed.Core {
 		/// <param name="sender">The sender object</param>
 		/// <param name="e">The event arguments</param>
 		private void OnMediaFilePropertyChanged(object sender, PropertyChangedEventArgs e) {
+			// Retrieve the info that changed
 			MetaDataInfo info = sender as MetaDataInfo;
-			if (info != null && MetaDataFormula.MetaDataProperties.Where(p => p.Path == "MetaData").Any(p => p.Property.Name == e.PropertyName))
-				MediaFiles.Reset(info.Parent);
+			if (info != null && info.Parent != null) {
+				// Ensure the property that changed is a valid-meta-data property
+				if (MetaDataFormula.MetaDataProperties.Any(p => p.Path == "MetaData" && p.Property.Name == e.PropertyName)) {
+					// Reset the file in the collection
+					MediaFiles.Reset(info.Parent);
+
+					// Send a notification to anyone listening
+					var tempHandler = MediaFilePropertyChanged;
+					if (tempHandler != null) {
+						tempHandler(info.Parent, e.PropertyName);
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -773,8 +791,9 @@ namespace mCubed.Core {
 		/// <param name="media">The media that should be added to the library</param>
 		public void AddMedia(IEnumerable<MediaFile> media) {
 			MediaFiles.BeginTransaction();
-			foreach (MediaFile file in media)
+			foreach (MediaFile file in media) {
 				MediaFiles.Add(file);
+			}
 			MediaFiles.EndTransaction();
 		}
 
@@ -948,6 +967,7 @@ namespace mCubed.Core {
 		/// </summary>
 		public void Dispose() {
 			// Unsubscribe others from its events
+			MediaFilePropertyChanged = null;
 			PropertyChanged = null;
 			PropertyChanging = null;
 

@@ -2,13 +2,7 @@
 using System.ComponentModel;
 
 namespace mCubed.Core {
-	public class MediaFile : INotifyPropertyChanged, IDisposable {
-		#region INotifyPropertyChanged Members
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		#endregion
-
+	public class MediaFile : IExternalNotifyPropertyChanged, IExternalNotifyPropertyChanging, IDisposable {
 		#region Data Store
 
 		private bool _isLoaded;
@@ -126,6 +120,26 @@ namespace mCubed.Core {
 				Parent.MediaObject.RestoreState(state);
 			}
 		}
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanged Members
+
+		public PropertyChangedEventHandler PropertyChangedHandler {
+			get { return PropertyChanged; }
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanging Members
+
+		public PropertyChangingEventHandler PropertyChangingHandler {
+			get { return PropertyChanging; }
+		}
+
+		public event PropertyChangingEventHandler PropertyChanging;
 
 		#endregion
 

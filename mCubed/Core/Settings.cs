@@ -8,13 +8,7 @@ using System.Linq;
 using System.Xml.Linq;
 
 namespace mCubed.Core {
-	public class Settings : INotifyPropertyChanged, IDisposable {
-		#region INotifyPropertyChanged Members
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		#endregion
-
+	public class Settings : IExternalNotifyPropertyChanged, IExternalNotifyPropertyChanging, IDisposable {
 		#region Data Store
 
 		private string _path = Path.Combine(Utilities.ExecutionDirectory, "mCubed.xml");
@@ -140,7 +134,9 @@ namespace mCubed.Core {
 
 		#region Events
 
-		public event Action Loaded;
+		public event Action<Library> LibraryMediaCollectionChanged;
+		private event Action Loaded;
+		public event Action<MediaFile, string> MediaFilePropertyChanged;
 		public event Action<MediaObject> MediaObjectChanged;
 		public event Action<MediaFile> NowPlayingChanged;
 		public event Action ShowMDIManagerChanged;
@@ -233,11 +229,11 @@ namespace mCubed.Core {
 		/// <param name="element">The XML settings to generate from</param>
 		private void GenerateRoot(XElement element) {
 			if (element.Element("Formulas") != null)
-				element.Element("Formulas").Elements().Select(e => GenerateFormula(e)).Where(e => e != null && !Formulas.Contains(e)).Perform(e => Formulas.Add(e));
+				element.Element("Formulas").Elements().Select(GenerateFormula).Where(e => e != null && !Formulas.Contains(e)).Perform(e => Formulas.Add(e));
 			if (element.Element("Columns") != null)
-				element.Element("Columns").Elements().Select(c => GenerateColumn(c)).Where(c => c != null && !AllColumns.Contains(c)).Perform(c => AllColumns.Add(c));
+				element.Element("Columns").Elements().Select(GenerateColumn).Where(c => c != null && !AllColumns.Contains(c)).Perform(c => AllColumns.Add(c));
 			if (element.Element("Libraries") != null)
-				Libraries = element.Element("Libraries").Elements().Select(e => GenerateLibrary(e));
+				element.Element("Libraries").Elements().Select(GenerateLibrary).Where(l => l != null && !Libraries.Contains(l)).Perform(l => AddLibrary(l));
 			ShowMDIManager = element.Parse("ShowMDIManager", true);
 			ShowMini = element.Parse("ShowMini", false);
 			DirectoryMediaDefault = element.Parse("DirectoryMediaDefault", Environment.CurrentDirectory);
@@ -425,6 +421,20 @@ namespace mCubed.Core {
 			}
 		}
 
+		/// <summary>
+		/// Performs the specified action when the settings have been loaded, or is already loaded
+		/// </summary>
+		/// <param name="action">The action to perform when the settings are loaded</param>
+		public void PerformWhenLoaded(Action action) {
+			if (action != null) {
+				if (IsLoaded) {
+					action();
+				} else {
+					Loaded += action;
+				}
+			}
+		}
+
 		#endregion
 
 		#region Collection Members
@@ -434,8 +444,11 @@ namespace mCubed.Core {
 		/// </summary>
 		/// <param name="library">The library to add to the collection of libraries</param>
 		public void AddLibrary(Library library) {
-			if (library != null)
-				Libraries = Libraries.Union(new[] { library });
+			if (library != null) {
+				library.MediaFiles.PropertyChanged += (s, e) => OnLibraryMediaCollectionChanged(library, e);
+				library.MediaFilePropertyChanged += OnMediaFilePropertyChanged;
+				Libraries = Libraries.Concat(new[] { library });
+			}
 		}
 
 		/// <summary>
@@ -503,11 +516,37 @@ namespace mCubed.Core {
 		}
 
 		/// <summary>
+		/// Event that handles when a library's media files collection has changed
+		/// </summary>
+		/// <param name="sender">The library whose media files property has changed</param>
+		/// <param name="e">The event arguments</param>
+		private void OnLibraryMediaCollectionChanged(Library library, PropertyChangedEventArgs e) {
+			var tempHandler = LibraryMediaCollectionChanged;
+			if (tempHandler != null && e.PropertyName == "Items") {
+				tempHandler(library);
+			}
+		}
+
+		/// <summary>
+		/// Event that handles when a media file's property has changed
+		/// </summary>
+		/// <param name="file">The file whose property has changed</param>
+		/// <param name="property">The name of the property that has changed</param>
+		private void OnMediaFilePropertyChanged(MediaFile file, string property) {
+			var tempHandler = MediaFilePropertyChanged;
+			if (tempHandler != null) {
+				tempHandler(file, property);
+			}
+		}
+
+		/// <summary>
 		/// Event that handles when the settings have loaded
 		/// </summary>
 		private void OnLoaded() {
-			if (IsLoaded && Loaded != null)
-				Loaded();
+			var tempHandler = Loaded;
+			if (IsLoaded && tempHandler != null)
+				tempHandler();
+			Loaded = null;
 		}
 
 		/// <summary>
@@ -583,6 +622,26 @@ namespace mCubed.Core {
 
 		#endregion
 
+		#region IExternalNotifyPropertyChanged Members
+
+		public PropertyChangedEventHandler PropertyChangedHandler {
+			get { return PropertyChanged; }
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanging Members
+
+		public PropertyChangingEventHandler PropertyChangingHandler {
+			get { return PropertyChanging; }
+		}
+
+		public event PropertyChangingEventHandler PropertyChanging;
+
+		#endregion
+
 		#region IDisposable Members
 
 		/// <summary>
@@ -591,7 +650,9 @@ namespace mCubed.Core {
 		public void Dispose() {
 			// Unsubscribe others from its events
 			PropertyChanged = null;
+			LibraryMediaCollectionChanged = null;
 			Loaded = null;
+			MediaFilePropertyChanged = null;
 			MediaObjectChanged = null;
 			NowPlayingChanged = null;
 			ShowMDIManagerChanged = null;
@@ -611,13 +672,7 @@ namespace mCubed.Core {
 		#endregion
 	}
 
-	public class ColumnSettings : INotifyPropertyChanged, IDisposable {
-		#region INotifyPropertyChanged Members
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		#endregion
-
+	public class ColumnSettings : IExternalNotifyPropertyChanged, IExternalNotifyPropertyChanging, IDisposable {
 		#region Data Store
 
 		private readonly Dictionary<string, ObservableCollection<ColumnVector>> _collections = new Dictionary<string, ObservableCollection<ColumnVector>>();
@@ -787,6 +842,26 @@ namespace mCubed.Core {
 				}
 			}
 		}
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanged Members
+
+		public PropertyChangedEventHandler PropertyChangedHandler {
+			get { return PropertyChanged; }
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanging Members
+
+		public PropertyChangingEventHandler PropertyChangingHandler {
+			get { return PropertyChanging; }
+		}
+
+		public event PropertyChangingEventHandler PropertyChanging;
 
 		#endregion
 

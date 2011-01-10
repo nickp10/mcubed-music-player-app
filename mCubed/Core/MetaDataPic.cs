@@ -8,13 +8,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace mCubed.Core {
-	public class MetaDataPic : INotifyPropertyChanged, IEquatable<MetaDataPic>, ICopiable<MetaDataPic>, IDisposable {
-		#region INotifyPropertyChanged Members
-
-		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-
-		#endregion
-
+	public class MetaDataPic : IEquatable<MetaDataPic>, ICopiable<MetaDataPic>, IExternalNotifyPropertyChanged, IExternalNotifyPropertyChanging, IDisposable {
 		#region Data Store
 
 		private static IEnumerable<string> _pictureTypes =
@@ -322,6 +316,26 @@ namespace mCubed.Core {
 				Data = Data
 			};
 		}
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanged Members
+
+		public PropertyChangedEventHandler PropertyChangedHandler {
+			get { return PropertyChanged; }
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanging Members
+
+		public PropertyChangingEventHandler PropertyChangingHandler {
+			get { return PropertyChanging; }
+		}
+
+		public event PropertyChangingEventHandler PropertyChanging;
 
 		#endregion
 

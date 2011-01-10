@@ -249,7 +249,6 @@ namespace mCubed.MetaData {
 					}
 
 					// Perform some readjustments
-					ReloadSuggestions();
 					ReloadPictures();
 				}, "Saving meta-data information", updateMDI.Length);
 			}
@@ -285,14 +284,6 @@ namespace mCubed.MetaData {
 
 			// Aggregate all the values if multiple values are allowed
 			return MetaDataInfo.Where(m => m.Status == MetaDataStatus.Edit).SelectMany(mdi => mdi.GetValue(property)).ToArray();
-		}
-
-		/// <summary>
-		/// Reload the suggestions in all the meta-data fields
-		/// </summary>
-		private void ReloadSuggestions() {
-			foreach (var mdf in MetaDataFields)
-				mdf.ReloadSuggestions();
 		}
 
 		/// <summary>

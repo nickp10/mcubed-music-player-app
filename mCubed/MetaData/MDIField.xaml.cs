@@ -182,6 +182,9 @@ namespace mCubed.MetaData {
 			// Hook up event handlers
 			AddHandler(UserControl.KeyDownEvent, new KeyEventHandler(OnMDIKeyDown), true);
 
+			// Setup suggestions
+			Utilities.MainSettings.PerformWhenLoaded(OnSetupSuggestions);
+
 			// Initialize
 			InitializeComponent();
 		}
@@ -266,11 +269,15 @@ namespace mCubed.MetaData {
 			IsMultiValues = Utilities.IsTypeIEnumerable(PropertyType);
 
 			// Load the proper suggestions
-			if (Utilities.MainSettings.IsLoaded) {
-				ReloadSuggestions();
-			} else {
-				Utilities.MainSettings.Loaded += new Action(ReloadSuggestions);
-			}
+			Utilities.MainSettings.PerformWhenLoaded(ReloadSuggestions);
+		}
+
+		/// <summary>
+		/// Event that handles when the suggestions should initially be setup
+		/// </summary>
+		private void OnSetupSuggestions() {
+			Utilities.MainSettings.LibraryMediaCollectionChanged += l => ReloadSuggestions();
+			Utilities.MainSettings.MediaFilePropertyChanged += (m, p) => { if (p == PropertyName) ReloadSuggestions(); };
 		}
 
 		/// <summary>
@@ -428,7 +435,7 @@ namespace mCubed.MetaData {
 		/// <summary>
 		/// Reload the list of suggestions to be used
 		/// </summary>
-		public void ReloadSuggestions() {
+		private void ReloadSuggestions() {
 			Suggestions = Utilities.MainSettings.Libraries.
 				SelectMany(l => l.MediaFiles.SelectMany(m => m.MetaData.GetValue(PropertyName))).
 				DistinctOrdered().

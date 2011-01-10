@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace mCubed.Core {
-	public class MetaDataFormula : INotifyPropertyChanged, IDisposable {
+	public class MetaDataFormula : IExternalNotifyPropertyChanged, IExternalNotifyPropertyChanging, IDisposable {
 		#region Static: Formula Population
 
 		/// <summary>
@@ -58,12 +58,6 @@ namespace mCubed.Core {
 			}
 			FormulaProperties = properties.OrderBy(f => f.Priority).ThenBy(f => f.Formula).ToArray();
 		}
-
-		#endregion
-
-		#region INotifyPropertyChanged Members
-
-		public event PropertyChangedEventHandler PropertyChanged;
 
 		#endregion
 
@@ -167,6 +161,26 @@ namespace mCubed.Core {
 
 		#endregion
 
+		#region IExternalNotifyPropertyChanged Members
+
+		public PropertyChangedEventHandler PropertyChangedHandler {
+			get { return PropertyChanged; }
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanging Members
+
+		public PropertyChangingEventHandler PropertyChangingHandler {
+			get { return PropertyChanging; }
+		}
+
+		public event PropertyChangingEventHandler PropertyChanging;
+
+		#endregion
+
 		#region IDisposable Members
 
 		/// <summary>
@@ -182,13 +196,7 @@ namespace mCubed.Core {
 		#endregion
 	}
 
-	public class MDFFile : INotifyPropertyChanged, IDisposable {
-		#region INotifyPropertyChanged Members
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		#endregion
-
+	public class MDFFile : IExternalNotifyPropertyChanged, IExternalNotifyPropertyChanging, IDisposable {
 		#region Static Members
 
 		/// <summary>
@@ -415,6 +423,26 @@ namespace mCubed.Core {
 		private void ChangeValue() {
 			Value = GetValue();
 		}
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanged Members
+
+		public PropertyChangedEventHandler PropertyChangedHandler {
+			get { return PropertyChanged; }
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanging Members
+
+		public PropertyChangingEventHandler PropertyChangingHandler {
+			get { return PropertyChanging; }
+		}
+
+		public event PropertyChangingEventHandler PropertyChanging;
 
 		#endregion
 

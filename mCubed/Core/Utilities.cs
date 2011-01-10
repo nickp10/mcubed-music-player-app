@@ -655,4 +655,48 @@ namespace mCubed.Core {
 		void OnSpeakerChanging(T speaker);
 		void OnSpeakerChanged(T speaker);
 	}
+	public interface IExternalNotifyPropertyChanged : INotifyPropertyChanged {
+		PropertyChangedEventHandler PropertyChangedHandler { get; }
+	}
+	public interface IExternalNotifyPropertyChanging : INotifyPropertyChanging {
+		PropertyChangingEventHandler PropertyChangingHandler { get; }
+	}
+	public class ExternalPropertyChangedEventArgs<T> : PropertyChangedEventArgs {
+		/// <summary>
+		/// Get/set the original value
+		/// </summary>
+		public T OldValue { get; set; }
+
+		/// <summary>
+		/// Get/set the value that was changed to
+		/// </summary>
+		public T NewValue { get; set; }
+
+		/// <summary>
+		/// Construct a new property changed event argument holder
+		/// </summary>
+		/// <param name="propertyName">The name of the property that has changed</param>
+		public ExternalPropertyChangedEventArgs(string propertyName)
+			: base(propertyName) {
+		}
+	}
+	public class ExternalPropertyChangingEventArgs<T> : PropertyChangingEventArgs {
+		/// <summary>
+		/// Get/set the original value
+		/// </summary>
+		public T OldValue { get; set; }
+
+		/// <summary>
+		/// Get/set the value being changed to
+		/// </summary>
+		public T NewValue { get; set; }
+
+		/// <summary>
+		/// Construct a new property changing event argument holder
+		/// </summary>
+		/// <param name="propertyName">The name of the property that is changing</param>
+		public ExternalPropertyChangingEventArgs(string propertyName)
+			: base(propertyName) {
+		}
+	}
 }

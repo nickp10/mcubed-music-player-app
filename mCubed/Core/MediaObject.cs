@@ -4,7 +4,7 @@ using System.Timers;
 using System.Windows.Media;
 
 namespace mCubed.Core {
-	public class MediaObject : INotifyPropertyChanged, IDisposable {
+	public class MediaObject : IExternalNotifyPropertyChanged, IExternalNotifyPropertyChanging, IDisposable {
 		#region MediaObjectState
 
 		public class MediaObjectState {
@@ -12,12 +12,6 @@ namespace mCubed.Core {
 			public double Progress { get; set; }
 			public MediaState State { get; set; }
 		}
-
-		#endregion
-
-		#region INotifyPropertyChanged Members
-
-		public event PropertyChangedEventHandler PropertyChanged;
 
 		#endregion
 
@@ -407,6 +401,26 @@ namespace mCubed.Core {
 				_player.Dispatcher.Invoke(action, _player);
 			}
 		}
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanged Members
+
+		public PropertyChangedEventHandler PropertyChangedHandler {
+			get { return PropertyChanged; }
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
+		#region IExternalNotifyPropertyChanging Members
+
+		public PropertyChangingEventHandler PropertyChangingHandler {
+			get { return PropertyChanging; }
+		}
+
+		public event PropertyChangingEventHandler PropertyChanging;
 
 		#endregion
 

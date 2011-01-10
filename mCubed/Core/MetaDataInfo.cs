@@ -7,7 +7,7 @@ using System.Linq;
 using System.Reflection;
 
 namespace mCubed.Core {
-	public abstract class MetaDataInfo : INotifyPropertyChanged, INotifyPropertyChanging, IDisposable {
+	public abstract class MetaDataInfo : IExternalNotifyPropertyChanged, IExternalNotifyPropertyChanging, IDisposable {
 		#region Data Store
 
 		private string _album;
