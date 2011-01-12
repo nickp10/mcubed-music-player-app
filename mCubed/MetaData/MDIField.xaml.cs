@@ -51,7 +51,7 @@ namespace mCubed.MetaData {
 		/// Get a collection of alternative values for auto-completion [Bindable]
 		/// </summary>
 		public IEnumerable<MDIValueContainer> Alternatives {
-			get { return OldValue.Union(Suggestions).DistinctEquals().Where(c => !String.IsNullOrEmpty(c.Value)); }
+			get { return OldValue.Union(Suggestions).DistinctEquals().Where(c => !String.IsNullOrEmpty(c.Value)).Select(c => new MDIValueContainer { IsSuggestion = c.IsSuggestion, Value = c.Value }).ToArray(); }
 		}
 
 		/// <summary>

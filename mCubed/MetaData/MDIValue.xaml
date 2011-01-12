@@ -5,9 +5,9 @@
 	<UserControl.Resources>
 		<ResourceDictionary Source="../Resources/Resources.xaml"/>
 	</UserControl.Resources>
-	<Grid DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" ToolTip="{Binding Value.Value}">
+	<Grid DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" ToolTip="{Binding Value.Value}" x:Name="ChildGrid">
 		<Grid.Resources>
-			<CollectionViewSource Source="{Binding Path=Alternatives}" x:Key="AltCVS">
+			<CollectionViewSource Source="{Binding Path=Alternatives}" Filter="OnFilterAutoCompleteItem" x:Key="AutoCompleteViewSource">
 				<CollectionViewSource.GroupDescriptions>
 					<PropertyGroupDescription PropertyName="IsSuggestion"/>
 				</CollectionViewSource.GroupDescriptions>
@@ -51,7 +51,7 @@
 		<Popup PlacementTarget="{Binding ElementName=ValueTextBox}" Placement="Bottom" PopupAnimation="Scroll" AllowsTransparency="True" IsOpen="{Binding IsAutoCompleteOpen}">
 			<Border>
 				<ScrollViewer MinHeight="100" MaxHeight="200" Width="300" Focusable="False" IsTabStop="False" VerticalScrollBarVisibility="Auto">
-					<ItemsControl ItemsSource="{Binding Source={StaticResource AltCVS}}" Focusable="False" IsTabStop="False" x:Name="AutoCompleteItems">
+					<ItemsControl ItemsSource="{Binding Source={StaticResource AutoCompleteViewSource}}" Focusable="False" IsTabStop="False" x:Name="AutoCompleteItems">
 						<ItemsControl.GroupStyle>
 							<GroupStyle HidesIfEmpty="True">
 								<GroupStyle.ContainerStyle>
@@ -81,7 +81,7 @@
 						</ItemsControl.GroupStyle>
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
-								<ListBoxItem Style="{DynamicResource AutoCompleteItem}" Cursor="Hand" IsSelected="{Binding IsSelected}" MouseEnter="OnValueMouseEnter" MouseLeftButtonUp="OnValueSelected" Content="{Binding Value}" />
+								<ListBoxItem Style="{DynamicResource AutoCompleteItem}" Cursor="Hand" controls:SelectorExtension.IsSelectable="{Binding IsSelected}" MouseEnter="OnAutoCompleteItemEntered" MouseLeftButtonUp="OnAutoCompleteItemSelected" Content="{Binding Value}" />
 							</DataTemplate>
 						</ItemsControl.ItemTemplate>
 					</ItemsControl>

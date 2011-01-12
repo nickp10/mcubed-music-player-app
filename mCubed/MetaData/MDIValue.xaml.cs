@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,6 +22,7 @@ namespace mCubed.MetaData {
 
 		#region Data Store
 
+		private CollectionViewSource _autoCompleteViewSource;
 		private bool _customSelect = false;
 		private int _selectionLength;
 		private int _selectionStart;
@@ -61,6 +63,28 @@ namespace mCubed.MetaData {
 
 		#endregion
 
+		#region Dependency Property: SelectedAutoCompleteItem
+
+		/// <summary>
+		/// Event that handles when the selected auto-complete item changed
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private static void OnSelectedAutoCompleteItemChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e) {
+			MDIValue value = sender as MDIValue;
+			if (value != null)
+				value.OnSelectedAutoCompleteItemChanged((MDIValueContainer)e.OldValue, (MDIValueContainer)e.NewValue);
+		}
+
+		public static readonly DependencyProperty SelectedAutoCompleteItemProperty =
+		    DependencyProperty.Register("SelectedAutoCompleteItem", typeof(MDIValueContainer), typeof(MDIValue), new UIPropertyMetadata(null, new PropertyChangedCallback(OnSelectedAutoCompleteItemChanged)));
+		public MDIValueContainer SelectedAutoCompleteItem {
+			get { return (MDIValueContainer)GetValue(SelectedAutoCompleteItemProperty); }
+			set { SetValue(SelectedAutoCompleteItemProperty, value); }
+		}
+
+		#endregion
+
 		#region Dependency Property: Status
 
 		/// <summary>
@@ -97,20 +121,24 @@ namespace mCubed.MetaData {
 		#region Properties
 
 		/// <summary>
-		/// Get/set the item that is currently selected within the auto-complete
+		/// Get the auto-complete items collectoin view from the collection view source resource
 		/// </summary>
-		public MDIValueContainer SelectedAutoCompleteItem {
+		public ICollectionView AutoCompleteView {
 			get {
-				var cachedAlts = Alternatives;
-				return cachedAlts == null ? null : cachedAlts.SingleOrDefault(a => a.IsSelected);
+				var viewSource = AutoCompleteViewSource;
+				return viewSource == null ? null : viewSource.View;
 			}
-			set {
-				var cachedAlts = Alternatives;
-				if (cachedAlts != null && cachedAlts.Contains(value)) {
-					foreach (var alternative in cachedAlts.Where(a => a.IsSelected))
-						alternative.IsSelected = false;
-					value.IsSelected = true;
+		}
+
+		/// <summary>
+		/// Get the auto-complete items collection view source resource
+		/// </summary>
+		public CollectionViewSource AutoCompleteViewSource {
+			get {
+				if (_autoCompleteViewSource == null) {
+					_autoCompleteViewSource = ChildGrid.Resources["AutoCompleteViewSource"] as CollectionViewSource;
 				}
+				return _autoCompleteViewSource;
 			}
 		}
 
@@ -135,6 +163,89 @@ namespace mCubed.MetaData {
 
 			// Initialize
 			InitializeComponent();
+		}
+
+		#endregion
+
+		#region Auto-Complete Event Handlers
+
+		/// <summary>
+		/// Event that handles when the auto-complete items should be filtered
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnFilterAutoCompleteItem(object sender, FilterEventArgs e) {
+			var item = e.Item as MDIValueContainer;
+			if (item != null) {
+				e.Accepted = ValueTextBox.Text.Split(' ').All(p => item.Value.IndexOf(p, StringComparison.CurrentCultureIgnoreCase) >= 0);
+			}
+		}
+
+		/// <summary>
+		/// Event that handles when the mouse enters a given auto-complete item
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnAutoCompleteItemEntered(object sender, MouseEventArgs e) {
+			var element = sender as FrameworkElement;
+			var item = element == null ? null : element.DataContext as MDIValueContainer;
+			if (item != null) {
+				SelectedAutoCompleteItem = item;
+			}
+		}
+
+		/// <summary>
+		/// Event that handles when an item in the auto-complete box is selected
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnAutoCompleteItemSelected(object sender, MouseButtonEventArgs e) {
+			var element = sender as FrameworkElement;
+			var item = element == null ? null : element.DataContext as MDIValueContainer;
+			OnAutoCompleteItemSelected(item, true);
+		}
+
+		/// <summary>
+		/// Event that completes the selection of an auto-complete item
+		/// </summary>
+		/// <param name="autoCompleteItem">The auto-complete item that was selected</param>
+		/// <param name="selectItem">True to select all the text in the textbox after selecting the item, or false to continue without selecting it</param>
+		private void OnAutoCompleteItemSelected(MDIValueContainer autoCompleteItem, bool selectItem) {
+			if (autoCompleteItem != null) {
+				Value.Value = autoCompleteItem.Value;
+				CloseAutoComplete();
+				if (selectItem) {
+					OnStatusChanged(MetaDataValueStatus.Edit);
+					SelectAll();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Event that handles when the text has changed so the filtering of the auto-complete items needs to change as well
+		/// </summary>
+		private void OnAutoCompleteTextChanged() {
+			RefreshAutoComplete();
+		}
+
+		/// <summary>
+		/// Event that handles when the selected auto-completed item has changed
+		/// </summary>
+		/// <param name="oldValue">The value that was previously selected</param>
+		/// <param name="newValue">The value that is newly selected</param>
+		private void OnSelectedAutoCompleteItemChanged(MDIValueContainer oldValue, MDIValueContainer newValue) {
+			if (oldValue != null) {
+				oldValue.IsSelected = false;
+			}
+			if (newValue != null) {
+				newValue.IsSelected = true;
+				if (IsAutoCompleteOpen) {
+					var element = AutoCompleteItems.ItemContainerGenerator.ContainerFromItem(newValue) as FrameworkElement;
+					if (element != null) {
+						element.BringIntoView();
+					}
+				}
+			}
 		}
 
 		#endregion
@@ -208,16 +319,14 @@ namespace mCubed.MetaData {
 				}
 			} else if (IsAutoCompleteOpen) {
 				if (e.Key == Key.Escape) {
-					IsAutoCompleteOpen = false;
+					CloseAutoComplete();
 				} else if (e.Key == Key.Up) {
-					SelectedAutoCompleteItem = Alternatives.ElementBefore(SelectedAutoCompleteItem, true);
-					((FrameworkElement)AutoCompleteItems.ItemContainerGenerator.ContainerFromItem(SelectedAutoCompleteItem)).BringIntoView();
+					SelectedAutoCompleteItem = AutoCompleteView.OfType<MDIValueContainer>().ElementBefore(SelectedAutoCompleteItem, true);
 				} else if (e.Key == Key.Down) {
-					SelectedAutoCompleteItem = Alternatives.ElementAfter(SelectedAutoCompleteItem, true);
-					((FrameworkElement)AutoCompleteItems.ItemContainerGenerator.ContainerFromItem(SelectedAutoCompleteItem)).BringIntoView();
-				} else if (e.Key == Key.Enter && SelectedAutoCompleteItem != null) {
-					Value.Value = SelectedAutoCompleteItem.Value;
-					IsAutoCompleteOpen = false;
+					SelectedAutoCompleteItem = AutoCompleteView.OfType<MDIValueContainer>().ElementAfter(SelectedAutoCompleteItem, true);
+				} else if (e.Key == Key.Enter) {
+					OnAutoCompleteItemSelected(SelectedAutoCompleteItem, false);
+				} else {
 					handled = false;
 				}
 			} else {
@@ -242,7 +351,7 @@ namespace mCubed.MetaData {
 		/// Event that handles when the status changed
 		/// </summary>
 		private void OnStatusChanged(MetaDataValueStatus prevStatus) {
-			IsAutoCompleteOpen = false;
+			CloseAutoComplete();
 			if (StatusChanged != null)
 				StatusChanged(this);
 			if (prevStatus == MetaDataValueStatus.Edit)
@@ -255,6 +364,7 @@ namespace mCubed.MetaData {
 		private void OnValueChanged() {
 			if (ValueChanged != null)
 				ValueChanged(this);
+			OnAutoCompleteTextChanged();
 		}
 
 		/// <summary>
@@ -265,35 +375,6 @@ namespace mCubed.MetaData {
 		private void OnValueDeleted(object sender, MouseButtonEventArgs e) {
 			if (ValueDeleted != null)
 				ValueDeleted(this);
-		}
-
-		/// <summary>
-		/// Event that handles when the mouse enters a given auto-complete item
-		/// </summary>
-		/// <param name="sender">The sender object</param>
-		/// <param name="e">The event arguments</param>
-		private void OnValueMouseEnter(object sender, MouseEventArgs e) {
-			var element = sender as FrameworkElement;
-			var container = element == null ? null : element.DataContext as MDIValueContainer;
-			if (container != null) {
-				SelectedAutoCompleteItem = container;
-			}
-		}
-
-		/// <summary>
-		/// Event that handles when an item in the auto-complete box is selected
-		/// </summary>
-		/// <param name="sender">The sender object</param>
-		/// <param name="e">The event arguments</param>
-		private void OnValueSelected(object sender, MouseButtonEventArgs e) {
-			var element = sender as FrameworkElement;
-			var item = element == null ? null : element.DataContext as MDIValueContainer;
-			if (item != null) {
-				Value.Value = item.Value;
-				IsAutoCompleteOpen = false;
-				OnStatusChanged(MetaDataValueStatus.Edit);
-				SelectAll();
-			}
 		}
 
 		#endregion
@@ -348,10 +429,44 @@ namespace mCubed.MetaData {
 		}
 
 		/// <summary>
-		/// Display the auto-complete box there are any suggestions to display
+		/// Closes the auto-complete box and de-selects the current item
+		/// </summary>
+		public void CloseAutoComplete() {
+			if (IsAutoCompleteOpen) {
+				var currentItem = SelectedAutoCompleteItem;
+				if (currentItem != null) {
+					currentItem.IsSelected = false;
+				}
+				IsAutoCompleteOpen = false;
+			}
+		}
+
+		/// <summary>
+		/// Display the auto-complete box if there are any suggestions to display
 		/// </summary>
 		public void ShowAutoComplete() {
-			IsAutoCompleteOpen = !IsReadOnly && Alternatives != null && Alternatives.Count() > 0;
+			if (!IsAutoCompleteOpen && !IsReadOnly) {
+				IsAutoCompleteOpen = true;
+				RefreshAutoComplete();
+			}
+		}
+
+		/// <summary>
+		/// Refreshes the auto-complete view to contain the correct items with the selected item being brought into view
+		/// </summary>
+		private void RefreshAutoComplete() {
+			AutoCompleteView.Refresh();
+			var currentItem = SelectedAutoCompleteItem;
+			if (currentItem == null || AutoCompleteView.OfType<MDIValueContainer>().All(c => c != currentItem))
+				currentItem = AutoCompleteView.OfType<MDIValueContainer>().FirstOrDefault();
+			SelectedAutoCompleteItem = currentItem;
+			if (currentItem != null) {
+				currentItem.IsSelected = true;
+				var element = AutoCompleteItems.ItemContainerGenerator.ContainerFromItem(currentItem) as FrameworkElement;
+				if (element != null) {
+					element.BringIntoView();
+				}
+			}
 		}
 
 		#endregion

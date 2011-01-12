@@ -275,41 +275,45 @@
 	</Style>
 
 	<!-- ListBox Item -->
-	<Style TargetType="{x:Type ListBoxItem}">
+	<Style TargetType="{x:Type ListBoxItem}" x:Key="ListBoxItemBase">
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type ListBoxItem}">
-					<Border x:Name="Border" Style="{StaticResource {x:Type Border}}" Background="Transparent" BorderBrush="Transparent" Padding="2">
+					<Border Style="{StaticResource {x:Type Border}}" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" Padding="2">
 						<ContentPresenter/>
 					</Border>
-					<ControlTemplate.Triggers>
-						<MultiTrigger>
-							<MultiTrigger.Conditions>
-								<Condition Property="IsMouseOver" Value="True"/>
-								<Condition Property="controls:SelectorExtension.IsSelectable" Value="True"/>
-							</MultiTrigger.Conditions>
-							<MultiTrigger.Setters>
-								<Setter TargetName="Border" Property="Background" Value="{DynamicResource SelectorBrush}"/>
-								<Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource SelectorOutline}"/>
-							</MultiTrigger.Setters>
-						</MultiTrigger>
-						<MultiTrigger>
-							<MultiTrigger.Conditions>
-								<Condition Property="IsSelected" Value="True"/>
-								<Condition Property="controls:SelectorExtension.IsSelectable" Value="True"/>
-							</MultiTrigger.Conditions>
-							<MultiTrigger.Setters>
-								<Setter TargetName="Border" Property="Background" Value="{DynamicResource PressedBrush}"/>
-								<Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource PressedOutline}"/>
-							</MultiTrigger.Setters>
-						</MultiTrigger>
-						<Trigger Property="IsEnabled" Value="False">
-							<Setter Property="Foreground" Value="{DynamicResource DisabledForeground}"/>
-						</Trigger>
-					</ControlTemplate.Triggers>
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
+	</Style>
+	<Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemBase}">
+		<Setter Property="Background" Value="Transparent"/>
+		<Setter Property="BorderBrush" Value="Transparent"/>
+		<Style.Triggers>
+			<MultiTrigger>
+				<MultiTrigger.Conditions>
+					<Condition Property="IsMouseOver" Value="True"/>
+					<Condition Property="controls:SelectorExtension.IsSelectable" Value="True"/>
+				</MultiTrigger.Conditions>
+				<MultiTrigger.Setters>
+					<Setter Property="Background" Value="{DynamicResource SelectorBrush}"/>
+					<Setter Property="BorderBrush" Value="{DynamicResource SelectorOutline}"/>
+				</MultiTrigger.Setters>
+			</MultiTrigger>
+			<MultiTrigger>
+				<MultiTrigger.Conditions>
+					<Condition Property="IsSelected" Value="True"/>
+					<Condition Property="controls:SelectorExtension.IsSelectable" Value="True"/>
+				</MultiTrigger.Conditions>
+				<MultiTrigger.Setters>
+					<Setter Property="Background" Value="{DynamicResource PressedBrush}"/>
+					<Setter Property="BorderBrush" Value="{DynamicResource PressedOutline}"/>
+				</MultiTrigger.Setters>
+			</MultiTrigger>
+			<Trigger Property="IsEnabled" Value="False">
+				<Setter Property="Foreground" Value="{DynamicResource DisabledForeground}"/>
+			</Trigger>
+		</Style.Triggers>
 	</Style>
 
 	<!-- ListView -->
@@ -489,13 +493,15 @@
 	</Style>
 
 	<!-- Custom Auto-Complete Item -->
-	<Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}" x:Key="AutoCompleteItem">
+	<Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemBase}" x:Key="AutoCompleteItem">
+		<Setter Property="Focusable" Value="False"/>
+		<Setter Property="IsTabStop" Value="False"/>
 		<Setter Property="Background" Value="Transparent"/>
 		<Setter Property="BorderBrush" Value="Transparent"/>
 		<Style.Triggers>
-			<Trigger Property="IsSelected" Value="True">
-				<Setter Property="Background" Value="{DynamicResource SelectorBrush}"/>
-				<Setter Property="BorderBrush" Value="{DynamicResource SelectorOutline}"/>
+			<Trigger Property="controls:SelectorExtension.IsSelectable" Value="True">
+				<Setter Property="Background" Value="{DynamicResource PressedBrush}"/>
+				<Setter Property="BorderBrush" Value="{DynamicResource PressedOutline}"/>
 			</Trigger>
 		</Style.Triggers>
 	</Style>
