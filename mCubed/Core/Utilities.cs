@@ -548,17 +548,34 @@ namespace mCubed.Core {
 		/// <param name="defaultValue">The default or fallback value if the conversion fails</param>
 		/// <returns>The string converted into the type, or the given default value</returns>
 		public static object Parse(this string str, Type type, object defaultValue) {
+			bool success;
+			return str.Parse(type, defaultValue, out success);
+		}
+
+		/// <summary>
+		/// Parse a given string value into the specified type
+		/// </summary>
+		/// <param name="str">The string value to convert</param>
+		/// <param name="type">The type to convert the string into</param>
+		/// <param name="defaultValue">The default or fallback value if the conversion fails</param>
+		/// <param name="success">True if the parse succeeded, or false if it failed and the default value had to be returned</param>
+		/// <returns>The string converted into the type, or the given default value</returns>
+		public static object Parse(this string str, Type type, object defaultValue, out bool success) {
 			// Get the parse method
+			success = false;
 			var method = typeof(Utilities).GetMethods().
 				Where(m => m.IsGenericMethod).
 				Where(m => m.Name == "Parse").
-				Where(m => m.GetParameters().Length == 2).
+				Where(m => m.GetParameters().Length == 3).
 				Where(m => m.GetParameters()[0].ParameterType == typeof(string)).Single();
 			if (method == null)
 				return defaultValue;
 
 			// Invoke the parse method
-			return method.MakeGenericMethod(type).Invoke(null, new[] { str, defaultValue });
+			var objs = new[] { str, defaultValue, false };
+			var returnValue = method.MakeGenericMethod(type).Invoke(null, objs);
+			success = bool.Parse(objs[2].ToString());
+			return returnValue;
 		}
 
 		/// <summary>
@@ -579,11 +596,26 @@ namespace mCubed.Core {
 		/// <param name="defaultValue">The default or fallback value if the conversion failed</param>
 		/// <returns>The string converted into the type, or the given default value</returns>
 		public static T Parse<T>(this string str, T defaultValue) {
+			bool success;
+			return str.Parse(defaultValue, out success);
+		}
+
+		/// <summary>
+		/// Parse a given string value into the specified type
+		/// </summary>
+		/// <typeparam name="T">The type to convert the string into</typeparam>
+		/// <param name="str">The string value to convert</param>
+		/// <param name="defaultValue">The default or fallback value if the conversion failed</param>
+		/// <param name="success">True if the parse succeeded, or false if it failed and the default value had to be returned</param>
+		/// <returns>The string converted into the type, or the given default value</returns>
+		public static T Parse<T>(this string str, T defaultValue, out bool success) {
 			// Check the input
+			success = false;
 			if (str == null)
 				return defaultValue;
 
 			// Attempt to convert
+			success = true;
 			try {
 				// Attempt to keep it the same
 				if (str is T)
@@ -598,7 +630,16 @@ namespace mCubed.Core {
 				// Attempt to parse it into an enum
 				if (type.IsEnum)
 					return (T)(object)Enum.Parse(type, str);
+
+				// Attempt to get the nullable parse method
+				if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>)) {
+					bool nullableSuccess;
+					T val = (T)Parse(str, new NullableConverter(type).UnderlyingType, null, out nullableSuccess);
+					if (nullableSuccess)
+						return val;
+				}
 			} catch { }
+			success = false;
 			return defaultValue;
 		}
 

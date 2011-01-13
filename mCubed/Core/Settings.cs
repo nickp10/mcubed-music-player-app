@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Xml.Linq;
 
 namespace mCubed.Core {
@@ -20,6 +21,7 @@ namespace mCubed.Core {
 		private IEnumerable<Library> _libraries = Enumerable.Empty<Library>();
 		private Library _libraryCurrent;
 		private Library _librarySelected;
+		private Point? _miniLocation;
 		private int _selectedTab = (int)TabOption.Help;
 		private bool _showMDIManager = true;
 		private bool _showMini;
@@ -96,6 +98,14 @@ namespace mCubed.Core {
 		public Library LibrarySelected {
 			get { return _librarySelected; }
 			set { this.SetAndNotify(ref _librarySelected, value, "LibrarySelected"); }
+		}
+
+		/// <summary>
+		/// Get/set the location for the mini player for startup and closing purposes only [Bindable]
+		/// </summary>
+		public Point? MiniLocation {
+			get { return _miniLocation; }
+			set { this.SetAndNotify(ref _miniLocation, value, "MiniLocation"); }
 		}
 
 		/// <summary>
@@ -236,6 +246,7 @@ namespace mCubed.Core {
 				element.Element("Libraries").Elements().Select(GenerateLibrary).Where(l => l != null && !Libraries.Contains(l)).Perform(l => AddLibrary(l));
 			ShowMDIManager = element.Parse("ShowMDIManager", true);
 			ShowMini = element.Parse("ShowMini", false);
+			MiniLocation = element.Parse<Point?>("MiniLocation", null);
 			DirectoryMediaDefault = element.Parse("DirectoryMediaDefault", Environment.CurrentDirectory);
 			DirectoryPictureDefault = element.Parse("DirectoryPictureDefault", Environment.CurrentDirectory);
 			SelectedTabEnum = element.Parse("SelectedTab", SelectedTabEnum);
@@ -304,6 +315,7 @@ namespace mCubed.Core {
 			return new XElement("mCubed",
 				new XAttribute("ShowMDIManager", ShowMDIManager),
 				new XAttribute("ShowMini", ShowMini),
+				new XAttribute("MiniLocation", ((object)MiniLocation ?? "").ToString()),
 				new XAttribute("DirectoryMediaDefault", DirectoryMediaDefault ?? ""),
 				new XAttribute("DirectoryPictureDefault", DirectoryPictureDefault ?? ""),
 				new XAttribute("SelectedTab", SelectedTabEnum.ToString() ?? ""),
@@ -360,7 +372,11 @@ namespace mCubed.Core {
 				LibrarySelected = LibraryCurrent;
 
 			// The settings have loaded
-			IsLoaded = true;
+			Utilities.MainProcessManager.AddProcess(p =>
+			{
+				IsLoaded = true;
+				p.CompletedCount++;
+			}, "Finalizing startup...", 1);
 		}
 
 		/// <summary>

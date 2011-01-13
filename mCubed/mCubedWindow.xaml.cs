@@ -91,6 +91,11 @@ namespace mCubed {
 				!mCubedError.ShowConfirm("There is currently one or more processes running. Closing the application now may corrupt data. Continue?")) {
 				e.Cancel = true;
 			} else {
+				if (Utilities.MainSettings.ShowMini) {
+					Utilities.MainSettings.MiniLocation = new Point(Left / SystemParameters.VirtualScreenWidth, Top / SystemParameters.VirtualScreenHeight);
+				} else {
+					Utilities.MainSettings.MiniLocation = null;
+				}
 				Utilities.MainSettings.Save();
 				GlobalKeyboardHook.Dispose();
 			}
@@ -122,6 +127,11 @@ namespace mCubed {
 				WindowState = WindowState.Normal;
 				SizeToContent = SizeToContent.WidthAndHeight;
 				ResizeMode = ResizeMode.NoResize;
+				if (Utilities.MainSettings.MiniLocation.HasValue) {
+					Top = Utilities.MainSettings.MiniLocation.Value.Y * SystemParameters.VirtualScreenHeight;
+					Left = Utilities.MainSettings.MiniLocation.Value.X * SystemParameters.VirtualScreenWidth;
+					Utilities.MainSettings.MiniLocation = null;
+				}
 			}
 
 			// Show the full player fixing the window state and positioning
