@@ -14,7 +14,7 @@ namespace mCubed {
 	public partial class mCubedSecondary : Window {
 		#region Data Store
 
-		private static DateTime _releaseDate = new DateTime(2010, 10, 17);
+		private static DateTime _releaseDate = new DateTime(2011, 1, 12);
 
 		#endregion
 
@@ -259,8 +259,8 @@ namespace mCubed {
 		#region Credits
 
 		private static readonly IEnumerable _credits = new[] {
-			new { Author = "Nick Paddock", Project = "mCubed Core", Version = "Music Meta-data Manager (Beta 2)", URL = "http://teknickal.blogspot.com/" },
-			new { Author = "Nick Paddock", Project = "mCubed UI", Version = "Music Meta-data Manager (Beta 2)", URL = "http://teknickal.blogspot.com/" },
+			new { Author = "Nick Paddock", Project = "mCubed Core", Version = "Music Meta-data Manager (Beta 3)", URL = "http://mcubed.sourceforge.net/" },
+			new { Author = "Nick Paddock", Project = "mCubed UI", Version = "Music Meta-data Manager (Beta 3)", URL = "http://mcubed.sourceforge.net/" },
 			new { Author = "Mark James", Project = "Silk Icon Set", Version = "1.3", URL = "http://www.famfamfam.com/lab/icons/silk/" },
 			new { Author = "Banshee Development Team", Project = "TagLib#", Version = "2.0.3.2", URL = "http://developer.novell.com/wiki/index.php/TagLib_Sharp" }
 		};
