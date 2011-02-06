@@ -356,12 +356,12 @@ namespace mCubed.Core {
 				if (MetaDataFormula.MetaDataProperties.Any(p => p.Path == "MetaData" && p.Property.Name == e.PropertyName)) {
 					// Reset the file in the collection
 					MediaFiles.Reset(info.Parent);
+				}
 
-					// Send a notification to anyone listening
-					var tempHandler = MediaFilePropertyChanged;
-					if (tempHandler != null) {
-						tempHandler(info.Parent, e.PropertyName);
-					}
+				// Send a notification to anyone listening
+				var tempHandler = MediaFilePropertyChanged;
+				if (tempHandler != null) {
+					tempHandler(info.Parent, e.PropertyName);
 				}
 			}
 		}
