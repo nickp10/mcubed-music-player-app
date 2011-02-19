@@ -153,6 +153,19 @@ namespace mCubed.Controls {
 		}
 
 		/// <summary>
+		/// Event that handles when the media file should be shown in Windows Explorer
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaFileShowExplorer(object sender, RoutedEventArgs e) {
+			var ele = sender as FrameworkElement;
+			var file = ele == null ? null : ele.DataContext as MediaFile;
+			if (file != null) {
+				System.Diagnostics.Process.Start("explorer.exe", "/select,\"" + file.MetaData.FilePath + "\"");
+			}
+		}
+
+		/// <summary>
 		/// Event that handles when the selected media should be copied to a new location
 		/// </summary>
 		/// <param name="sender">The sender object</param>

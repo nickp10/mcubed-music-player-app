@@ -456,7 +456,7 @@
 				<TabItem Header="About mCubed">
 					<ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto">
 						<TextBlock TextWrapping="Wrap" Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}, Path=ViewportWidth}">
-							<Run FontWeight="Bold">mCubed</Run> is an all-inclusive media manager. The application is described by its version name.
+							<Run FontWeight="Bold">mCubed For Windows</Run> is an all-inclusive media manager. The application is described by its version name.
 							The version name will always fulfill the acronym of mCubed (three M's). The first release of mCubed is Music Meta-data
 							Manager. This means that this version is only for meta-data purposes for music files. Future releases of mCubed will, 
 							hopefully, improve upon this release by expanding the acronym to be broader. The ultimate goal is Multi-Media Manager.
@@ -481,8 +481,9 @@
 							This particular beta added many great features and improvements, but still lacked perfection, and it also included the biggest
 							feature in mCubed's history: the greatly improved library viewer. This marked the second major milestone in its ongoing history.
 							Shortly thereafter, a third beta was released improving and polishing many features throughout the application. This release
-							is the closest to an official release that mCubed has been. With these milestones accomplished, the future of mCubed only holds
-							room for improvement.
+							is the closest to an official release that mCubed has been. A month later, a fourth beta was released significantly improving
+							the performance of the application. It also added several minor changes and features. With these milestones accomplished, the
+							future of mCubed only holds room for improvement.
 						</TextBlock>
 					</ScrollViewer>
 				</TabItem>

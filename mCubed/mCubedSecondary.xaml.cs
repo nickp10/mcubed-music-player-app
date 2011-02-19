@@ -14,7 +14,7 @@ namespace mCubed {
 	public partial class mCubedSecondary : Window {
 		#region Data Store
 
-		private static DateTime _releaseDate = new DateTime(2011, 1, 12);
+		private static DateTime _releaseDate = new DateTime(2011, 2, 19);
 
 		#endregion
 
@@ -192,7 +192,7 @@ namespace mCubed {
 			new { Shortcut = "Ctrl + A", Description = "Selects all the text within a textbox, or selects all the media within the library viewer." },
 			new { Shortcut = "Ctrl + C", Description = "Copies the selected text within a textbox." },
 			new { Shortcut = "Ctrl + D", Description = "Deletes the current value in the meta-data manager if the field supports multiple values, or clears the current value otherwise." },
-			new { Shortcut = "Ctrl + E", Description = "Cancels or undo's all the changes within the meta-data manager (note: does not remove manually markings)." },
+			new { Shortcut = "Ctrl + E", Description = "Cancels or undo's all the changes within the meta-data manager." },
 			//new { Shortcut = "Ctrl + F", Description = "Moves the keyboard focus to the search/find field to search/find media within the selected library." },
 			new { Shortcut = "Ctrl + H", Description = "Toggles the shuffle status of the current library." },
 			new { Shortcut = "Ctrl + I", Description = "Toggles the visibility of the meta-data manager." },
@@ -207,7 +207,11 @@ namespace mCubed {
 			new { Shortcut = "Ctrl + U / Shift + Ctrl + U", Description = "Cancels or undo's the change to the current field within the meta-data manager (with the shift key determining if the previous or next field should be given focus)." },
 			new { Shortcut = "Ctrl + V", Description = "Pastes the current text stored in the clipboard." },
 			new { Shortcut = "Ctrl + X", Description = "Copies and deletes the selected text within a textbox." },
-			new { Shortcut = "Ctrl + Z", Description = "Cancels or undo's the most recent change within a textbox." }
+			new { Shortcut = "Ctrl + Z", Description = "Cancels or undo's the most recent change within a textbox." },
+			new { Shortcut = "Alt + Left Arrow", Description = "Gives the field to left of the current field keyboard focus within the meta-data manager." },
+			new { Shortcut = "Alt + Right Arrow", Description = "Gives the field to right of the current field keyboard focus within the meta-data manager." },
+			new { Shortcut = "Alt + Up Arrow", Description = "Gives the field above the current field keyboard focus within the meta-data manager." },
+			new { Shortcut = "Alt + Down Arrow", Description = "Gives the field below the current field keyboard focus within the meta-data manager." }
 		};
 
 		/// <summary>
@@ -259,10 +263,10 @@ namespace mCubed {
 		#region Credits
 
 		private static readonly IEnumerable _credits = new[] {
-			new { Author = "Nick Paddock", Project = "mCubed Core", Version = "Music Meta-data Manager (Beta 3)", URL = "http://mcubed.sourceforge.net/" },
-			new { Author = "Nick Paddock", Project = "mCubed UI", Version = "Music Meta-data Manager (Beta 3)", URL = "http://mcubed.sourceforge.net/" },
+			new { Author = "Nick Paddock", Project = "mCubed Core", Version = "Music Meta-data Manager (Beta 4)", URL = "http://mcubed.sourceforge.net/" },
+			new { Author = "Nick Paddock", Project = "mCubed UI", Version = "Music Meta-data Manager (Beta 4)", URL = "http://mcubed.sourceforge.net/" },
 			new { Author = "Mark James", Project = "Silk Icon Set", Version = "1.3", URL = "http://www.famfamfam.com/lab/icons/silk/" },
-			new { Author = "Banshee Development Team", Project = "TagLib#", Version = "2.0.3.2", URL = "http://developer.novell.com/wiki/index.php/TagLib_Sharp" }
+			new { Author = "Banshee Development Team", Project = "TagLib#", Version = "2.0.3.7", URL = "http://developer.novell.com/wiki/index.php/TagLib_Sharp" }
 		};
 
 		/// <summary>

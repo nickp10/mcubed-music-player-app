@@ -38,6 +38,7 @@
 					<ContextMenu x:Key="ListView_ContextMenu">
 						<!-- Active Media Options -->
 						<MenuItem Header="Play" Click="OnMediaFilePlay"/>
+						<MenuItem Header="Show in Windows Explorer" Click="OnMediaFileShowExplorer"/>
 						<Separator/>
 
 						<!-- Selected Media Options -->

@@ -378,7 +378,7 @@ namespace mCubed.Core {
 		/// <param name="field">The field that will be changing</param>
 		/// <param name="value">The new value for the field</param>
 		/// <param name="properties">The property names of the properties that have changed</param>
-		public static void SetAndNotify<T>(this INotifyPropertyChanged sender, ref T field, T value, params string[] properties) {
+		public static void SetAndNotify<T>(this IExternalNotifyPropertyChanged sender, ref T field, T value, params string[] properties) {
 			SetAndNotify(sender, ref field, value, null, null, properties);
 		}
 
@@ -392,7 +392,7 @@ namespace mCubed.Core {
 		/// <param name="before">The action that should be performed before the value is set</param>
 		/// <param name="after">The action that should be performed after the value is set</param>
 		/// <param name="properties">The property names of the properties that have changed</param>
-		public static void SetAndNotify<T>(this INotifyPropertyChanged sender, ref T field, T value, Action before, Action after, params string[] properties) {
+		public static void SetAndNotify<T>(this IExternalNotifyPropertyChanged sender, ref T field, T value, Action before, Action after, params string[] properties) {
 			if (sender != null && sender.Set(ref field, value, before, after))
 				sender.OnPropertyChanged(properties);
 		}
@@ -402,26 +402,56 @@ namespace mCubed.Core {
 		/// </summary>
 		/// <param name="sender">The object that the properties have changed on</param>
 		/// <param name="properties">The property names of the properties that have changed</param>
-		public static void OnPropertyChanged(this INotifyPropertyChanged sender, params string[] properties) {
-			// Check the sender and get the event information
-			if (sender == null)
+		public static void OnPropertyChanged(this IExternalNotifyPropertyChanged sender, params string[] properties) {
+			// Check the sender
+			if (sender == null) {
 				return;
+			}
+
+			// Get the event handler
+			var handler = sender.PropertyChangedHandler;
+			if (handler == null) {
+				return;
+			}
+
+			// Invoke each property changed by using the event handler
+			foreach (var property in properties.Select(p => new PropertyChangedEventArgs(p))) {
+				handler(sender, property);
+			}
+		}
+
+		/// <summary>
+		/// Notify other objects that a property or properties have changed on the sender
+		/// </summary>
+		/// <param name="sender">The object that the properties have changed on</param>
+		/// <param name="properties">The property names of the properties that have changed</param>
+		public static void OnPropertyChanged(this INotifyPropertyChanged sender, params string[] properties) {
+			// Check the sender
+			if (sender == null) {
+				return;
+			}
+
+			// Get the event field
 			Type eventType = sender.GetType();
 			FieldInfo eventField = null;
-			while (eventType != null && (eventField = eventType.GetField("PropertyChanged", BindingFlags.Instance | BindingFlags.NonPublic)) == null)
+			while (eventType != null && (eventField = eventType.GetField("PropertyChanged", BindingFlags.Instance | BindingFlags.NonPublic)) == null) {
 				eventType = eventType.BaseType;
+			}
 
 			// Check the event and get the invocation information
-			if (eventType == null || eventField == null)
+			if (eventType == null || eventField == null) {
 				return;
+			}
 			var eventDelegate = eventField.GetValue(sender) as MulticastDelegate;
 			var invocationList = (eventDelegate == null) ? null : eventDelegate.GetInvocationList();
 
 			// Invoke each property changed on each event listener
 			if (invocationList != null && invocationList.Length > 0) {
-				foreach (var property in properties.Select(p => new PropertyChangedEventArgs(p)))
-					foreach (var handler in invocationList)
+				foreach (var property in properties.Select(p => new PropertyChangedEventArgs(p))) {
+					foreach (var handler in invocationList) {
 						handler.Method.Invoke(handler.Target, new object[] { sender, property });
+					}
+				}
 			}
 		}
 

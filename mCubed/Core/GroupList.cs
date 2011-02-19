@@ -1283,27 +1283,6 @@ namespace mCubed.Core {
 
 			// Just add the notification otherwise
 			Properties.Add(notification);
-
-			//foreach (string property in properties) {
-			//     if (_properties.ContainsKey(propertyChangedList)) {
-			//          Dictionary<GroupList<T>, List<string>> propertyDict = _properties[propertyChangedList];
-			//          if (propertyDict.ContainsKey(senderList)) {
-			//               List<string> propertyList = propertyDict[senderList];
-			//               if (!propertyList.Contains(property))
-			//                    propertyList.Add(property);
-			//          } else {
-			//               List<string> propertyList = new List<string>();
-			//               propertyList.Add(property);
-			//               propertyDict[senderList] = propertyList;
-			//          }
-			//     } else {
-			//          List<string> propertyList = new List<string>();
-			//          propertyList.Add(property);
-			//          Dictionary<GroupList<T>, List<string>> propertyDict = new Dictionary<GroupList<T>, List<string>>();
-			//          propertyDict[senderList] = propertyList;
-			//          _properties[propertyChangedList] = propertyDict;
-			//     }
-			//}
 		}
 
 		#endregion

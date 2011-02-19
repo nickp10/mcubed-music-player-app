@@ -23,7 +23,7 @@ namespace mCubed.MetaData {
 		#region Data Store
 
 		private CollectionViewSource _autoCompleteViewSource;
-		private bool _customSelect = false;
+		private bool _customSelect;
 		private int _selectionLength;
 		private int _selectionStart;
 		private double _scrollOffset;
@@ -324,8 +324,9 @@ namespace mCubed.MetaData {
 					SelectedAutoCompleteItem = AutoCompleteView.OfType<MDIValueContainer>().ElementBefore(SelectedAutoCompleteItem, true);
 				} else if (e.Key == Key.Down) {
 					SelectedAutoCompleteItem = AutoCompleteView.OfType<MDIValueContainer>().ElementAfter(SelectedAutoCompleteItem, true);
-				} else if (e.Key == Key.Enter) {
+				} else if (e.Key == Key.Enter || e.Key == Key.Tab) {
 					OnAutoCompleteItemSelected(SelectedAutoCompleteItem, false);
+					handled = e.Key == Key.Enter;
 				} else {
 					handled = false;
 				}

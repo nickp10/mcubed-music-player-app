@@ -32,7 +32,7 @@ namespace mCubed.MetaData {
 		#region Data Store
 
 		private string _currentKey;
-		private IEnumerable<MDIField> _metaDataFields = Enumerable.Empty<MDIField>();
+		private MDIField[][] _metaDataFields;
 		private IEnumerable<MetaDataInfo> _metaDataInfo = Enumerable.Empty<MetaDataInfo>();
 		private Dictionary<string, IEnumerable<MetaDataInfo>> _metaDataInfoDictionary = new Dictionary<string, IEnumerable<MetaDataInfo>>();
 
@@ -62,8 +62,7 @@ namespace mCubed.MetaData {
 		/// Get the meta data fields that are contained within this manager [Bindable]
 		/// </summary>
 		public IEnumerable<MDIField> MetaDataFields {
-			get { return _metaDataFields; }
-			private set { this.SetAndNotify(ref _metaDataFields, (value ?? Enumerable.Empty<MDIField>()).ToArray(), "MetaDataFields"); }
+			get { return _metaDataFields.SelectMany(f => f); }
 		}
 
 		/// <summary>
@@ -124,8 +123,10 @@ namespace mCubed.MetaData {
 		/// <param name="sender">The sender object</param>
 		/// <param name="e">The event arguments</param>
 		private void OnLoaded(object sender, RoutedEventArgs e) {
-			MetaDataFields = new[] { ManagerPanel1, ManagerPanel2 }.SelectMany(p => p.Children.OfType<MDIField>());
+			_metaDataFields = new[] { ManagerPanel1, ManagerPanel2 }.Select(p => p.Children.OfType<MDIField>().ToArray()).ToArray();
+			this.OnPropertyChanged("MetaDataFields");
 			foreach (var field in MetaDataFields) {
+				field.SpecializedNavigation += new Action<MDIField, int, int>(OnSpecializedNavigation);
 				field.SpecializedTabOut += new Action<MDIField, bool>(OnSpecializedTabOut);
 			}
 			OnMetaDataInfoChanged(null, null);
@@ -140,9 +141,10 @@ namespace mCubed.MetaData {
 		private void OnMDIKeyDown(object sender, KeyEventArgs e) {
 			// Setup a temporary handled check
 			bool handled = true;
+			bool ctrl = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
 
 			// Sort through the keyboard shortcuts
-			if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control) {
+			if (ctrl) {
 				if (e.Key == Key.S) {
 					OnSave(null, null);
 				} else if (e.Key == Key.E) {
@@ -265,6 +267,45 @@ namespace mCubed.MetaData {
 					// Perform some readjustments
 					ReloadPictures();
 				}, "Saving meta-data information", updateMDI.Length);
+			}
+		}
+
+		/// <summary>
+		/// Event that handles when the MDI field should navigate to the field at the given relative offset
+		/// </summary>
+		/// <param name="field">The field that is acting as the place of origin for the navigation</param>
+		/// <param name="xOffset">The number of fields in the x-direction to move</param>
+		/// <param name="yOffset">The number of fields in the y-direction to move</param>
+		private void OnSpecializedNavigation(MDIField field, int xOffset, int yOffset) {
+			// Locate the current field's location
+			int xCurrent = -1, yCurrent = -1;
+			for (int i = 0; i < _metaDataFields.Length; i++) {
+				for (int j = 0; j < _metaDataFields[i].Length; j++) {
+					if (_metaDataFields[i][j] == field) {
+						xCurrent = i;
+						yCurrent = j;
+						break;
+					}
+				}
+			}
+
+			// Find the element that should be focused and focus it
+			if (xCurrent != -1 && yCurrent != -1 && _metaDataFields.Length > 0) {
+				int xNew = xCurrent + xOffset;
+				while (xNew < 0) {
+					xNew += _metaDataFields.Length;
+				}
+				var fields = _metaDataFields[xNew % _metaDataFields.Length];
+				if (fields.Length > 0) {
+					int yNew = yCurrent + yOffset;
+					while (yNew < 0) {
+						yNew += fields.Length;
+					}
+					var newField = fields[yNew % fields.Length];
+					if (newField != null) {
+						newField.SpecializedTabInto(true);
+					}
+				}
 			}
 		}
 

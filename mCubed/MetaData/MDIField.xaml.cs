@@ -187,6 +187,7 @@ namespace mCubed.MetaData {
 		#region Events
 
 		public event Action<MDIField, bool> SpecializedTabOut;
+		public event Action<MDIField, int, int> SpecializedNavigation;
 
 		#endregion
 
@@ -216,14 +217,28 @@ namespace mCubed.MetaData {
 			// Setup a temporary handled check
 			bool handled = true;
 			bool shift = (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
+			bool ctrl = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+			bool alt = (Keyboard.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt;
 
 			// Sort through the keyboard shortcuts
-			if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control) {
+			if (ctrl) {
 				if (e.Key == Key.M) {
 					IsMarked = !IsMarked;
 				} else if (e.Key == Key.U) {
 					UndoChange();
 					OnSpecializedTabOut(!shift);
+				} else {
+					handled = false;
+				}
+			} else if (alt) {
+				if (e.Key == Key.Left || e.SystemKey == Key.Left) {
+					OnSpecializedNavigation(-1, 0);
+				} else if (e.Key == Key.Right || e.SystemKey == Key.Right) {
+					OnSpecializedNavigation(1, 0);
+				} else if (e.Key == Key.Up || e.SystemKey == Key.Up) {
+					OnSpecializedNavigation(0, -1);
+				} else if (e.Key == Key.Down || e.SystemKey == Key.Down) {
+					OnSpecializedNavigation(0, 1);
 				} else {
 					handled = false;
 				}
@@ -295,12 +310,26 @@ namespace mCubed.MetaData {
 		}
 
 		/// <summary>
+		/// Event that handles when the MDI field should navigate to the field at the given relative offset
+		/// </summary>
+		/// <param name="xOffset">The number of fields in the x-direction to move</param>
+		/// <param name="yOffset">The number of fields in the y-direction to move</param>
+		private void OnSpecializedNavigation(int xOffset, int yOffset) {
+			var tempHandler = SpecializedNavigation;
+			if (tempHandler != null) {
+				tempHandler(this, xOffset, yOffset);
+			}
+		}
+
+		/// <summary>
 		/// Event that handles when the MDI field should be tabbed out using the special tab command
 		/// </summary>
 		/// <param name="direction">True if the next element should be forward, or false for backward</param>
 		private void OnSpecializedTabOut(bool forward) {
-			if (SpecializedTabOut != null)
-				SpecializedTabOut(this, forward);
+			var tempHandler = SpecializedTabOut;
+			if (tempHandler != null) {
+				tempHandler(this, forward);
+			}
 		}
 
 		/// <summary>
@@ -483,8 +512,9 @@ namespace mCubed.MetaData {
 				NewValue = value.Select(s => new MDIValueContainer { Value = s }).ToArray();
 
 				// Restore the keyboard input appropriately
-				if (reselect)
+				if (reselect) {
 					CurrentSelection = selection;
+				}
 
 				// Undo the manually marking, if any
 				IsMarked = false;
