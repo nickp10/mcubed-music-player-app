@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Text;
 
 namespace mCubed.Core {
 	public class MetaDataFormula : IExternalNotifyPropertyChanged, IExternalNotifyPropertyChanging, IDisposable {
@@ -228,6 +229,54 @@ namespace mCubed.Core {
 
 		#endregion
 
+		#region Static Formula Method Definitions
+
+		private static readonly Dictionary<string, Func<string, string[], string>> methods = new Dictionary<string, Func<string, string[], string>>() {
+			{ "pad-left", (s, p) => {
+				if (p.Length == 2 && p[1].Length == 1) {
+					int padding = p[0].TryParse<int>();
+					char pad = p[1][0];
+					if (padding > 0) {
+						s = s.PadLeft(padding, pad);
+					}
+				}
+				return s;
+			} },
+			{ "pad-right", (s, p) => {
+				if (p.Length == 2 && p[1].Length == 1) {
+					int padding = p[0].TryParse<int>();
+					char pad = p[1][0];
+					if (padding > 0) {
+						s = s.PadRight(padding, pad);
+					}
+				}
+				return s;
+			} },
+			{ "upper", (s, p) => {
+				return s.ToUpper();
+			} },
+			{ "lower", (s, p) => {
+				return s.ToLower();
+			} },
+			{ "sub", (s, p) => {
+				if (p.Length == 1) {
+					int start = p[0].TryParse<int>();
+					if (start >= 0 && start <= s.Length) {
+						s = s.Substring(start);
+					}
+				} else if (p.Length == 2) {
+					int start = p[0].TryParse<int>();
+					int length = p[1].TryParse<int>();
+					if (start >= 0 && length >=0 && (start + length) <= s.Length) {
+						s = s.Substring(start, length);
+					}
+				}
+				return s;
+			} }
+		};
+
+		#endregion
+
 		#region Data Store
 
 		private MediaFile _mediaFile;
@@ -354,39 +403,38 @@ namespace mCubed.Core {
 					}
 				}
 				var formulaParts = formula.Split(':');
-				var padding = 0;
-				if (formulaParts.Length >= 2)
-					padding = formulaParts[1].TryParse<int>();
 				var attribute = items.FirstOrDefault(f => f.Formula.Equals(formulaParts[0], StringComparison.CurrentCultureIgnoreCase));
-				if (attribute != null)
-					retValue = GetValue(attribute, padding);
+				if (attribute != null) {
+					retValue = GetValue(attribute, formulaParts.Skip(1).ToArray());
+				}
 			}
 			return retValue;
 		}
 
 		/// <summary>
-		/// Get a value out of the given formula property
+		/// Get a value using the meta-data attribute to retreive the initial value and then pass it through a series of method calls
 		/// </summary>
-		/// <param name="property">The property to generate a value for</param>
-		/// <returns>The value from the property</returns>
-		private string GetValue(MetaDataAttribute property) {
-			return GetValue(property, 0);
-		}
-
-		/// <summary>
-		/// Get a value out of the given formula property
-		/// </summary>
-		/// <param name="property">The property to generate a value for</param>
-		/// <param name="minPadding">The minimum number of characters that will be returned, spaces for strings and zeros for numbers</param>
-		/// <returns>The value from the property</returns>
-		private string GetValue(MetaDataAttribute property, int minPadding) {
+		/// <param name="property">The property to retrieve the initial value from</param>
+		/// <param name="methodCalls">The series of method calls to perfom on the initial value</param>
+		/// <returns>The value of the property after it has passed through all the method calls</returns>
+		private string GetValue(MetaDataAttribute property, string[] methodCalls) {
+			// Get the initial value
 			object obj = typeof(MDFFile).GetProperty(property.Path).GetValue(this, null);
 			object value = property.Property.GetValue(obj, null);
-			if (value == null)
-				return "".PadLeft(minPadding);
-			string retValue = value.ToString() ?? "";
-			char paddingChar = value.GetType().IsNumericType() ? '0' : ' ';
-			retValue = retValue.PadLeft(minPadding, paddingChar);
+			string retValue = (value == null ? "" : (value.ToString() ?? ""));
+
+			// Execute methods on the value
+			foreach (string methodCall in methodCalls) {
+				string[] methodParts = methodCall.Split(',');
+				string methodName = methodParts[0];
+				string[] methodParams = methodParts.Skip(1).ToArray();
+				if (methods.ContainsKey(methodName)) {
+					var method = methods[methodName];
+					if (method != null) {
+						retValue = method(retValue, methodParams) ?? "";
+					}
+				}
+			}
 			return retValue;
 		}
 
@@ -399,7 +447,7 @@ namespace mCubed.Core {
 				return Parent.FallbackValue;
 			} else {
 				string newValue = Parent.Formula;
-				foreach (var match in Regex.Matches(Parent.Formula, @"%([\w\.\?\:]*)%").OfType<Match>()) {
+				foreach (var match in Regex.Matches(Parent.Formula, @"%([\w\.\?\:\-\,]*)%").OfType<Match>()) {
 					var matchString = match.Value;
 					var replaceString = matchString;
 					var formulaProps = match.Groups[1].Value.Split('?');

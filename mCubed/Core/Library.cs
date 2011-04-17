@@ -119,7 +119,7 @@ namespace mCubed.Core {
 		private readonly ColumnSettings _columnSettings = new ColumnSettings();
 		private string _displayName;
 		private IEnumerable<string> _directories = Enumerable.Empty<string>();
-		private string _filenameForumla = "%FirstAlbumPerformer?FirstPerformer%" + Path.DirectorySeparatorChar + "%Album%" + Path.DirectorySeparatorChar + "%Track:2% %Title%";
+		private string _filenameForumla = "%FirstAlbumPerformer?FirstPerformer%" + Path.DirectorySeparatorChar + "%Album%" + Path.DirectorySeparatorChar + "%Track:pad-left,2,0% %Title%";
 		private bool _isLoaded;
 		private bool _isShuffled;
 		private bool _loadOnStartup = true;
