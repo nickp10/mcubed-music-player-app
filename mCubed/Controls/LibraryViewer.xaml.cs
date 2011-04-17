@@ -409,7 +409,11 @@ namespace mCubed.Controls {
 			var element = sender as FrameworkElement;
 			var group = element == null ? null : element.DataContext as GroupList<MediaFile>;
 			if (group != null) {
-				SelectedItems = group;
+				if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control) {
+					SelectedItems = SelectedItems.ToArray().Union(group);
+				} else {
+					SelectedItems = group;
+				}
 				e.Handled = true;
 			}
 		}

@@ -263,10 +263,10 @@ namespace mCubed {
 		#region Credits
 
 		private static readonly IEnumerable _credits = new[] {
-			new { Author = "Nick Paddock", Project = "mCubed Core", Version = "Music Meta-data Manager (Beta 4)", URL = "http://mcubed.sourceforge.net/" },
-			new { Author = "Nick Paddock", Project = "mCubed UI", Version = "Music Meta-data Manager (Beta 4)", URL = "http://mcubed.sourceforge.net/" },
+			new { Author = "Nick Paddock", Project = "mCubed Core", Version = "Music Meta-data Manager", URL = "http://mcubed.sourceforge.net/" },
+			new { Author = "Nick Paddock", Project = "mCubed UI", Version = "Music Meta-data Manager", URL = "http://mcubed.sourceforge.net/" },
 			new { Author = "Mark James", Project = "Silk Icon Set", Version = "1.3", URL = "http://www.famfamfam.com/lab/icons/silk/" },
-			new { Author = "Banshee Development Team", Project = "TagLib#", Version = "2.0.3.7", URL = "http://developer.novell.com/wiki/index.php/TagLib_Sharp" }
+			new { Author = "Banshee Development Team", Project = "TagLib#", Version = "2.0.4.0", URL = "https://github.com/mono/taglib-sharp/" }
 		};
 
 		/// <summary>
