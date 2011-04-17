@@ -32,7 +32,7 @@ namespace mCubed.MetaData {
 		#region Data Store
 
 		private string _currentKey;
-		private MDIField[][] _metaDataFields;
+		private MDIField[][] _metaDataFields = new MDIField[0][];
 		private IEnumerable<MetaDataInfo> _metaDataInfo = Enumerable.Empty<MetaDataInfo>();
 		private Dictionary<string, IEnumerable<MetaDataInfo>> _metaDataInfoDictionary = new Dictionary<string, IEnumerable<MetaDataInfo>>();
 
