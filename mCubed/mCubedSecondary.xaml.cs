@@ -88,6 +88,35 @@ namespace mCubed {
 
 		#endregion
 
+		#region Advanced Settings
+
+		/// <summary>
+		/// Event that handles when a command needs to be added
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void ApplicationSettings_AddCommand(object sender, RoutedEventArgs e) {
+			Settings.Commands.Add(new Command
+			{
+				DisplayName = "Show in Windows Explorer",
+				Value = "explorer.exe /select,%c"
+			});
+		}
+
+		/// <summary>
+		/// Event that handles when a command needs to be removed
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void ApplicationSettings_RemoveCommand(object sender, RoutedEventArgs e) {
+			var selection = CommandListView.SelectedItem as Command;
+			if (selection != null) {
+				Settings.Commands.Remove(selection);
+			}
+		}
+
+		#endregion
+
 		#region Library Settings
 
 		/// <summary>

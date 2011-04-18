@@ -166,6 +166,43 @@ namespace mCubed.Controls {
 		}
 
 		/// <summary>
+		/// Event that handles when a command should be executed with the selected media
+		/// </summary>
+		/// <param name="sender">The sender object</param>
+		/// <param name="e">The event arguments</param>
+		private void OnMediaExecuteCommand(object sender, RoutedEventArgs e) {
+			// Grab the command
+			var ele = sender as MenuItem;
+			var command = ele == null ? null : ele.DataContext as Command;
+			if (command != null) {
+				// Generate the %c placeholder value
+				string currentPath = "";
+				var par = ele.CommandParameter as FrameworkElement;
+				var file = par == null ? null : par.DataContext as MediaFile;
+				if (file != null) {
+					currentPath = "\"" + file.MetaData.FilePath + "\"";
+				}
+
+				// Generate the %s placeholder value
+				string selectedPath = "";
+				var files = SelectedItems.ToArray();
+				if (files.Length > 0) {
+					selectedPath = files.Select(f => "\"" + f.MetaData.FilePath + "\"").Aggregate((s1, s2) => s1 += "," + s2);
+				}
+
+				// Execute the command
+				Func<string, string> replace = s => s.Replace("%c", currentPath).Replace("%s", selectedPath);
+				string value = command.Value;
+				int index = value.IndexOf(' ');
+				if (index > -1) {
+					System.Diagnostics.Process.Start(replace(value.Substring(0, index)), replace(value.Substring(index + 1)));
+				} else {
+					System.Diagnostics.Process.Start(replace(value));
+				}
+			}
+		}
+
+		/// <summary>
 		/// Event that handles when the selected media should be copied to a new location
 		/// </summary>
 		/// <param name="sender">The sender object</param>

@@ -165,6 +165,25 @@ namespace mCubed.Controls {
 	}
 
 	/// <summary>
+	/// Used to specify whether the "Execute Command..." context menu option is enabled or disabled.
+	/// Enabled means there is at least 1 command, or disabled means there are 0 commands [Binding, One-Way]
+	/// </summary>
+	public class CommandCountConverter : IValueConverter {
+		#region IValueConverter Members
+
+		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+			var count = value as int?;
+			return count.HasValue && count.Value > 0;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+			return null;
+		}
+
+		#endregion
+	}
+
+	/// <summary>
 	/// Used to specify the collection of columns to be able to select from. It should filter out the
 	/// already selected columns if the selected columns should not be shown. [Multi-Binding, One-Way]
 	/// </summary>

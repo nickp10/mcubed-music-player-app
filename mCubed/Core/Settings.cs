@@ -14,6 +14,7 @@ namespace mCubed.Core {
 
 		private string _path = Path.Combine(Utilities.ExecutionDirectory, "mCubed.xml");
 		private readonly ObservableCollection<ColumnDetail> _allColumns = new ObservableCollection<ColumnDetail>();
+		private readonly ObservableCollection<Command> _commands = new ObservableCollection<Command>();
 		private string _directoryMediaDefault = Environment.CurrentDirectory;
 		private string _directoryPictureDefault = Environment.CurrentDirectory;
 		private XDocument _document;
@@ -46,6 +47,11 @@ namespace mCubed.Core {
 		/// Get a collection of all the column details that are available to be chosen from [Bindable]
 		/// </summary>
 		public ObservableCollection<ColumnDetail> AllColumns { get { return _allColumns; } }
+
+		/// <summary>
+		/// Get a collection of all the commands that may be executed as a separate process [Bindable]
+		/// </summary>
+		public ObservableCollection<Command> Commands { get { return _commands; } }
 
 		/// <summary>
 		/// Get/set the default directory for media browsing
@@ -183,6 +189,19 @@ namespace mCubed.Core {
 		}
 
 		/// <summary>
+		/// Generate from a XML command to a mCubed command
+		/// </summary>
+		/// <param name="element">The XML command to generate from</param>
+		/// <returns>The mCubed command that is generated</returns>
+		private Command GenerateCommand(XElement element) {
+			return new Command
+			{
+				DisplayName = element.Parse<string>("DisplayName"),
+				Value = element.Parse<string>("Value")
+			};
+		}
+
+		/// <summary>
 		/// Generate from a XML formula to a mCubed formula
 		/// </summary>
 		/// <param name="element">The XML formula to generate from</param>
@@ -244,6 +263,8 @@ namespace mCubed.Core {
 				element.Element("Columns").Elements().Select(GenerateColumn).Where(c => c != null && !AllColumns.Contains(c)).Perform(c => AllColumns.Add(c));
 			if (element.Element("Libraries") != null)
 				element.Element("Libraries").Elements().Select(GenerateLibrary).Where(l => l != null && !Libraries.Contains(l)).Perform(l => AddLibrary(l));
+			if (element.Element("Commands") != null)
+				element.Element("Commands").Elements().Select(GenerateCommand).Where(c => c != null && !Commands.Contains(c)).Perform(c => Commands.Add(c));
 			ShowMDIManager = element.Parse("ShowMDIManager", true);
 			ShowMini = element.Parse("ShowMini", false);
 			MiniLocation = element.Parse<Point?>("MiniLocation", null);
@@ -269,6 +290,17 @@ namespace mCubed.Core {
 				new XAttribute("Key", column.Key),
 				new XAttribute("Type", column.Type)
 			);
+		}
+
+		/// <summary>
+		/// Generate from a mCubed command to a XML command
+		/// </summary>
+		/// <param name="command">The mCubed command to generate from</param>
+		/// <returns>The XML command that is generated</returns>
+		private XElement GenerateCommand(Command command) {
+			return new XElement("Command",
+				new XAttribute("DisplayName", command.DisplayName ?? ""),
+				new XAttribute("Value", command.Value ?? ""));
 		}
 
 		/// <summary>
@@ -321,7 +353,8 @@ namespace mCubed.Core {
 				new XAttribute("SelectedTab", SelectedTabEnum.ToString() ?? ""),
 				new XElement("Formulas", Formulas.Select(f => GenerateFormula(f))),
 				new XElement("Libraries", Libraries.Where(l => l.SaveLibrary).Select(l => GenerateLibrary(l))),
-				new XElement("Columns", AllColumns.Select(c => GenerateColumn(c, id++)))
+				new XElement("Columns", AllColumns.Select(c => GenerateColumn(c, id++))),
+				new XElement("Commands", Commands.Select(c => GenerateCommand(c)))
 			);
 		}
 

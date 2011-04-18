@@ -140,6 +140,66 @@
 						</GroupBox>
 					</Grid>
 				</TabItem>
+				<TabItem DataContext="{Binding Settings}" Header="Advanced Settings">
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="*"/>
+							<RowDefinition Height="10"/>
+							<RowDefinition Height=".5*"/>
+						</Grid.RowDefinitions>
+						<GroupBox Header="Commands" Padding="10">
+							<Grid>
+								<Grid.RowDefinitions>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="10"/>
+									<RowDefinition Height="Auto"/>
+									<RowDefinition Height="10"/>
+									<RowDefinition Height="Auto"/>
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="20"/>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="20"/>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="20"/>
+								</Grid.ColumnDefinitions>
+								<ListView Grid.ColumnSpan="5" ItemsSource="{Binding Commands}" SelectionMode="Single" x:Name="CommandListView">
+									<ListView.ItemContainerStyle>
+										<Style TargetType="{x:Type ListViewItem}">
+											<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+										</Style>
+									</ListView.ItemContainerStyle>
+									<ListView.View>
+										<GridView>
+											<GridViewColumn Header="Display Name" Width="200">
+												<GridViewColumn.CellTemplate>
+													<DataTemplate>
+														<TextBox Text="{Binding Path=DisplayName, UpdateSourceTrigger=PropertyChanged}"/>
+													</DataTemplate>
+												</GridViewColumn.CellTemplate>
+											</GridViewColumn>
+											<GridViewColumn Header="Command" Width="300">
+												<GridViewColumn.CellTemplate>
+													<DataTemplate>
+														<TextBox Text="{Binding Path=Value, UpdateSourceTrigger=PropertyChanged}"/>
+													</DataTemplate>
+												</GridViewColumn.CellTemplate>
+											</GridViewColumn>
+										</GridView>
+									</ListView.View>
+								</ListView>
+								<Button Grid.Row="2" Grid.Column="1" Click="ApplicationSettings_AddCommand" Content="Add Command" Padding="5"/>
+								<Button Grid.Row="2" Grid.Column="3" Click="ApplicationSettings_RemoveCommand" Content="Remove Command" Padding="5"/>
+								<TextBlock Grid.Row="4" Grid.ColumnSpan="5" TextWrapping="Wrap">
+									These commands appear in the context menu of selected files and are used to execute external commands.
+									The placeholder of "%s" represents all selected media and "%c" represents the media that was right-clicked.
+									For instance, the command "explorer.exe /select,%c" will open Windows Explorer to the directory of the media
+									and will select it.
+								</TextBlock>
+							</Grid>
+						</GroupBox>
+					</Grid>
+				</TabItem>
 				<TabItem DataContext="{Binding Settings}" Header="Library Settings">
 					<Grid>
 						<Grid.RowDefinitions>

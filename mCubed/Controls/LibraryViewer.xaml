@@ -35,6 +35,7 @@
 					<controls:IsGroupItemConverter x:Key="IsGroupItemConverter" />
 					<controls:DirectoryArrayConverter x:Key="DirectoryArrayConverter" />
 					<controls:DirectoryCountConverter x:Key="DirectoryCountConverter" />
+					<controls:CommandCountConverter x:Key="CommandCountConverter" />
 					<ContextMenu x:Key="ListView_ContextMenu">
 						<!-- Active Media Options -->
 						<MenuItem Header="Play" Click="OnMediaFilePlay"/>
@@ -42,6 +43,15 @@
 						<Separator/>
 
 						<!-- Selected Media Options -->
+						<MenuItem Header="Execute Command..." ItemsSource="{Binding Source={x:Static core:Utilities.MainSettings}, Path=Commands}" DisplayMemberPath="DisplayName"
+								IsEnabled="{Binding Source={x:Static core:Utilities.MainSettings}, Path=Commands.Count, Converter={StaticResource CommandCountConverter}}">
+							<MenuItem.ItemContainerStyle>
+								<Style TargetType="{x:Type MenuItem}">
+									<Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type MenuItem}}}"/>
+									<EventSetter Event="MenuItem.Click" Handler="OnMediaExecuteCommand" />
+								</Style>
+							</MenuItem.ItemContainerStyle>
+						</MenuItem>
 						<MenuItem Header="Copy To..." ItemsSource="{Binding Source={x:Static core:Utilities.MainSettings}, Path=Libraries}">
 							<MenuItem.ItemTemplate>
 								<HierarchicalDataTemplate ItemsSource="{Binding Path=Directories, Converter={StaticResource DirectoryArrayConverter}}">

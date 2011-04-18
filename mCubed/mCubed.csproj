@@ -175,6 +175,7 @@
     <Compile Include="Controls\Icon.cs" />
     <Compile Include="Controls\SelectorExtension.cs" />
     <Compile Include="Core\ColumnDetail.cs" />
+    <Compile Include="Core\Command.cs" />
     <Compile Include="Core\FileUtilities.cs" />
     <Compile Include="Core\GlobalKeyboardHook.cs" />
     <Compile Include="Core\GroupList.cs" />
