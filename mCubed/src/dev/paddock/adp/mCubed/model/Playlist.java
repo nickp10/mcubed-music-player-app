@@ -1,0 +1,355 @@
+package dev.paddock.adp.mCubed.model;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import dev.paddock.adp.mCubed.R;
+import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.preferences.PlayModeEnum;
+import dev.paddock.adp.mCubed.preferences.RepeatStatus;
+import dev.paddock.adp.mCubed.utilities.App;
+import dev.paddock.adp.mCubed.utilities.Log;
+import dev.paddock.adp.mCubed.utilities.PreferenceManager;
+import dev.paddock.adp.mCubed.utilities.ProgressManager;
+import dev.paddock.adp.mCubed.utilities.PropertyManager;
+import dev.paddock.adp.mCubed.utilities.Utilities;
+
+public class Playlist {
+	private final List<MediaGrouping> composition = new ArrayList<MediaGrouping>();
+	private final List<MediaFile> files = new ArrayList<MediaFile>();
+	private final PlayMode playMode;
+	private String name;
+	private MediaFile current;
+	
+	/**
+	 * FOR TESTING PURPOSES ONLY!!!
+	 * @param unitTestOnly
+	 */
+	protected Playlist(Boolean unitTestOnly) {
+		playMode = null;
+	}
+
+	public Playlist() {
+		this(Collections.<MediaFile>emptyList());
+	}
+	
+	public Playlist(Collection<MediaFile> initialFiles) {
+		files.addAll(initialFiles);
+		playMode = new PlayMode(this);
+		playMode.setPlaylist(this);
+	}
+	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		if (this.name != name) {
+			NotificationArgs args = new NotificationArgs(this, "Name", this.name, name);
+			PropertyManager.notifyPropertyChanging(this, "Name", args);
+			this.name = name;
+			PropertyManager.notifyPropertyChanged(this, "Name", args);
+		}
+	}
+	
+	public MediaFile getCurrent() {
+		return current;
+	}
+	private void setCurrent(MediaFile file, boolean forceNotify) {
+		if (this.current != file || forceNotify) {
+			if (Log.isDebug()) {
+				Log.d("History: " + getHistoryList());
+				Log.d("Queue: " + getQueueList());
+				Log.d("Current: " + (file == null ? 0 : file.getID()));
+			}
+			NotificationArgs args = new NotificationArgs(this, "Current", this.current, file);
+			PropertyManager.notifyPropertyChanging(this, "Current", args);
+			this.current = file;
+			PropertyManager.notifyPropertyChanged(this, "Current", args);
+		}
+	}
+	
+	private void resetCurrent() {
+		resetCurrent(false);
+	}
+	
+	private void resetCurrent(boolean forceNotify) {
+		setCurrent(playMode.getCurrent(), forceNotify);
+		if (playMode.getCurrentRequiresRepeat()) {
+			RepeatStatus repeat = PreferenceManager.getSettingEnum(RepeatStatus.class, R.string.pref_repeat_status);
+			if (repeat != RepeatStatus.RepeatPlaylist) {
+				App.getPlayer().stop();
+			}
+		}
+	}
+	
+	public void next() {
+		playMode.next();
+		resetCurrent(true);
+	}
+	
+	public void previous() {
+		playMode.previous();
+		resetCurrent(true);
+	}
+	
+	protected void addFiles(MediaFile... files) {
+		addFilesInternal(false, files);
+	}
+	
+	protected void addFiles(Collection<MediaFile> files) {
+		addFilesInternal(false, files);
+	}
+	
+	public void addFilesToQueue(MediaFile... files) {
+		addFilesInternal(true, files);
+	}
+	
+	public void addFilesToQueue(Collection<MediaFile> files) {
+		addFilesInternal(true, files);
+	}
+	
+	private void addFilesInternal(boolean addToQueue, MediaFile... files) {
+		if (files != null) {
+			Progress progress = ProgressManager.startProgress(Schema.PROG_PLAYLIST_ADDFILES, "Adding files to playlist...");
+			int count = 0;
+			for (MediaFile file : files) {
+				if (file != null) {
+					// Add the file to the playlist
+					addFileInternal(true, file);
+					
+					// Add to the queue
+					if (addToQueue) {
+						playMode.appendToQueue(file);
+					}
+				}
+				
+				// Update the progress
+				count++;
+				double value = (double)count / (double)files.length;
+				progress.setValue(value);
+			}
+			resetCurrent();
+			ProgressManager.endProgress(progress);
+		}
+	}
+	
+	private void addFilesInternal(boolean addToQueue, Collection<MediaFile> files) {
+		if (files != null) {
+			addFilesInternal(addToQueue, files.toArray(new MediaFile[0]));
+		}
+	}
+	
+	private void addFileInternal(boolean doNotify, MediaFile file) {
+		// Add to the playlist
+		if (!this.files.contains(file)) {
+			this.files.add(file);
+			if (doNotify) {
+				playMode.addedToPlaylist(file);
+			}
+		}
+	}
+	
+	protected void removeFiles(MediaFile... files) {
+		removeFilesInternal(false, files);
+	}
+	
+	protected void removeFiles(Collection<MediaFile> files) {
+		removeFilesInternal(false, files);
+	}
+	
+	public void removeFilesFromQueue(MediaFile... files) {
+		removeFilesInternal(true, files);
+	}
+	
+	public void removeFilesFromQueue(Collection<MediaFile> files) {
+		removeFilesInternal(true, files);
+	}
+	
+	private void removeFilesInternal(boolean removeFromQueue, MediaFile... files) {
+		for (MediaFile file : files) {
+			if (file != null) {
+				if (removeFromQueue) {
+					if (this.files.contains(file)) {
+						playMode.removeFromQueue(file);
+					}
+				} else if (this.files.remove(file)) {
+					playMode.removedFromPlaylist(file);
+				}
+			}
+		}
+		resetCurrent();
+	}
+	
+	private void removeFilesInternal(boolean removeFromQueue, Collection<MediaFile> files) {
+		if (files != null) {
+			removeFilesInternal(removeFromQueue, files.toArray(new MediaFile[0]));
+		}
+	}
+	
+	public List<MediaFile> getFiles() {
+		return files;
+	}
+	
+	private boolean containsMediaGroupAll() {
+		for (MediaGrouping grouping : composition) {
+			if (grouping.getGroup() == MediaGroup.All) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean containsMediaGroup(MediaGrouping grouping) {
+		for (MediaGrouping compGrouping : composition) {
+			if (grouping.getGroup() == compGrouping.getGroup() && grouping.getID() == compGrouping.getID()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public Collection<MediaGrouping> getComposition() {
+		return Collections.unmodifiableCollection(composition);
+	}
+	
+	public void addComposition(MediaGrouping grouping) {
+		if (grouping != null && !containsMediaGroupAll() && !containsMediaGroup(grouping)) {
+			Progress progress = ProgressManager.startProgress(Schema.PROG_PLAYLIST_ADDCOMPOSITION, "Adding composition to playlist...");
+			progress.setSubIDs(Schema.PROG_MEDIAGROUP_GETFILES, Schema.PROG_PLAYLIST_ADDFILES);
+			if (grouping.getGroup() == MediaGroup.All) {
+				clearComposition();
+			}
+			composition.add(grouping);
+			addFiles(grouping.getMediaFiles());
+			ProgressManager.endProgress(progress);
+		}
+	}
+	
+	public void clearComposition() {
+		composition.clear();
+	}
+	
+	private static String generateList(Collection<MediaFile> files) {
+		StringBuilder builder = new StringBuilder();
+		for (MediaFile file : files) {
+			if (builder.length() != 0) {
+				builder.append(",");
+			}
+			builder.append(file.getID());
+		}
+		return builder.toString();
+	}
+	
+	private static Collection<MediaFile> generateList(String ids) {
+		Collection<MediaFile> files = new ArrayList<MediaFile>();
+		if (!Utilities.isNullOrEmpty(ids)) {
+			String[] idArray = ids.split(",");
+			for (String idString : idArray) {
+				try {
+					long id = Long.parseLong(idString);
+					MediaFile file = MediaFile.get(id);
+					if (file != null) {
+						files.add(file);
+					}
+				} catch (Exception e) { }
+			}
+		}
+		return files;
+	}
+	
+	private static void setList(Collection<MediaFile> destinationList, String ids) {
+		Collection<MediaFile> files = generateList(ids);
+		destinationList.clear();
+		destinationList.addAll(files);
+	}
+	
+	public String getHistoryList() {
+		return generateList(playMode.getHistory());
+	}
+	
+	public String getQueueList() {
+		return generateList(playMode.getQueue());
+	}
+	
+	public void reset(String historyIDs, String queueIDs, long currentID) {
+		// Update the history
+		setList(playMode.getHistory(), historyIDs);
+		for (MediaFile file : playMode.getHistory()) {
+			addFileInternal(false, file);
+		}
+		
+		// Update the queue
+		setList(playMode.getQueue(), queueIDs);
+		for (MediaFile file : playMode.getQueue()) {
+			addFileInternal(false, file);
+		}
+		
+		// Update the current
+		MediaFile file = MediaFile.get(currentID);
+		if (file != null) {
+			addFileInternal(false, file);
+		}
+		playMode.setCurrent(file);
+		playMode.reset(false);
+		resetCurrent(true);
+	}
+	
+	public void resetPlayMode(PlayModeEnum playMode, boolean clearQueue) {
+		this.playMode.setPlayModeEnum(playMode, clearQueue);
+	}
+	
+	private void validateList(List<MediaFile> destinationList) {
+		MediaFile[] destArray = destinationList.toArray(new MediaFile[0]);
+		for (MediaFile file : destArray) {
+			if (file == null || !files.contains(file)) {
+				destinationList.remove(file);
+			}
+		}
+	}
+	
+	/**
+	 * Validates that all the media files in the playlist (containing the history,
+	 * queue, current, and remaining files) still exist on the device and still fall
+	 * in one of the compositions that make up the playlist. If the current file changed
+	 * during this process, then this  method will true. Otherwise, false will be returned.
+	 * @return True if the current media file changed, or false otherwise.
+	 */
+	public boolean validate() {
+		// Setup the progress
+		Progress progress = ProgressManager.startProgress(Schema.PROG_PLAYLIST_VALIDATE, "Validating the playlist...");
+		String[] subIDs = new String[composition.size() * 2];
+		for (int i = 0; i < composition.size(); i++) {
+			subIDs[i * 2] = Schema.PROG_MEDIAGROUP_GETFILES;
+			subIDs[(i * 2) + 1] = Schema.PROG_PLAYLIST_ADDFILES;
+		}
+		progress.setSubIDs(subIDs);
+		progress.setAllowChildTitle(false);
+		
+		// Clear and re-add the media files
+		MediaFile beginCurrent = getCurrent();
+		files.clear();
+		for (MediaGrouping grouping : composition) {
+			addFiles(grouping.getMediaFiles());
+		}
+		
+		// Validate the history and queue
+		validateList(playMode.getHistory());
+		validateList(playMode.getQueue());
+		
+		// Validate the current
+		MediaFile current = playMode.getCurrent();
+		if (current == null || !files.contains(current)) {
+			playMode.setCurrent(null);
+		}
+		
+		// Notify the play mode
+		playMode.reset(false);
+		resetCurrent();
+		
+		// End the progress
+		ProgressManager.endProgress(progress);
+		return beginCurrent != getCurrent();
+	}
+}

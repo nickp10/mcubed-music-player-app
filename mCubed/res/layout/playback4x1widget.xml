@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="horizontal"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="fill_parent"
+		android:text="Prev" 
+		android:id="@+id/w41_prev_button"/>
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="fill_parent"
+		android:text="Play" 
+		android:id="@+id/w41_play_button"/>
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="fill_parent"
+		android:text="Next" 
+		android:id="@+id/w41_next_button"/>
+	<ProgressBar
+		style="?android:attr/progressBarStyleHorizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:id="@+id/w41_seek_bar"/>
+</LinearLayout>

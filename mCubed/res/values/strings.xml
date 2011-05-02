@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">mCubed</string>
+	<string name="app_version">1.00</string>
+	<string name="pref_repeat_status">pref_repeat_status</string>
+	<string name="pref_play_mode">pref_play_mode</string>
+	<string name="pref_clear_queue_with_play_mode">pref_clear_queue_with_play_mode</string>
+	<string name="pref_previous_action">pref_previous_action</string>
+	<string name="pref_previous_smart_condition">pref_previous_smart_condition</string>
+	<string name="pref_light_up_screen">pref_light_up_screen</string>
+	<string name="pref_notification_visibility">pref_notification_visibility</string>
+	<string name="pref_open_overlay_player">pref_open_overlay_player</string>
+	<string name="pref_headphones_connected">pref_headphones_connected</string>
+	<string name="pref_headphones_disconnected">pref_headphones_disconnected</string>
+	<string name="pref_bluetooth_connected">pref_bluetooth_connected</string>
+	<string name="pref_bluetooth_disconnected">pref_bluetooth_disconnected</string>
+	<string name="pref_bluetooth_allow_controls">pref_bluetooth_allow_controls</string>
+	<string name="pref_volume_speaker">pref_volume_speaker</string>
+	<string name="pref_volume_headphones">pref_volume_headphones</string>
+	<string name="pref_volume_bluetooth">pref_volume_bluetooth</string>
+	<string name="pref_record_logs">pref_record_logs</string>
+	<string name="pref_resume_automatically">pref_resume_automatically</string>
+	<string name="pref_defaults_loaded">pref_defaults_loaded</string>
+</resources>
