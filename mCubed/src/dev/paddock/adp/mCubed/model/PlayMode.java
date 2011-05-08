@@ -44,7 +44,7 @@ public class PlayMode {
 		return getAllFiles().isEmpty();
 	}
 	
-	public List<MediaFile> getHistory() {
+	public BindingList<MediaFile> getHistory() {
 		return history;
 	}
 	
@@ -56,7 +56,7 @@ public class PlayMode {
 		this.current = file;
 	}
 	
-	public List<MediaFile> getQueue() {
+	public BindingList<MediaFile> getQueue() {
 		return queue;
 	}
 	

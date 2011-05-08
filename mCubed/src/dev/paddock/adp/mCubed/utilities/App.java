@@ -10,10 +10,11 @@ import android.os.AsyncTask.Status;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.model.AsyncTask;
+import dev.paddock.adp.mCubed.model.Composite;
 import dev.paddock.adp.mCubed.model.InitStatus;
+import dev.paddock.adp.mCubed.model.ListAction;
 import dev.paddock.adp.mCubed.model.MediaFile;
 import dev.paddock.adp.mCubed.model.MediaGroup;
-import dev.paddock.adp.mCubed.model.MediaGrouping;
 import dev.paddock.adp.mCubed.model.MediaPlayer;
 import dev.paddock.adp.mCubed.model.MediaPlayerState;
 import dev.paddock.adp.mCubed.model.MediaStatus;
@@ -213,8 +214,8 @@ public class App extends Application {
 		rootNode.setNodePathValue("NowPlaying/Current", Long.toString(currentID));
 		rootNode.setNodePathValue("NowPlaying/Queue", nowPlaying.getQueueList());
 		XMLNode compositionNode = rootNode.getNodePath("NowPlaying/Composition", true);
-		for (MediaGrouping grouping : nowPlaying.getComposition()) {
-			compositionNode.addChildNode("Item").setNodeText(grouping.toString());
+		for (Composite composite : nowPlaying.getComposition()) {
+			compositionNode.addChildNode("Item").setNodeText(composite.toString());
 		}
 		
 		// Create the player node
@@ -245,19 +246,18 @@ public class App extends Application {
 		XMLNode compositionNode = rootNode.getNodePath("NowPlaying/Composition", false);
 		if (compositionNode != null) {
 			// Setup the composition
-			nowPlaying.clearComposition();
 			List<XMLNode> itemNodes = compositionNode.getChildNodes();
 			
 			// Adjust the progress
 			String[] subIDs = new String[itemNodes.size()];
 			for (int i = 0; i < subIDs.length; i++) {
-				subIDs[i] = Schema.PROG_PLAYLIST_ADDCOMPOSITION;
+				subIDs[i] = Schema.PROG_PLAYLIST_ADDCOMPOSITE;
 			}
 			progress.appendSubIDs(subIDs);
 			
 			// Add the composition
 			for (XMLNode itemNode : compositionNode.getChildNodes()) {
-				nowPlaying.addComposition(MediaGrouping.parse(itemNode.getNodeText()));
+				nowPlaying.addComposite(Composite.parse(itemNode.getNodeText()));
 			}
 		}
 		
@@ -320,9 +320,9 @@ public class App extends Application {
 						XMLDocument rootNode = loadAppStateXML();
 						if (rootNode == null) {
 							// Load the initial playlist as all files
-							progress.setSubIDs(Schema.PROG_PLAYLIST_ADDCOMPOSITION);
+							progress.setSubIDs(Schema.PROG_PLAYLIST_ADDCOMPOSITE);
 							// TODO IMPROVE
-							getNowPlaying().addComposition(MediaGroup.All.getGrouping(0));
+							getNowPlaying().addComposite(new Composite(MediaGroup.All.getGrouping(0), ListAction.Add));
 						} else {
 							// Load from its previous state
 							progress.setSubIDs(Schema.PROG_APP_LOADXML);

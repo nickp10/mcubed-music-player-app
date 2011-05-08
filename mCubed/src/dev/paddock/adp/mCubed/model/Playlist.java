@@ -17,8 +17,8 @@ import dev.paddock.adp.mCubed.utilities.PropertyManager;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class Playlist {
-	private final List<MediaGrouping> composition = new ArrayList<MediaGrouping>();
-	private final List<MediaFile> files = new ArrayList<MediaFile>();
+	private final BindingList<Composite> composition = new BindingList<Composite>(new ArrayList<Composite>());
+	private final BindingList<MediaFile> files = new BindingList<MediaFile>(new ArrayList<MediaFile>());
 	private final PlayMode playMode;
 	private String name;
 	private MediaFile current;
@@ -112,7 +112,8 @@ public class Playlist {
 	
 	private void addFilesInternal(boolean addToQueue, MediaFile... files) {
 		if (files != null) {
-			Progress progress = ProgressManager.startProgress(Schema.PROG_PLAYLIST_ADDFILES, "Adding files to playlist...");
+			String subject = addToQueue ? "queue" : "playlist";
+			Progress progress = ProgressManager.startProgress(Schema.PROG_PLAYLIST_ADDFILES, "Adding files to " + subject + "...");
 			int count = 0;
 			for (MediaFile file : files) {
 				if (file != null) {
@@ -142,7 +143,6 @@ public class Playlist {
 	}
 	
 	private void addFileInternal(boolean doNotify, MediaFile file) {
-		// Add to the playlist
 		if (!this.files.contains(file)) {
 			this.files.add(file);
 			if (doNotify) {
@@ -168,18 +168,30 @@ public class Playlist {
 	}
 	
 	private void removeFilesInternal(boolean removeFromQueue, MediaFile... files) {
-		for (MediaFile file : files) {
-			if (file != null) {
-				if (removeFromQueue) {
-					if (this.files.contains(file)) {
-						playMode.removeFromQueue(file);
+		if (files != null) {
+			String subject = removeFromQueue ? "queue" : "playlist";
+			Progress progress = ProgressManager.startProgress(Schema.PROG_PLAYLIST_REMOVEFILES, "Removing files from " + subject + "...");
+			int count = 0;
+			for (MediaFile file : files) {
+				// Remove the file accordingly
+				if (file != null) {
+					if (removeFromQueue) {
+						if (this.files.contains(file)) {
+							playMode.removeFromQueue(file);
+						}
+					} else if (this.files.remove(file, true)) {
+						playMode.removedFromPlaylist(file);
 					}
-				} else if (this.files.remove(file)) {
-					playMode.removedFromPlaylist(file);
 				}
+				
+				// Update the progress
+				count++;
+				double value = (double)count / (double)files.length;
+				progress.setValue(value);
 			}
+			resetCurrent();
+			ProgressManager.endProgress(progress);
 		}
-		resetCurrent();
 	}
 	
 	private void removeFilesInternal(boolean removeFromQueue, Collection<MediaFile> files) {
@@ -192,43 +204,42 @@ public class Playlist {
 		return files;
 	}
 	
-	private boolean containsMediaGroupAll() {
-		for (MediaGrouping grouping : composition) {
-			if (grouping.getGroup() == MediaGroup.All) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	private boolean containsMediaGroup(MediaGrouping grouping) {
-		for (MediaGrouping compGrouping : composition) {
-			if (grouping.getGroup() == compGrouping.getGroup() && grouping.getID() == compGrouping.getID()) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public Collection<MediaGrouping> getComposition() {
+	public Collection<Composite> getComposition() {
 		return Collections.unmodifiableCollection(composition);
 	}
 	
-	public void addComposition(MediaGrouping grouping) {
-		if (grouping != null && !containsMediaGroupAll() && !containsMediaGroup(grouping)) {
-			Progress progress = ProgressManager.startProgress(Schema.PROG_PLAYLIST_ADDCOMPOSITION, "Adding composition to playlist...");
-			progress.setSubIDs(Schema.PROG_MEDIAGROUP_GETFILES, Schema.PROG_PLAYLIST_ADDFILES);
-			if (grouping.getGroup() == MediaGroup.All) {
-				clearComposition();
+	public void addComposite(Composite composite) {
+		if (composite != null) {
+			ListAction action = composite.getAction();
+			MediaGrouping grouping = composite.getGrouping();
+			Progress progress = ProgressManager.startProgress(Schema.PROG_PLAYLIST_ADDCOMPOSITE, "Adding composite to playlist...");
+			progress.setSubIDs(Schema.PROG_MEDIAGROUP_GETFILES);
+			if (action == ListAction.Add) {
+				progress.appendSubIDs(Schema.PROG_PLAYLIST_ADDFILES);
+				if (composite.isMediaGroupAll()) {
+					composition.clear();
+				}
+				composition.add(composite);
+				addFiles(grouping.getMediaFiles());
+			} else if (action == ListAction.Remove) {
+				progress.appendSubIDs(Schema.PROG_PLAYLIST_REMOVEFILES);
+				if (composite.isMediaGroupAll()) {
+					composition.clear();
+				}
+				composition.add(composite);
+				removeFiles(grouping.getMediaFiles());
 			}
-			composition.add(grouping);
-			addFiles(grouping.getMediaFiles());
 			ProgressManager.endProgress(progress);
 		}
 	}
 	
-	public void clearComposition() {
-		composition.clear();
+	public void removeComposite(Composite composite) {
+		if (composition.remove(composite, true)) {
+			Progress progress = ProgressManager.startProgress(Schema.PROG_PLAYLIST_REMOVECOMPOSITE, "Removing composite from playlist...", Schema.PROG_PLAYLIST_VALIDATE);
+			progress.setAllowChildTitle(false);
+			validate();
+			ProgressManager.endProgress(progress);
+		}
 	}
 	
 	private static String generateList(Collection<MediaFile> files) {
@@ -300,11 +311,11 @@ public class Playlist {
 		this.playMode.setPlayModeEnum(playMode, clearQueue);
 	}
 	
-	private void validateList(List<MediaFile> destinationList) {
+	private void validateList(BindingList<MediaFile> destinationList) {
 		MediaFile[] destArray = destinationList.toArray(new MediaFile[0]);
 		for (MediaFile file : destArray) {
 			if (file == null || !files.contains(file)) {
-				destinationList.remove(file);
+				destinationList.remove(file, true);
 			}
 		}
 	}
@@ -319,19 +330,20 @@ public class Playlist {
 	public boolean validate() {
 		// Setup the progress
 		Progress progress = ProgressManager.startProgress(Schema.PROG_PLAYLIST_VALIDATE, "Validating the playlist...");
-		String[] subIDs = new String[composition.size() * 2];
+		String[] subIDs = new String[composition.size()];
 		for (int i = 0; i < composition.size(); i++) {
-			subIDs[i * 2] = Schema.PROG_MEDIAGROUP_GETFILES;
-			subIDs[(i * 2) + 1] = Schema.PROG_PLAYLIST_ADDFILES;
+			subIDs[i] = Schema.PROG_PLAYLIST_ADDCOMPOSITE;
 		}
 		progress.setSubIDs(subIDs);
 		progress.setAllowChildTitle(false);
 		
 		// Clear and re-add the media files
 		MediaFile beginCurrent = getCurrent();
+		Composite[] tempComposition = composition.toArray(new Composite[0]);
+		composition.clear();
 		files.clear();
-		for (MediaGrouping grouping : composition) {
-			addFiles(grouping.getMediaFiles());
+		for (Composite composite : tempComposition) {
+			addComposite(composite);
 		}
 		
 		// Validate the history and queue

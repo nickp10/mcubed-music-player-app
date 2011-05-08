@@ -3,26 +3,10 @@ package dev.paddock.adp.mCubed.model;
 import java.util.Collections;
 import java.util.List;
 
-import dev.paddock.adp.mCubed.utilities.Utilities;
-
 public class MediaGrouping {
 	private MediaGroup group;
 	private long id;
 	private String name;
-	
-	public static MediaGrouping parse(String str) {
-		if (!Utilities.isNullOrEmpty(str)) {
-			String[] parts = str.split(",");
-			if (parts.length == 2) {
-				try {
-					MediaGroup group = MediaGroup.valueOf(parts[0]);
-					long id = Long.parseLong(parts[1]);
-					return group.getGrouping(id);
-				} catch (Exception e) { }
-			}
-		}
-		return null;
-	}
 	
 	public MediaGrouping(MediaGroup group, long id, String name) {
 		this.group = group;
@@ -49,8 +33,17 @@ public class MediaGrouping {
 		return name;
 	}
 	
-	@Override
-	public String toString() {
-		return group.toString() + "," + id;
+	public boolean isMediaGroupAll() {
+		return getGroup() == MediaGroup.All;
+	}
+	
+	public static boolean equals(MediaGrouping first, MediaGrouping second) {
+		if (first == null) {
+			return second == null;
+		} else if (second == null) {
+			return false;
+		} else {
+			return first.getGroup() == second.getGroup() && first.getID() == second.getID();
+		}
 	}
 }
