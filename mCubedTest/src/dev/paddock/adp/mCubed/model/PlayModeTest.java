@@ -1,5 +1,8 @@
 package dev.paddock.adp.mCubed.model;
 
+import static dev.paddock.adp.mCubed.TestUtils.assertSequenceEmpty;
+import static dev.paddock.adp.mCubed.TestUtils.assertSequenceEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,42 +11,18 @@ import android.test.AndroidTestCase;
 import com.google.android.testing.mocking.AndroidMock;
 import com.google.android.testing.mocking.UsesMocks;
 
+import dev.paddock.adp.mCubed.MediaFileUtils;
+
+@UsesMocks(Playlist.class)
 public class PlayModeTest extends AndroidTestCase{
-	private final MediaFile[] mediaFiles = new MediaFile[5];
+	private final MediaFile[] mediaFiles = MediaFileUtils.getMocks();
 	private final List<MediaFile> files = new ArrayList<MediaFile>();
 	private Playlist playlist;
 	
-	public static <T> void assertSequenceEmpty(List<T> actual) {
-		if (actual == null) {
-			assertNull(actual);
-		} else {
-			assertEquals(0, actual.size());
-		}
-	}
-	
-	public static <T> void assertSequenceEquals(T[] expected, List<T> actual) {
-		if (expected == null || actual == null) {
-			assertNull(expected);
-			assertNull(actual);
-		} else {
-			assertEquals(expected.length, actual.size());
-			for (int i = 0; i < expected.length; i++) {
-				assertEquals(expected[i], actual.get(i));
-			}
-		}
-	}
-	
-	@UsesMocks({ MediaFile.class, Playlist.class })
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		for (int i = 0; i < mediaFiles.length; i++) {
-			MediaFile file = AndroidMock.createMock(MediaFile.class);
-			AndroidMock.expect(file.fileExists()).andReturn(true).anyTimes();
-			AndroidMock.expect(file.getID()).andReturn((long)i).anyTimes();
-			AndroidMock.replay(file);
-			mediaFiles[i] = file;
-		}
+		MediaFileUtils.verifyArrange();
 		files.clear();
 		playlist = AndroidMock.createMock(Playlist.class, true);
 		AndroidMock.expect(playlist.getFiles()).andReturn(files).anyTimes();
@@ -53,9 +32,7 @@ public class PlayModeTest extends AndroidTestCase{
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		for (int i = 0; i < mediaFiles.length; i++) {
-			AndroidMock.verify(mediaFiles[i]);
-		}
+		MediaFileUtils.verifyMocks();
 		AndroidMock.verify(playlist);
 	}
 	
@@ -478,47 +455,39 @@ public class PlayModeTest extends AndroidTestCase{
 		playMode.addedToPlaylist(mediaFiles[2]);
 		
 		// Assert the state before
-		assertTrue(playMode.getHistory().isEmpty());
+		assertSequenceEmpty(playMode.getHistory());
 		assertEquals(mediaFiles[0], playMode.getCurrent());
-		assertEquals(1, playMode.getQueue().size());
-		assertEquals(mediaFiles[1], playMode.getQueue().get(0));
+		assertSequenceEquals(new MediaFile[] { mediaFiles[1] }, playMode.getQueue());
 		assertFalse(playMode.getCurrentRequiresRepeat());
 		
 		// Call previous to make sure nothing happens
 		playMode.previous();
-		assertTrue(playMode.getHistory().isEmpty());
+		assertSequenceEmpty(playMode.getHistory());
 		assertEquals(mediaFiles[0], playMode.getCurrent());
-		assertEquals(1, playMode.getQueue().size());
-		assertEquals(mediaFiles[1], playMode.getQueue().get(0));
+		assertSequenceEquals(new MediaFile[] { mediaFiles[1] }, playMode.getQueue());
 		assertFalse(playMode.getCurrentRequiresRepeat());
 		
 		// Call next two times to reach the end and call previous once
 		playMode.next();
 		playMode.next();
 		playMode.previous();
-		assertEquals(1, playMode.getHistory().size());
-		assertEquals(mediaFiles[0], playMode.getHistory().get(0));
+		assertSequenceEquals(new MediaFile[] { mediaFiles[0] }, playMode.getHistory());
 		assertEquals(mediaFiles[1], playMode.getCurrent());
-		assertEquals(1, playMode.getQueue().size());
-		assertEquals(mediaFiles[2], playMode.getQueue().get(0));
+		assertSequenceEquals(new MediaFile[] { mediaFiles[2] }, playMode.getQueue());
 		assertFalse(playMode.getCurrentRequiresRepeat());
 		
 		// Call previous to reach the beginning again
 		playMode.previous();
-		assertTrue(playMode.getHistory().isEmpty());
+		assertSequenceEmpty(playMode.getHistory());
 		assertEquals(mediaFiles[0], playMode.getCurrent());
-		assertEquals(2, playMode.getQueue().size());
-		assertEquals(mediaFiles[1], playMode.getQueue().get(0));
-		assertEquals(mediaFiles[2], playMode.getQueue().get(1));
+		assertSequenceEquals(new MediaFile[] { mediaFiles[1], mediaFiles[2] }, playMode.getQueue());
 		assertFalse(playMode.getCurrentRequiresRepeat());
 		
 		// Call previous and make sure nothing happens again
 		playMode.previous();
-		assertTrue(playMode.getHistory().isEmpty());
+		assertSequenceEmpty(playMode.getHistory());
 		assertEquals(mediaFiles[0], playMode.getCurrent());
-		assertEquals(2, playMode.getQueue().size());
-		assertEquals(mediaFiles[1], playMode.getQueue().get(0));
-		assertEquals(mediaFiles[2], playMode.getQueue().get(1));
+		assertSequenceEquals(new MediaFile[] { mediaFiles[1], mediaFiles[2] }, playMode.getQueue());
 		assertFalse(playMode.getCurrentRequiresRepeat());
 		
 		// Call next three times to loop around
@@ -529,11 +498,9 @@ public class PlayModeTest extends AndroidTestCase{
 		
 		// Call previous and make sure nothing changed
 		playMode.previous();
-		assertTrue(playMode.getHistory().isEmpty());
+		assertSequenceEmpty(playMode.getHistory());
 		assertEquals(mediaFiles[0], playMode.getCurrent());
-		assertEquals(2, playMode.getQueue().size());
-		assertEquals(mediaFiles[1], playMode.getQueue().get(0));
-		assertEquals(mediaFiles[2], playMode.getQueue().get(1));
+		assertSequenceEquals(new MediaFile[] { mediaFiles[1], mediaFiles[2] }, playMode.getQueue());
 		assertFalse(playMode.getCurrentRequiresRepeat());
 	}
 	
@@ -591,6 +558,12 @@ public class PlayModeTest extends AndroidTestCase{
 		playMode.moveWithinQueue(mediaFiles[2], 2);
 		
 		// Assert the move
+		assertSequenceEquals(new MediaFile[] { mediaFiles[1], mediaFiles[2], mediaFiles[0] }, playMode.getQueue());
+		
+		// Attempt to move file 3
+		playMode.moveWithinQueue(mediaFiles[3], 2);
+		
+		// Assert that it didn't move
 		assertSequenceEquals(new MediaFile[] { mediaFiles[1], mediaFiles[2], mediaFiles[0] }, playMode.getQueue());
 	}
 }
