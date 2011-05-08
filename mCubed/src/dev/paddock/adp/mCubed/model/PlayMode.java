@@ -3,7 +3,6 @@ package dev.paddock.adp.mCubed.model;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.model.playModes.IPlayMode;
@@ -11,8 +10,8 @@ import dev.paddock.adp.mCubed.preferences.PlayModeEnum;
 import dev.paddock.adp.mCubed.utilities.PreferenceManager;
 
 public class PlayMode {
-	private final Stack<MediaFile> history = new Stack<MediaFile>();
-	private final List<MediaFile> queue = new LinkedList<MediaFile>();
+	private final BindingList<MediaFile> history = new BindingList<MediaFile>(new LinkedList<MediaFile>());
+	private final BindingList<MediaFile> queue = new BindingList<MediaFile>(new LinkedList<MediaFile>());
 	private MediaFile current;
 	private boolean currentRequiresRepeat;
 	private IPlayMode playMode;
@@ -114,17 +113,17 @@ public class PlayMode {
 	
 	public void removedFromPlaylist(MediaFile file) {
 		playMode.removedFromPlaylist(file);
-		queue.remove(file);
-		history.remove(file);
+		queue.remove(file, true);
+		history.remove(file, true);
 		if (current == file) {
 			next();
 		}
-		if (current == file) {
+		if (current == file || current == null) {
 			current = null;
 			currentRequiresRepeat = false;
 		}
-		queue.remove(file);
-		history.remove(file);
+		queue.remove(file, true);
+		history.remove(file, true);
 		generateNext();
 	}
 	
@@ -133,21 +132,31 @@ public class PlayMode {
 	}
 	
 	public void insertIntoQueue(MediaFile file, int index) {
-		if (current != file && index >= 0 && index <= queue.size() && !queue.contains(file)) {
-			history.remove(file);
+		if (index >= 0 && index <= queue.size()) {
 			queue.add(index, file);
 			playMode.addedToQueue(file);
 		}
 	}
 	
 	public void moveWithinQueue(MediaFile file, int newIndex) {
-		if (newIndex >= 0 && newIndex < queue.size() && queue.remove(file)) {
-			queue.add(newIndex, file);
+		if (newIndex >= 0 && newIndex <= queue.size()) {
+			boolean canAdd = false;
+			int index = -1;
+			while ((index = queue.indexOf(file)) != -1) {
+				if (index < newIndex) {
+					newIndex--;
+				}
+				queue.remove(index);
+				canAdd = true;
+			}
+			if (canAdd) {
+				queue.add(newIndex, file);
+			}
 		}
 	}
 	
 	public void removeFromQueue(MediaFile file) {
-		if (queue.remove(file)) {
+		if (queue.remove(file, true)) {
 			playMode.removedFromQueue(file);
 			generateNext();
 		}
@@ -168,7 +177,7 @@ public class PlayMode {
 			current = null;
 		} else {
 			if (current != null) {
-				history.push(current);
+				history.add(current);
 			}
 			generateNext();
 			if (queue.isEmpty()) {
@@ -189,7 +198,7 @@ public class PlayMode {
 			if (current != null) {
 				queue.add(0, current);
 			}
-			current = history.pop();
+			current = history.remove(history.size() - 1);
 		}
 	}
 	
