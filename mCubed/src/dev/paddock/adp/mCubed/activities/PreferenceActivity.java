@@ -27,8 +27,22 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
 			super.onCreate(savedInstanceState);
 			addPreferencesFromResource(R.xml.preferences);
 			
-			// Get the overlay preference 
-			String preferenceKey = getString(R.string.pref_open_overlay_player);
+			// Get the previous smart condition preference
+			String preferenceKey = getString(R.string.pref_previous_smart_condition);
+			final Preference smartConditionPref = findPreference(preferenceKey);
+			
+			// Add a listener to the previous action changed
+			preferenceKey = getString(R.string.pref_previous_action);
+			findPreference(preferenceKey).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+				@Override
+				public boolean onPreferenceChange(Preference preference, Object newValue) {
+					smartConditionPref.setEnabled(newValue.equals(PreviousAction.Smart.name()));
+					return true;
+				}
+			});
+			
+			// Get the overlay preference
+			preferenceKey = getString(R.string.pref_open_overlay_player);
 			final Preference overlayPref = findPreference(preferenceKey);
 			
 			// Add a listener to the notification visibility changed

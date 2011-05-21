@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:custom="http://schema.android.com/apk/res">
+	xmlns:custom="http://schemas.android.com/apk/res/dev.paddock.adp.mCubed">
 	<PreferenceCategory android:title="Playback Settings">
 		<ListPreference android:title="Repeat Status"
 			android:summary="Specifies the status of the repeat action, whether it be repeating the playlist, the song, or no repeat."
@@ -15,6 +15,10 @@
 		<ListPreference android:title="Previous Button Action"
 			android:summary="The 'Smart' option will restart the current song or play the previous song depending on how much of the song has played."
 			android:key="@string/pref_previous_action" />
+		<dev.paddock.adp.mCubed.preferences.DimensionPreference android:title="Previous Smart Condition"
+			android:summary="Specifies the condition of how much the current song must have played before the previous button will instead restart the song."
+			android:key="@string/pref_previous_smart_condition"
+			custom:dimensions="%,%,0,100;s,Seconds,0,999" />
 		<CheckBoxPreference android:title="Light Up Screen"
 			android:summary="Determines whether or not the screen should light up when a song changes, only if the screen isn't already lit up."
 			android:key="@string/pref_light_up_screen" />

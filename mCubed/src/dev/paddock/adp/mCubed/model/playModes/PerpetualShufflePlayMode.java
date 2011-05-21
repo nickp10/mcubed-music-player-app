@@ -23,12 +23,10 @@ public class PerpetualShufflePlayMode implements IPlayMode {
 	}
 
 	@Override
-	public void addedToQueue(MediaFile file) {
-	}
+	public void addedToQueue(MediaFile file) { }
 
 	@Override
-	public void removedFromQueue(MediaFile file) {
-	}
+	public void removedFromQueue(MediaFile file) { }
 
 	@Override
 	public MediaFile getNext() {

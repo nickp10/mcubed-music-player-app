@@ -177,17 +177,17 @@ public class App extends Application {
 		} else if (action == PreviousAction.Smart) {
 			String condition = PreferenceManager.getSettingString(R.string.pref_previous_smart_condition);
 			if (!Utilities.isNullOrEmpty(condition)) {
-				char type = condition.charAt(condition.length() - 1);
+				char unit = condition.charAt(condition.length() - 1);
 				int value = Utilities.parseInt(condition.substring(0, condition.length() - 1));
 				int currentSeek = getPlayer().getSeek();
 				int currentDuration = getPlayer().getDuration();
-				if (type == '%') {
-					if (value > 0 && value <= 100) {
+				if (unit == '%') {
+					if (value >= 0 && value <= 100) {
 						int checkSeek = (int)((value / 100d) * currentDuration);
 						restartSong = currentSeek >= checkSeek;
 					}
-				} else if (type == 's') {
-					if (value > 0) {
+				} else if (unit == 's') {
+					if (value >= 0) {
 						int checkSeek = value * 1000;
 						restartSong = currentSeek >= checkSeek;
 					}

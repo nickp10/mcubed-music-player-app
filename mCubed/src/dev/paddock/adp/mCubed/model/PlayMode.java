@@ -185,7 +185,12 @@ public class PlayMode {
 				history.clear();
 				currentRequiresRepeat = true;
 			}
-			current = queue.remove(0);
+			if (queue.isEmpty()) {
+				current = null;
+				currentRequiresRepeat = false;
+			} else {
+				current = queue.remove(0);
+			}
 			generateNext();
 		}
 	}

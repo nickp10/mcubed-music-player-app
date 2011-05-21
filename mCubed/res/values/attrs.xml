@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<declare-styleable name="VolumePreference">
-		<attr name="units" format="string"/>
-		<attr name="maxValue" format="integer"/>
-		<attr name="defaultValue" format="integer" />
+		<attr name="units" format="string" />
+		<attr name="maximum" format="integer" />
+	</declare-styleable>
+	<declare-styleable name="DimensionPreference">
+		<attr name="dimensions" format="string" />
 	</declare-styleable>
 </resources>

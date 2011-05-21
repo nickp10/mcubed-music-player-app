@@ -14,7 +14,7 @@ public class PersistedShufflePlayMode implements IPlayMode {
 
 	@Override
 	public void addedToPlaylist(MediaFile file) {
-		remainingFiles.remove(file);
+		remainingFiles.add(file);
 	}
 
 	@Override

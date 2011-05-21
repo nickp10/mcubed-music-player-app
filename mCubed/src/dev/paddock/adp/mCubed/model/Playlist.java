@@ -204,8 +204,8 @@ public class Playlist {
 		return files;
 	}
 	
-	public Collection<Composite> getComposition() {
-		return Collections.unmodifiableCollection(composition);
+	public List<Composite> getComposition() {
+		return Collections.unmodifiableList(composition);
 	}
 	
 	public void addComposite(Composite composite) {

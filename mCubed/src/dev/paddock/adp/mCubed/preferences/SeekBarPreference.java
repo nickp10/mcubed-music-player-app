@@ -1,13 +1,15 @@
 package dev.paddock.adp.mCubed.preferences;
 
+import dev.paddock.adp.mCubed.R;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.res.TypedArray;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.SeekBar;
@@ -15,84 +17,100 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 public class SeekBarPreference extends DialogPreference implements OnSeekBarChangeListener {
-	private static final String androidns = "http://schema.android.com/apk/res";
-	
+	private static final int DEFAULT_DEFAULT_VALUE = 50;
 	private SeekBar seekBar;
 	private TextView valueText;
 	private CheckBox enableCheckbox;
-	private OnClickListener checkboxClickListener;
-	private Context context;
+	private OnCheckedChangeListener checkboxChangedListener;
+	private boolean onGetDefaultValueCalled;
 	private String units;
-	private int defaultValue, maxValue, value;
+	private int value, maximum = 100, defaultValue;
 	
 	public SeekBarPreference(Context context, AttributeSet attrs) {
 		// Setup
 		super(context, attrs);
-		this.context = context;
+		
+		// Fix the default value
+		if (!onGetDefaultValueCalled) {
+			defaultValue = DEFAULT_DEFAULT_VALUE;
+		}
 		
 		// Read attributes
-		units = attrs.getAttributeValue(androidns, "units");
-		defaultValue = attrs.getAttributeIntValue(androidns, "defaultValue", 50);
-		maxValue = attrs.getAttributeIntValue(androidns, "maxValue", 100);
+		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.VolumePreference);
+		units = a.getString(R.styleable.VolumePreference_units);
+		maximum = a.getInt(R.styleable.VolumePreference_maximum, getMaximumValue());
+		a.recycle();
+	}
+	
+	@Override
+	protected Object onGetDefaultValue(TypedArray a, int index) {
+		onGetDefaultValueCalled = true;
+		defaultValue = a.getInt(index, DEFAULT_DEFAULT_VALUE);
+		return getDefaultValue();
 	}
 	
 	@Override
 	protected View onCreateDialogView() {
 		// Create the layout
-		LinearLayout layout = new LinearLayout(context);
+		LinearLayout layout = new LinearLayout(getContext());
 		layout.setOrientation(LinearLayout.VERTICAL);
 		layout.setPadding(5, 5, 5, 5);
 		
 		// Create an enable checkbox
-		enableCheckbox = new CheckBox(context);
+		enableCheckbox = new CheckBox(getContext());
 		enableCheckbox.setText("Enable");
-		enableCheckbox.setOnClickListener(getCheckboxClickListener());
+		enableCheckbox.setOnCheckedChangeListener(getCheckboxChangedListener());
 		layout.addView(enableCheckbox, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		
 		// Create the seek bar
-		seekBar = new SeekBar(context);
-		seekBar.setMax(maxValue);
+		seekBar = new SeekBar(getContext());
+		seekBar.setMax(getMaximumValue());
 		seekBar.setOnSeekBarChangeListener(this);
 		layout.addView(seekBar, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		
 		// Create the value display
-		valueText = new TextView(context);
+		valueText = new TextView(getContext());
 		valueText.setGravity(Gravity.CENTER_HORIZONTAL);
 		valueText.setTextSize(16);
 		layout.addView(valueText, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		
 		// Set the initial value
-		setValue(getPersistedInt(defaultValue));
-		updateEnabled(true);
+		setValue(getPersistedInt(getDefaultValue()));
 		return layout;
 	}
 	
-	private void updateEnabled(boolean doCheckValue) {
-		// Check the value
-		if (doCheckValue) {
-			enableCheckbox.setChecked(value >= 0);
+	private void updateDisplay() {
+		updateEnableCheckbox();
+		updateSeekBar();
+		updateTextDisplay();
+	}
+	
+	private void updateEnableCheckbox() {
+		if (enableCheckbox != null) {
+			boolean isChecked = isValueSet();
+			enableCheckbox.setChecked(isChecked);
+			seekBar.setEnabled(isChecked);
+			valueText.setEnabled(isChecked);
 		}
-		
-		// Update the state of the elements
-		boolean isChecked = enableCheckbox.isChecked();
-		seekBar.setEnabled(isChecked);
-		valueText.setEnabled(isChecked);
-		
-		// Update the value
-		if (value < 0) {
-			setValue(defaultValue);
-		}
-		if (!isChecked) {
-			value = -1;
+	}
+	
+	private void updateSeekBar() {
+		if (seekBar != null) {
+			int value = getDisplayValue();
+			seekBar.setProgress(value);
 		}
 	}
 	
 	private void updateTextDisplay() {
-		String valueStr = String.valueOf(value);
-		if (units != null) {
-			valueStr = valueStr.concat(units);
+		if (valueText != null) {
+			int value = getDisplayValue();
+			String valueStr = Integer.toString(value);
+			String units = getUnits();
+			if (units != null) {
+				valueStr = valueStr.concat(units);
+			}
+			valueText.setText(valueStr);
 		}
-		valueText.setText(valueStr);
 	}
 	
 	@Override
@@ -111,13 +129,16 @@ public class SeekBarPreference extends DialogPreference implements OnSeekBarChan
 
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int value, boolean fromUser) {
-		setValue(value);
+		if (isValueSet()) {
+			setValue(value);
+		}
 	}
 	
 	@Override
-	public void onClick(DialogInterface dialog, int which) {
-		super.onClick(dialog, which);
-		if (which == DialogInterface.BUTTON_POSITIVE) {
+	protected void onDialogClosed(boolean positiveResult) {
+		super.onDialogClosed(positiveResult);
+		if (positiveResult) {
+			int value = getValue();
 			if (shouldPersist()) {
 				persistInt(value);
 			}
@@ -131,16 +152,44 @@ public class SeekBarPreference extends DialogPreference implements OnSeekBarChan
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) { }
 	
-	public OnClickListener getCheckboxClickListener() {
-		if (checkboxClickListener == null) {
-			checkboxClickListener = new OnClickListener() {
+	public OnCheckedChangeListener getCheckboxChangedListener() {
+		if (checkboxChangedListener == null) {
+			checkboxChangedListener = new OnCheckedChangeListener() {
 				@Override
-				public void onClick(View v) {
-					SeekBarPreference.this.updateEnabled(false);
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					if (isChecked) {
+						setValue(getDisplayValue());
+					} else {
+						setValue(-1);
+					}
 				}
 			};
 		}
-		return checkboxClickListener;
+		return checkboxChangedListener;
+	}
+	
+	public String getUnits() {
+		return units;
+	}
+	
+	public int getMaximumValue() {
+		return maximum;
+	}
+	
+	public int getDefaultValue() {
+		return defaultValue;
+	}
+	
+	public boolean isValueSet() {
+		return getValue() >= 0;
+	}
+	
+	public int getDisplayValue() {
+		if (isValueSet()) {
+			return getValue();
+		}
+		int defaultValue = getDefaultValue();
+		return defaultValue >= 0 ? defaultValue : DEFAULT_DEFAULT_VALUE;
 	}
 	
 	public int getValue() {
@@ -148,12 +197,9 @@ public class SeekBarPreference extends DialogPreference implements OnSeekBarChan
 	}
 	
 	public void setValue(int value) {
-		this.value = value;
-		if (seekBar != null) {
-			seekBar.setProgress(value);
+		if (this.value != value) {
+			this.value = value;
 		}
-		if (valueText != null) {
-			updateTextDisplay();
-		}
+		updateDisplay();
 	}
 }
