@@ -4,10 +4,15 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNotSame;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.android.testing.mocking.AndroidMock;
 import com.google.android.testing.mocking.UsesMocks;
 
 import dev.paddock.adp.mCubed.model.MediaFile;
+import dev.paddock.adp.mCubed.model.MediaGroup;
+import dev.paddock.adp.mCubed.model.MediaGrouping;
 
 @UsesMocks(MediaFile.class)
 public class MediaFileUtils {
@@ -71,5 +76,33 @@ public class MediaFileUtils {
 	
 	public static MediaFile get(int id) {
 		return mediaFiles[id - 1];
+	}
+	
+	public static List<MediaFile> getMediaFilesForGrouping(MediaGrouping grouping) {
+		MediaGroup group = grouping.getGroup();
+		long id = grouping.getID();
+		List<MediaFile> files = new ArrayList<MediaFile>();
+		for (MediaFile file : mediaFiles) {
+			if (group == MediaGroup.All) {
+				files.add(file);
+			} else if (group == MediaGroup.Album) {
+				if (file.getAlbumID() == id) {
+					files.add(file);
+				}
+			} else if (group == MediaGroup.Artist) {
+				if (file.getArtistID() == id) {
+					files.add(file);
+				}
+			} else if (group == MediaGroup.Genre) {
+				if (file.getGenreID() == id) {
+					files.add(file);
+				}
+			} else if (group == MediaGroup.Song) {
+				if (file.getID() == id) {
+					files.add(file);
+				}
+			}
+		}
+		return files;
 	}
 }
