@@ -189,6 +189,10 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 		return true;
 	}
 	
+	public boolean isPlaying() {
+		return getStatus() == MediaStatus.Play;
+	}
+	
 	public MediaStatus getStatus() {
 		return status;
 	}

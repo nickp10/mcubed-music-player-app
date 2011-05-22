@@ -128,8 +128,8 @@ public class LibraryActivity extends Activity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(Menu.NONE, Schema.MN_SETTINGS, 1, "Settings").setIcon(R.drawable.settings);
-		menu.add(Menu.NONE, Schema.MN_EXIT, 2, "Exit").setIcon(R.drawable.exit);
+		menu.add(Menu.NONE, Schema.MN_SETTINGS, 1, "Settings").setIcon(R.drawable.menu_settings);
+		menu.add(Menu.NONE, Schema.MN_EXIT, 2, "Exit").setIcon(R.drawable.menu_exit);
 		return true;
 	}
 	

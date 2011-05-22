@@ -108,7 +108,6 @@ public class PlayMode {
 	
 	public void addedToPlaylist(MediaFile file) {
 		playMode.addedToPlaylist(file);
-		resetCurrent();
 	}
 	
 	public void removedFromPlaylist(MediaFile file) {
@@ -207,7 +206,7 @@ public class PlayMode {
 		}
 	}
 	
-	private void resetCurrent() {
+	public void resetCurrent() {
 		if (current == null) {
 			next();
 		} else {

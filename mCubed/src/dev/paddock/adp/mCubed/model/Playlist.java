@@ -75,6 +75,7 @@ public class Playlist {
 	}
 	
 	private void resetCurrent(boolean forceNotify) {
+		playMode.resetCurrent();
 		setCurrent(playMode.getCurrent(), forceNotify);
 		if (playMode.getCurrentRequiresRepeat()) {
 			RepeatStatus repeat = PreferenceManager.getSettingEnum(RepeatStatus.class, R.string.pref_repeat_status);

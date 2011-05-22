@@ -1,9 +1,11 @@
 package dev.paddock.adp.mCubed.widgets;
 
 import android.content.Context;
+import android.net.Uri;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.model.InitStatus;
+import dev.paddock.adp.mCubed.model.MediaFile;
 import dev.paddock.adp.mCubed.model.MediaStatus;
 import dev.paddock.adp.mCubed.services.ClientCallback;
 import dev.paddock.adp.mCubed.services.IClientCallback;
@@ -45,11 +47,16 @@ public class Playback4x1Provider extends PlaybackProvider {
 	
 	@Override
 	protected IRemoteViewsUpdater onUpdate(WidgetUpdater updater) {
-		updater.setTextViewText(R.id.w41_play_button, App.isInitialized() && App.getPlayer().getStatus() == MediaStatus.Play ? "Pause" : "Play");
+		updater.setImageViewResource(R.id.w41_play_button, App.isInitialized() && App.getPlayer().isPlaying() ? R.drawable.ic_media_pause : R.drawable.ic_media_play);
 		updater.setOnClickIntent(R.id.w41_play_button, new ClickIntent(Utilities.getContext(), getClass(), Schema.WI_PLAY_CLICK));
 		updater.setOnClickIntent(R.id.w41_prev_button, new ClickIntent(Utilities.getContext(), getClass(), Schema.WI_PREV_CLICK));
 		updater.setOnClickIntent(R.id.w41_next_button, new ClickIntent(Utilities.getContext(), getClass(), Schema.WI_NEXT_CLICK));
 		updater.setProgressBar(R.id.w41_seek_bar, App.getPlayer().getDuration(), App.getPlayer().getSeek(), false);
+		MediaFile file = App.getPlayingMedia();
+		Uri art = file == null ? null : file.getAlbumArt();
+		if (art != null) {
+			updater.setImageViewUri(R.id.w41_cover_image, art);
+		}
 		return null;
 	}
 	

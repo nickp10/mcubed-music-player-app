@@ -7,6 +7,7 @@ import dev.paddock.adp.mCubed.utilities.ICursor;
 import dev.paddock.adp.mCubed.utilities.Log;
 import dev.paddock.adp.mCubed.utilities.PropertyManager;
 import dev.paddock.adp.mCubed.utilities.Utilities;
+import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -204,24 +205,8 @@ public class MediaFile {
 	 */
 	private void loadAlbumArt() {
 		if (!isAlbumArtLoaded) {
-			String[] albumProjection = new String[] { MediaStore.Audio.Albums.ALBUM_ART };
-			Utilities.query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, getAlbumID(), albumProjection, new ICursor() {
-				@Override
-				public boolean run(Cursor cursor) {
-					loadAlbumArt(cursor);
-					return false;
-				}
-			});
-		}
-	}
-	
-	/**
-	 * Loads the album art for the media file.
-	 * @param cursor The cursor to read the album art information from.
-	 */
-	private void loadAlbumArt(Cursor cursor) {
-		if (!isAlbumArtLoaded) {
-			setAlbumArt(Utilities.getCursorUriValue(cursor, MediaStore.Audio.Albums.ALBUM_ART));
+			Uri artworkUri = Uri.parse("content://media/external/audio/albumart");
+			setAlbumArt(ContentUris.withAppendedId(artworkUri, getAlbumID()));
 			isAlbumArtLoaded = true;
 		}
 	}
