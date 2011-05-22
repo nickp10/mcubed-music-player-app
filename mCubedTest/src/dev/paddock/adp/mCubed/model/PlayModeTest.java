@@ -36,22 +36,27 @@ public class PlayModeTest extends AndroidTestCase{
 		AndroidMock.verify(playlist);
 	}
 	
+	private void addedToPlaylist(PlayMode playMode, MediaFile file) {
+		playMode.addedToPlaylist(file);
+		playMode.resetCurrent();
+	}
+	
 	public void testAddedToPlaylist() {
 		PlayMode playMode = new PlayMode(playlist, false);
 		files.add(mediaFiles[0]);
-		playMode.addedToPlaylist(mediaFiles[0]);
+		addedToPlaylist(playMode, mediaFiles[0]);
 		assertEquals(mediaFiles[0], playMode.getCurrent());
 		assertTrue(playMode.getHistory().isEmpty());
 		assertTrue(playMode.getQueue().isEmpty());
 		
 		files.add(mediaFiles[1]);
-		playMode.addedToPlaylist(mediaFiles[1]);
+		addedToPlaylist(playMode, mediaFiles[1]);
 		assertEquals(mediaFiles[0], playMode.getCurrent());
 		assertTrue(playMode.getHistory().isEmpty());
 		assertEquals(mediaFiles[1], playMode.getQueue().get(0));
 		
 		files.add(mediaFiles[2]);
-		playMode.addedToPlaylist(mediaFiles[2]);
+		addedToPlaylist(playMode, mediaFiles[2]);
 		assertEquals(mediaFiles[0], playMode.getCurrent());
 		assertTrue(playMode.getHistory().isEmpty());
 		assertEquals(mediaFiles[1], playMode.getQueue().get(0));
@@ -61,11 +66,11 @@ public class PlayModeTest extends AndroidTestCase{
 		// Setup the play mode
 		PlayMode playMode = new PlayMode(playlist, false);
 		files.add(mediaFiles[0]);
-		playMode.addedToPlaylist(mediaFiles[0]);
+		addedToPlaylist(playMode, mediaFiles[0]);
 		files.add(mediaFiles[1]);
-		playMode.addedToPlaylist(mediaFiles[1]);
+		addedToPlaylist(playMode, mediaFiles[1]);
 		files.add(mediaFiles[2]);
-		playMode.addedToPlaylist(mediaFiles[2]);
+		addedToPlaylist(playMode, mediaFiles[2]);
 		
 		// Assert the state before
 		assertTrue(playMode.getHistory().isEmpty());
@@ -97,11 +102,11 @@ public class PlayModeTest extends AndroidTestCase{
 		
 		// Add the files back
 		files.add(mediaFiles[0]);
-		playMode.addedToPlaylist(mediaFiles[0]);
+		addedToPlaylist(playMode, mediaFiles[0]);
 		files.add(mediaFiles[1]);
-		playMode.addedToPlaylist(mediaFiles[1]);
+		addedToPlaylist(playMode, mediaFiles[1]);
 		files.add(mediaFiles[2]);
-		playMode.addedToPlaylist(mediaFiles[2]);
+		addedToPlaylist(playMode, mediaFiles[2]);
 		
 		// Let's move to the next item and redo the removes
 		playMode.next();
@@ -138,11 +143,11 @@ public class PlayModeTest extends AndroidTestCase{
 		
 		// Add the files back
 		files.add(mediaFiles[0]);
-		playMode.addedToPlaylist(mediaFiles[0]);
+		addedToPlaylist(playMode, mediaFiles[0]);
 		files.add(mediaFiles[1]);
-		playMode.addedToPlaylist(mediaFiles[1]);
+		addedToPlaylist(playMode, mediaFiles[1]);
 		files.add(mediaFiles[2]);
-		playMode.addedToPlaylist(mediaFiles[2]);
+		addedToPlaylist(playMode, mediaFiles[2]);
 		
 		// Let's move to the last item and redo the removes
 		playMode.next();
@@ -194,15 +199,15 @@ public class PlayModeTest extends AndroidTestCase{
 		// Setup the play mode
 		PlayMode playMode = new PlayMode(playlist, false);
 		files.add(mediaFiles[0]);
-		playMode.addedToPlaylist(mediaFiles[0]);
+		addedToPlaylist(playMode, mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[0]);
 		files.add(mediaFiles[1]);
-		playMode.addedToPlaylist(mediaFiles[1]);
+		addedToPlaylist(playMode, mediaFiles[1]);
 		files.add(mediaFiles[2]);
-		playMode.addedToPlaylist(mediaFiles[2]);
+		addedToPlaylist(playMode, mediaFiles[2]);
 		playMode.next();
 		playMode.next();
 		playMode.next();
@@ -228,15 +233,15 @@ public class PlayModeTest extends AndroidTestCase{
 		// Setup the play mode
 		PlayMode playMode = new PlayMode(playlist, false);
 		files.add(mediaFiles[0]);
-		playMode.addedToPlaylist(mediaFiles[0]);
+		addedToPlaylist(playMode, mediaFiles[0]);
 		files.add(mediaFiles[1]);
-		playMode.addedToPlaylist(mediaFiles[1]);
+		addedToPlaylist(playMode, mediaFiles[1]);
 		playMode.appendToQueue(mediaFiles[1]);
 		playMode.appendToQueue(mediaFiles[1]);
 		playMode.appendToQueue(mediaFiles[1]);
 		playMode.appendToQueue(mediaFiles[1]);
 		files.add(mediaFiles[2]);
-		playMode.addedToPlaylist(mediaFiles[2]);
+		addedToPlaylist(playMode, mediaFiles[2]);
 		
 		// Assert the state before
 		assertSequenceEmpty(playMode.getHistory());
@@ -257,19 +262,19 @@ public class PlayModeTest extends AndroidTestCase{
 		// Setup the play mode
 		PlayMode playMode = new PlayMode(playlist, false);
 		files.add(mediaFiles[0]);
-		playMode.addedToPlaylist(mediaFiles[0]);
+		addedToPlaylist(playMode, mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[0]);
 		files.add(mediaFiles[1]);
-		playMode.addedToPlaylist(mediaFiles[1]);
+		addedToPlaylist(playMode, mediaFiles[1]);
 		playMode.appendToQueue(mediaFiles[1]);
 		playMode.appendToQueue(mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[0]);
 		files.add(mediaFiles[2]);
-		playMode.addedToPlaylist(mediaFiles[2]);
+		addedToPlaylist(playMode, mediaFiles[2]);
 		playMode.next();
 		playMode.next();
 		playMode.next();
@@ -294,15 +299,15 @@ public class PlayModeTest extends AndroidTestCase{
 		// Setup the play mode
 		PlayMode playMode = new PlayMode(playlist, false);
 		files.add(mediaFiles[0]);
-		playMode.addedToPlaylist(mediaFiles[0]);
+		addedToPlaylist(playMode, mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[0]);
 		files.add(mediaFiles[1]);
-		playMode.addedToPlaylist(mediaFiles[1]);
+		addedToPlaylist(playMode, mediaFiles[1]);
 		files.add(mediaFiles[2]);
-		playMode.addedToPlaylist(mediaFiles[2]);
+		addedToPlaylist(playMode, mediaFiles[2]);
 		playMode.next();
 		playMode.next();
 		playMode.next();
@@ -327,15 +332,15 @@ public class PlayModeTest extends AndroidTestCase{
 		// Setup the play mode
 		PlayMode playMode = new PlayMode(playlist, false);
 		files.add(mediaFiles[0]);
-		playMode.addedToPlaylist(mediaFiles[0]);
+		addedToPlaylist(playMode, mediaFiles[0]);
 		files.add(mediaFiles[1]);
-		playMode.addedToPlaylist(mediaFiles[1]);
+		addedToPlaylist(playMode, mediaFiles[1]);
 		playMode.appendToQueue(mediaFiles[1]);
 		playMode.appendToQueue(mediaFiles[1]);
 		playMode.appendToQueue(mediaFiles[1]);
 		playMode.appendToQueue(mediaFiles[1]);
 		files.add(mediaFiles[2]);
-		playMode.addedToPlaylist(mediaFiles[2]);
+		addedToPlaylist(playMode, mediaFiles[2]);
 		playMode.next();
 		
 		// Assert the state before
@@ -357,7 +362,7 @@ public class PlayModeTest extends AndroidTestCase{
 		// Setup the play mode
 		PlayMode playMode = new PlayMode(playlist, false);
 		files.add(mediaFiles[0]);
-		playMode.addedToPlaylist(mediaFiles[0]);
+		addedToPlaylist(playMode, mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[0]);
@@ -367,9 +372,9 @@ public class PlayModeTest extends AndroidTestCase{
 		playMode.appendToQueue(mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[0]);
 		files.add(mediaFiles[1]);
-		playMode.addedToPlaylist(mediaFiles[1]);
+		addedToPlaylist(playMode, mediaFiles[1]);
 		files.add(mediaFiles[2]);
-		playMode.addedToPlaylist(mediaFiles[2]);
+		addedToPlaylist(playMode, mediaFiles[2]);
 		playMode.next();
 		playMode.next();
 		playMode.next();
@@ -394,11 +399,11 @@ public class PlayModeTest extends AndroidTestCase{
 		// Setup the play mode
 		PlayMode playMode = new PlayMode(playlist, false);
 		files.add(mediaFiles[0]);
-		playMode.addedToPlaylist(mediaFiles[0]);
+		addedToPlaylist(playMode, mediaFiles[0]);
 		files.add(mediaFiles[1]);
-		playMode.addedToPlaylist(mediaFiles[1]);
+		addedToPlaylist(playMode, mediaFiles[1]);
 		files.add(mediaFiles[2]);
-		playMode.addedToPlaylist(mediaFiles[2]);
+		addedToPlaylist(playMode, mediaFiles[2]);
 		
 		// Assert the state before
 		assertTrue(playMode.getHistory().isEmpty());
@@ -448,11 +453,11 @@ public class PlayModeTest extends AndroidTestCase{
 		// Setup the play mode
 		PlayMode playMode = new PlayMode(playlist, false);
 		files.add(mediaFiles[0]);
-		playMode.addedToPlaylist(mediaFiles[0]);
+		addedToPlaylist(playMode, mediaFiles[0]);
 		files.add(mediaFiles[1]);
-		playMode.addedToPlaylist(mediaFiles[1]);
+		addedToPlaylist(playMode, mediaFiles[1]);
 		files.add(mediaFiles[2]);
-		playMode.addedToPlaylist(mediaFiles[2]);
+		addedToPlaylist(playMode, mediaFiles[2]);
 		
 		// Assert the state before
 		assertSequenceEmpty(playMode.getHistory());
@@ -508,11 +513,11 @@ public class PlayModeTest extends AndroidTestCase{
 		// Setup the play mode
 		PlayMode playMode = new PlayMode(playlist, false);
 		files.add(mediaFiles[0]);
-		playMode.addedToPlaylist(mediaFiles[0]);
+		addedToPlaylist(playMode, mediaFiles[0]);
 		files.add(mediaFiles[1]);
-		playMode.addedToPlaylist(mediaFiles[1]);
+		addedToPlaylist(playMode, mediaFiles[1]);
 		files.add(mediaFiles[2]);
-		playMode.addedToPlaylist(mediaFiles[2]);
+		addedToPlaylist(playMode, mediaFiles[2]);
 		playMode.appendToQueue(mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[0]);
 		playMode.appendToQueue(mediaFiles[2]);
