@@ -276,7 +276,7 @@ namespace mCubed.Core {
 		/// </summary>
 		/// <param name="pictureResource">The picture resource to update to</param>
 		public void UpdatePicture(MetaDataPicResource pictureResource) {
-			var stream = Application.GetResourceStream(new Uri("pack://application:,,,/Images/" + pictureResource.ToString() + ".gif", UriKind.Absolute)).Stream;
+			var stream = Application.GetResourceStream(new Uri("pack://application:,,,/Images/" + pictureResource.ToString() + ".png", UriKind.Absolute)).Stream;
 			byte[] bytes = new byte[stream.Length];
 			stream.Read(bytes, 0, bytes.Length);
 			Data = bytes;

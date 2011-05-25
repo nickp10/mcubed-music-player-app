@@ -253,10 +253,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Default.gif" />
-    <Resource Include="Images\InvalidFormat.gif" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Icons\accept.png" />
     <Resource Include="Icons\add.png" />
     <Resource Include="Icons\delete.png" />
@@ -288,6 +284,8 @@
     <Resource Include="Icons\arrow_down.png" />
     <Resource Include="Icons\arrow_up.png" />
     <Resource Include="Icons\refresh.png" />
+    <Resource Include="Images\Default.png" />
+    <Resource Include="Images\InvalidFormat.png" />
     <Content Include="References\taglib-sharp.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
