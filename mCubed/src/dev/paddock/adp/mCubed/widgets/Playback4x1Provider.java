@@ -51,10 +51,13 @@ public class Playback4x1Provider extends PlaybackProvider {
 		updater.setOnClickIntent(R.id.w41_play_button, new ClickIntent(Utilities.getContext(), getClass(), Schema.WI_PLAY_CLICK));
 		updater.setOnClickIntent(R.id.w41_prev_button, new ClickIntent(Utilities.getContext(), getClass(), Schema.WI_PREV_CLICK));
 		updater.setOnClickIntent(R.id.w41_next_button, new ClickIntent(Utilities.getContext(), getClass(), Schema.WI_NEXT_CLICK));
+		updater.setOnClickIntent(R.id.w41_cover_image, new ClickIntent(Utilities.getContext(), getClass(), Schema.WI_OPEN_APP_CLICK));
 		updater.setProgressBar(R.id.w41_seek_bar, App.getPlayer().getDuration(), App.getPlayer().getSeek(), false);
 		MediaFile file = App.getPlayingMedia();
 		Uri art = file == null ? null : file.getAlbumArt();
-		if (art != null) {
+		if (art == null) {
+			updater.setImageViewResource(R.id.w41_cover_image, R.drawable.img_cover_missing);
+		} else {
 			updater.setImageViewUri(R.id.w41_cover_image, art);
 		}
 		return null;

@@ -1,5 +1,11 @@
 package dev.paddock.adp.mCubed.activities;
 
+import android.app.Activity;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.model.MediaStatus;
 import dev.paddock.adp.mCubed.receivers.ClientReceiver;
@@ -8,13 +14,6 @@ import dev.paddock.adp.mCubed.services.IClientCallback;
 import dev.paddock.adp.mCubed.services.PlaybackClient;
 import dev.paddock.adp.mCubed.utilities.App;
 import dev.paddock.adp.mCubed.utilities.Utilities;
-import android.app.Activity;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 
 public class OverlayActivity extends Activity {
 	private ClientReceiver clientReceiver;
@@ -49,9 +48,7 @@ public class OverlayActivity extends Activity {
 		public void onClick(View v) {
 			Utilities.pushContext(OverlayActivity.this);
 			try {
-				Intent intent = new Intent(Utilities.getContext(), LibraryActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
+				Utilities.launchMainActivity();
 				OverlayActivity.this.finish();
 			} finally {
 				Utilities.popContext();

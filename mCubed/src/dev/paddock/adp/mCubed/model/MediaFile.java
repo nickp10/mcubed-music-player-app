@@ -206,7 +206,12 @@ public class MediaFile {
 	private void loadAlbumArt() {
 		if (!isAlbumArtLoaded) {
 			Uri artworkUri = Uri.parse("content://media/external/audio/albumart");
-			setAlbumArt(ContentUris.withAppendedId(artworkUri, getAlbumID()));
+			artworkUri = ContentUris.withAppendedId(artworkUri, getAlbumID());
+			if (Utilities.fileExists(artworkUri)) {
+				setAlbumArt(artworkUri);
+			} else {
+				setAlbumArt(null);
+			}
 			isAlbumArtLoaded = true;
 		}
 	}

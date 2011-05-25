@@ -73,6 +73,7 @@ public class Schema {
 	public static final String WI_PLAY_CLICK = PREFIX + "WI_PLAY_CLICK";
 	public static final String WI_PREV_CLICK = PREFIX + "WI_PREV_CLICK";
 	public static final String WI_NEXT_CLICK = PREFIX + "WI_NEXT_CLICK";
+	public static final String WI_OPEN_APP_CLICK = PREFIX + "WI_OPEN_APP_CLICK";
 	
 	/** FILE STORAGE SCHEMA **/
 	public static final String FILE_APP_STATE = "mCubedAppState.xml";

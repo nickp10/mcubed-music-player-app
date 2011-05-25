@@ -6,24 +6,26 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-import dev.paddock.adp.mCubed.Schema;
-import dev.paddock.adp.mCubed.model.AsyncTask;
-import dev.paddock.adp.mCubed.model.Holder;
-import dev.paddock.adp.mCubed.model.PublishProgress;
-
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.activities.LibraryActivity;
+import dev.paddock.adp.mCubed.model.AsyncTask;
+import dev.paddock.adp.mCubed.model.Holder;
+import dev.paddock.adp.mCubed.model.PublishProgress;
 
 public class Utilities {
 	private static final Map<Long, Stack<Context>> contextMap = new HashMap<Long, Stack<Context>>();
@@ -316,9 +318,34 @@ public class Utilities {
 			return false;
 		}
 		
-		// Create the file
+		// Check if the file straight up exists
 		File file = new File(uri.toString());
-		return file.exists();
+		if (file.exists()) {
+			return true;
+		}
+		
+		// Get the content resolver
+		ContentResolver contentResolver = getCR();
+		if (contentResolver == null) {
+			return false;
+		}
+		
+		// Attempt to open the input stream
+		InputStream stream = null;
+		try {
+			stream = contentResolver.openInputStream(uri);
+			return true;
+		} catch (FileNotFoundException e) {
+			return false;
+		} finally {
+			if (stream != null) {
+				try {
+					stream.close();
+				} catch (IOException e) {
+					Log.e(e);
+				}
+			}
+		}
 	}
 	
 	public static boolean isScreenOn() {
@@ -350,6 +377,13 @@ public class Utilities {
 				}
 			}
 		}
+	}
+	
+	public static void launchMainActivity() {
+		Context context = Utilities.getContext();
+		Intent intent = new Intent(context, LibraryActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+		context.startActivity(intent);
 	}
 	
 	public static int parseInt(String str) {

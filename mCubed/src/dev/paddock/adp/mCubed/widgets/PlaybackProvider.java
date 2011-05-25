@@ -114,6 +114,8 @@ public abstract class PlaybackProvider extends AppWidgetProvider {
 				PlaybackClient.movePlaybackPrev();
 			} else if (Schema.WI_NEXT_CLICK.equals(action)) {
 				PlaybackClient.movePlaybackNext();
+			} else if (Schema.WI_OPEN_APP_CLICK.equals(action)) {
+				Utilities.launchMainActivity();
 			}
 		} finally {
 			Utilities.popContext();

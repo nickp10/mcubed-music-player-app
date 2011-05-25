@@ -17,7 +17,7 @@ public class Playback1x1Provider extends PlaybackProvider {
 	
 	@Override
 	protected IRemoteViewsUpdater onUpdate(WidgetUpdater updater) {
-		updater.setTextViewText(R.id.w11_play_button, App.isInitialized() && App.getPlayer().getStatus() == MediaStatus.Play ? "Pause" : "Play");
+		updater.setImageViewResource(R.id.w11_play_button, App.isInitialized() && App.getPlayer().isPlaying() ? R.drawable.widget_pause : R.drawable.widget_play);
 		updater.setOnClickIntent(R.id.w11_play_button, new ClickIntent(Utilities.getContext(), getClass(), Schema.WI_PLAY_CLICK));
 		return null;
 	}

@@ -149,7 +149,7 @@ public class PlaybackService extends Service {
 		NotificationManager manager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 		NotificationVisibility visibility = PreferenceManager.getSettingEnum(NotificationVisibility.class, R.string.pref_notification_visibility);
 		MediaFile media = App.getPlayingMedia();
-		boolean isPlaying = App.getPlayer().getStatus() == MediaStatus.Play;
+		boolean isPlaying = App.getPlayer().isPlaying();
 		
 		// Cancel the existing one to signal the ticker
 		if (doTicker) {
@@ -188,7 +188,7 @@ public class PlaybackService extends Service {
 		String title = media.getTitle();
 		String content = media.getArtist();
 		String ticker = content + " - " + title;
-		int icon = isPlaying ? android.R.drawable.ic_media_play : android.R.drawable.ic_media_pause;
+		int icon = isPlaying ? R.drawable.notify_play : R.drawable.notify_pause;
 		
 		// Create and show the notification
 		Notification notification = new Notification(icon, ticker, System.currentTimeMillis());

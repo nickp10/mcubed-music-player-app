@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
-	<Button
+	<ImageButton
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
-		android:text="Play" 
-		android:id="@+id/w11_play_button"/>
+		android:layout_margin="10dp"
+		android:src="@drawable/widget_play"
+		android:background="@drawable/media_button_background"
+		android:id="@+id/w11_play_button" />
 </LinearLayout>
