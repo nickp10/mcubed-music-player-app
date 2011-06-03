@@ -14,7 +14,7 @@ import com.google.android.testing.mocking.UsesMocks;
 import dev.paddock.adp.mCubed.MediaFileUtils;
 
 @UsesMocks(Playlist.class)
-public class PlayModeTest extends AndroidTestCase{
+public class PlayModeTest extends AndroidTestCase {
 	private final MediaFile[] mediaFiles = MediaFileUtils.getMocks();
 	private final List<MediaFile> files = new ArrayList<MediaFile>();
 	private Playlist playlist;
