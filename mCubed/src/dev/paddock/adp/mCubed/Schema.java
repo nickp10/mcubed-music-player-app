@@ -69,11 +69,21 @@ public class Schema {
 	public static final int MN_SETTINGS = 1;
 	public static final int MN_EXIT = 2;
 	
+	/** MISC SCHEMA **/
+	public static final int FLAG_ALL = 0;
+	
 	/** WIDGET INTENT SCHEMA **/
 	public static final String WI_PLAY_CLICK = PREFIX + "WI_PLAY_CLICK";
 	public static final String WI_PREV_CLICK = PREFIX + "WI_PREV_CLICK";
 	public static final String WI_NEXT_CLICK = PREFIX + "WI_NEXT_CLICK";
 	public static final String WI_OPEN_APP_CLICK = PREFIX + "WI_OPEN_APP_CLICK";
+	
+	/** WIDGET INVALIDATION SCHEMA **/
+	public static final int WI_INV_UPDATED = 1;
+	public static final int WI_INV_FILE_CHANGED = 2;
+	public static final int WI_INV_INIT_CHANGED = 4;
+	public static final int WI_INV_STATUS_CHANGED = 8;
+	public static final int WI_INV_SEEK_CHANGED = 16;
 	
 	/** FILE STORAGE SCHEMA **/
 	public static final String FILE_APP_STATE = "mCubedAppState.xml";
@@ -113,5 +123,15 @@ public class Schema {
 			return action != null && (I_MCUBED.equals(action) || I_MCUBED_PROGRESS.equals(action));
 		}
 		return false;
+	}
+	
+	/**
+	 * Determine whether or not the given value matches a given flag or the is equal to FLAG_ALL
+	 * @param actualValue The value to check against
+	 * @param flag The flag to check if the value contains
+	 * @return True if the given value matches the given flag, or false otherwise
+	 */
+	public static boolean isFlagged(int actualValue, int flag) {
+		return actualValue == FLAG_ALL || (actualValue & flag) == flag;
 	}
 }

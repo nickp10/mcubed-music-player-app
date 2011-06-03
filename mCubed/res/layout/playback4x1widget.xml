@@ -1,55 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
-	android:layout_marginLeft="5dp"
-	android:layout_marginRight="5dp"
-	android:background="@drawable/w41_background"
-	android:orientation="horizontal">
-	<ImageView
-		android:layout_height="70dp"
-		android:layout_width="70dp"
-		android:layout_gravity="center_vertical"
-		android:layout_marginLeft="5dp"
-		android:scaleType="centerInside"
-		android:id="@+id/w41_cover_image" />
+	android:layout_width="fill_parent"
+	android:layout_marginLeft="10dp"
+	android:layout_marginRight="10dp"
+	android:background="@drawable/w41_background">
+	<LinearLayout
+		android:layout_height="fill_parent"
+		android:layout_width="fill_parent"
+		android:orientation="horizontal"
+		android:visibility="gone"
+		android:id="@+id/w41_info_layout">
+		<ImageView
+			android:layout_height="70dp"
+			android:layout_width="70dp"
+			android:layout_gravity="center_vertical"
+			android:layout_marginLeft="10dp"
+			android:scaleType="centerInside"
+			android:id="@+id/w41_cover_image" />
+		<LinearLayout
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:layout_gravity="center_vertical"
+			android:layout_marginLeft="10dp"
+			android:layout_marginRight="10dp"
+			android:orientation="vertical">
+			<FrameLayout
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:layout_marginTop="5dp"
+				android:layout_marginBottom="5dp">
+				<ProgressBar
+					style="@android:style/Widget.ProgressBar.Horizontal"
+					android:layout_height="wrap_content"
+					android:layout_width="fill_parent"
+					android:id="@+id/w41_seek_bar" />
+				<TextView
+					android:layout_height="wrap_content"
+					android:layout_width="fill_parent"
+					android:layout_gravity="center_vertical"
+					android:ellipsize="marquee"
+					android:marqueeRepeatLimit="marquee_forever"
+					android:singleLine="true"
+					android:scrollHorizontally="true"
+					android:shadowColor="#000000"
+					android:shadowDx="1"
+					android:shadowDy="1"
+					android:shadowRadius="1"
+					android:id="@+id/w41_playing_info">
+					<requestFocus/>
+				</TextView>
+			</FrameLayout>
+			<LinearLayout
+				android:layout_height="fill_parent"
+				android:layout_width="fill_parent"
+				android:gravity="center_horizontal"
+				android:orientation="horizontal">
+				<ImageButton
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:src="@drawable/ic_media_previous"
+					android:background="@drawable/media_button_background"
+					android:id="@+id/w41_prev_button" />
+				<ImageButton
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:layout_marginLeft="15dp"
+					android:layout_marginRight="15dp"
+					android:src="@drawable/ic_media_play"
+					android:background="@drawable/media_button_background"
+					android:id="@+id/w41_play_button" />
+				<ImageButton
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:src="@drawable/ic_media_next"
+					android:background="@drawable/media_button_background"
+					android:id="@+id/w41_next_button" />
+			</LinearLayout>
+		</LinearLayout>
+	</LinearLayout>
 	<LinearLayout
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent"
-		android:layout_gravity="center_vertical"
-		android:orientation="vertical">
-		<ProgressBar
-			style="?android:attr/progressBarStyleHorizontal"
-			android:layout_width="fill_parent"
+		android:layout_marginLeft="10dp"
+		android:layout_marginRight="10dp"
+		android:layout_gravity="center"
+		android:gravity="center"
+		android:orientation="vertical"
+		android:id="@+id/w41_init_layout">
+		<TextView
 			android:layout_height="wrap_content"
-			android:layout_margin="5dp"
-			android:id="@+id/w41_seek_bar" />
-		<LinearLayout
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent"
-			android:gravity="center_horizontal"
-			android:orientation="horizontal">
-			<ImageButton
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:src="@drawable/ic_media_previous"
-				android:background="@drawable/media_button_background"
-				android:id="@+id/w41_prev_button" />
-			<ImageButton
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginLeft="15dp"
-				android:layout_marginRight="15dp"
-				android:src="@drawable/ic_media_play"
-				android:background="@drawable/media_button_background"
-				android:id="@+id/w41_play_button" />
-			<ImageButton
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:src="@drawable/ic_media_next"
-				android:background="@drawable/media_button_background"
-				android:id="@+id/w41_next_button" />
-		</LinearLayout>
+			android:layout_width="wrap_content"
+			android:layout_marginBottom="10dp"
+			android:text="Initializing..." />
+		<ProgressBar
+			style="@android:style/Widget.ProgressBar.Horizontal"
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent" 
+			android:indeterminate="true" />
 	</LinearLayout>
-</LinearLayout>
+</FrameLayout>

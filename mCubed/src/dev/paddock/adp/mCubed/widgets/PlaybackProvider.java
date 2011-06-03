@@ -11,6 +11,7 @@ import dev.paddock.adp.mCubed.services.IClientCallback;
 import dev.paddock.adp.mCubed.services.PlaybackClient;
 import dev.paddock.adp.mCubed.utilities.App;
 import dev.paddock.adp.mCubed.utilities.Utilities;
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
@@ -20,6 +21,7 @@ import android.widget.RemoteViews;
 
 public abstract class PlaybackProvider extends AppWidgetProvider {
 	private static final Map<Class<?>, IClientCallback> clientCallbacks = new HashMap<Class<?>, IClientCallback>();
+	private static final Map<Class<?>, IRemoteViewsUpdater> widgetUpdaters = new HashMap<Class<?>, IRemoteViewsUpdater>();
 	
 	@Override
 	public final void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -33,7 +35,6 @@ public abstract class PlaybackProvider extends AppWidgetProvider {
 		}
 	}
 	
-	protected abstract IRemoteViewsUpdater onUpdate(WidgetUpdater updater);
 	protected abstract int getLayoutID();
 	
 	protected final int[] getWidgetIDs() {
@@ -44,40 +45,43 @@ public abstract class PlaybackProvider extends AppWidgetProvider {
 		ComponentName componentName = new ComponentName(Utilities.getContext(), getClass());
 		return appWidgetManager.getAppWidgetIds(componentName);
 	}
-	
-	protected final void updateWidget(IRemoteViewsUpdater... updaters) {
-		updateWidget(AppWidgetManager.getInstance(Utilities.getContext()), updaters);
-	}
-	
-	protected final void updateWidget(AppWidgetManager appWidgetManager, IRemoteViewsUpdater... updaters) {
-		// Get the widget IDs needing updated
-		int[] widgetIDs = getWidgetIDs(appWidgetManager);
-		if (widgetIDs != null && widgetIDs.length > 0) {
-			// Grab the remote view
-			RemoteViews views = new RemoteViews(Utilities.getContext().getPackageName(), getLayoutID());
-			
-			// Register the mouse click intent
-			for (IRemoteViewsUpdater updater : updaters) {
-				if (updater != null) {
-					updater.updateView(views);
-				}
-			}
-			
-			// Update the widgets
-			appWidgetManager.updateAppWidget(widgetIDs, views);
-		}
-	}
-	
+
 	protected final void invalidate() {
 		invalidate(null);
 	}
 	
+	protected final void invalidate(int flags) {
+		invalidate(null, flags);
+	}
+	
 	protected final void invalidate(AppWidgetManager manager) {
+		invalidate(manager, Schema.FLAG_ALL);
+	}
+	
+	protected final void invalidate(AppWidgetManager manager, int flags) {
+		// Get the widget manager
 		if (manager == null) {
 			manager = AppWidgetManager.getInstance(Utilities.getContext());
 		}
-		WidgetUpdater updater = new WidgetUpdater();
-		updateWidget(manager, onUpdate(updater), updater);
+		
+		// Make sure we actually got a manager
+		if (manager != null) {
+			// Get the widget IDs needing updated
+			int[] widgetIDs = getWidgetIDs(manager);
+			if (widgetIDs != null && widgetIDs.length > 0) {
+				// Grab the remote view
+				RemoteViews views = new RemoteViews(Utilities.getContext().getPackageName(), getLayoutID());
+				
+				// Update the remote view
+				IRemoteViewsUpdater updater = getUpdater();
+				if (updater != null) {
+					updater.updateView(views, flags);
+				}
+				
+				// Update the widgets
+				manager.updateAppWidget(widgetIDs, views);
+			}
+		}
 	}
 	
 	@Override
@@ -122,6 +126,22 @@ public abstract class PlaybackProvider extends AppWidgetProvider {
 		}
 	}
 	
+	protected final PendingIntent generateClickIntent(String action) {
+		Context context = Utilities.getContext();
+		Intent intent = new Intent(context, getClass());
+		intent.setAction(action);
+		return PendingIntent.getBroadcast(context, 0, intent, 0);
+	}
+	
+	private final IRemoteViewsUpdater getUpdater() {
+		if (!widgetUpdaters.containsKey(getClass())) {
+			widgetUpdaters.put(getClass(), generateUpdater());
+		}
+		return widgetUpdaters.get(getClass());
+	}
+	
+	protected abstract IRemoteViewsUpdater generateUpdater();
+	
 	private final IClientCallback getClientCallback() {
 		if (!clientCallbacks.containsKey(getClass())) {
 			clientCallbacks.put(getClass(), generateClientCallback());
@@ -133,12 +153,12 @@ public abstract class PlaybackProvider extends AppWidgetProvider {
 		return new ClientCallback() {
 			@Override
 			public void propertyInitStatusChanged(InitStatus initStatus) {
-				invalidate();
+				invalidate(Schema.WI_INV_INIT_CHANGED);
 			}
 
 			@Override
 			public void propertyPlaybackStatusChanged(MediaStatus playbackStatus) {
-				invalidate();
+				invalidate(Schema.WI_INV_STATUS_CHANGED);
 			}
 		};
 	}

@@ -65,6 +65,7 @@ public class HeadsetReceiver extends BroadcastReceiver implements IReceiver {
 		intentFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
 		intentFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
 		intentFilter.addAction(Intent.ACTION_MEDIA_BUTTON);
+		intentFilter.setPriority(Integer.MAX_VALUE);
 		return intentFilter;
 	}
 
