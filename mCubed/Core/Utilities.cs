@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using System.Windows;
 
 namespace mCubed.Core {
 	public static class Utilities {
@@ -697,6 +698,34 @@ namespace mCubed.Core {
 		/// <returns>A collection of strings that have been converted into the type</returns>
 		public static IEnumerable<T> Parse<T>(this IEnumerable<string> strs) {
 			return strs == null ? null : strs.Select(s => Parse<T>(s)).ToArray();
+		}
+
+		#endregion
+
+		#region Extension Methods: UI
+
+		/// <summary>
+		/// Forcefully gives focus to the specified element. Due to a WPF bug or MS design
+		/// decision, an element that is not visible on the screen cannot be given focus
+		/// until it is truly visible on the screen. This will wait to give the element focus
+		/// until it is truly visible on the screen, or if it's already visible, then it 
+		/// will give the element focus immediately.
+		/// </summary>
+		/// <param name="element">The element to forcefully give focus to.</param>
+		public static void ForceFocus(this UIElement element) {
+			if (element != null) {
+				if (element.IsVisible) {
+					element.Focus();
+				} else {
+					DependencyPropertyChangedEventHandler onVisibleChanged = null;
+					onVisibleChanged = new DependencyPropertyChangedEventHandler((s, e) =>
+					{
+						element.IsVisibleChanged -= onVisibleChanged;
+						element.Focus();
+					});
+					element.IsVisibleChanged += onVisibleChanged;
+				}
+			}
 		}
 
 		#endregion

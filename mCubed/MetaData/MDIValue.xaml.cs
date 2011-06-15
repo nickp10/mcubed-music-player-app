@@ -421,7 +421,7 @@ namespace mCubed.MetaData {
 					ValueTextBox.SelectAll();
 				else
 					ValueTextBox.Select(start, length);
-				ValueTextBox.Focus();
+				ValueTextBox.ForceFocus();
 			} else {
 				_customSelect = true;
 				_selectionStart = start;
