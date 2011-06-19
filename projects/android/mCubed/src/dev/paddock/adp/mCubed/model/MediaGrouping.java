@@ -15,10 +15,14 @@ public class MediaGrouping {
 	}
 	
 	public List<MediaFile> getMediaFiles() {
+		return getMediaFiles(null, null);
+	}
+	
+	public List<MediaFile> getMediaFiles(WhereClause where, SortClause sort) {
 		if (group == null) {
 			return Collections.<MediaFile>emptyList();
 		}
-		return group.getMediaFilesForGrouping(this);
+		return group.getMediaFilesForGrouping(this, where, sort);
 	}
 	
 	public MediaGroup getGroup() {

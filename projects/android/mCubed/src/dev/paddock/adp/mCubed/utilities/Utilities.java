@@ -26,6 +26,8 @@ import dev.paddock.adp.mCubed.activities.LibraryActivity;
 import dev.paddock.adp.mCubed.model.AsyncTask;
 import dev.paddock.adp.mCubed.model.Holder;
 import dev.paddock.adp.mCubed.model.PublishProgress;
+import dev.paddock.adp.mCubed.model.SortClause;
+import dev.paddock.adp.mCubed.model.WhereClause;
 
 public class Utilities {
 	private static final Map<Long, Stack<Context>> contextMap = new HashMap<Long, Stack<Context>>();
@@ -212,23 +214,38 @@ public class Utilities {
 	}
 	
 	public static void query(Uri uri, String[] projection, ICursor cursor) {
-		query(uri, projection, null, null, null, cursor);
+		query(uri, projection, null, null, cursor);
 	}
 	
 	public static void query(Uri uri, long id, String[] projection, ICursor cursor) {
-		query(ContentUris.withAppendedId(uri, id), projection, null, null, null, cursor);
+		query(ContentUris.withAppendedId(uri, id), projection, null, null, cursor);
 	}
 	
-	public static void query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder, ICursor cursor) {
+	public static void query(Uri uri, String[] projection, WhereClause where, SortClause sort, ICursor cursor) {
 		ContentResolver cr = getCR();
 		if (cursor != null && cr != null) {
+			// Generate the selection and sort clauses
+			String selection = null, sortOrder = null;
+			String[] selectionArgs = null;
+			if (where != null) {
+				selection = where.getSelection();
+				selectionArgs = where.getSelectionArgs();
+			}
+			if (sort != null) {
+				sortOrder = sort.toSQL();
+			}
+			
+			// Run the query
 			Cursor queryCursor = null;
 			try {
 				queryCursor = cr.query(uri, projection, selection, selectionArgs, sortOrder);
+				
+				// Iterator over the results, running the ICursor for each item
 				if (queryCursor != null && queryCursor.moveToFirst()) {
 					while(!cursor.run(queryCursor) && queryCursor.moveToNext());
 				}
 			} finally {
+				// Make sure we close the cursor
 				if (queryCursor != null) {
 					queryCursor.close();
 				}

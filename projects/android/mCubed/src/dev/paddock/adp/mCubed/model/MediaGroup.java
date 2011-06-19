@@ -80,7 +80,7 @@ public enum MediaGroup {
 		}
 	}
 	
-	public List<MediaFile> getMediaFilesForGrouping(final MediaGrouping grouping) {
+	public List<MediaFile> getMediaFilesForGrouping(final MediaGrouping grouping, WhereClause where, SortClause sort) {
 		final Progress progress = ProgressManager.startProgress(Schema.PROG_MEDIAGROUP_GETFILES, "Loading files...");
 		final long id = grouping.getID(); 
 		final List<MediaFile> mediaFiles = new ArrayList<MediaFile>();
@@ -103,13 +103,18 @@ public enum MediaGroup {
 		if (this == MediaGroup.Genre || this == MediaGroup.Playlist) {
 			String volume = "external";
 			Uri queryUri = this == MediaGroup.Genre ? Genres.Members.getContentUri(volume, id) : Playlists.Members.getContentUri(volume, id);
-			Utilities.query(queryUri, MediaFile.DATA_PROJECTION, cursor);
+			Utilities.query(queryUri, MediaFile.DATA_PROJECTION, where, sort, cursor);
 		} else if (this == MediaGroup.Album || this == MediaGroup.Artist) {
-			Utilities.query(Media.EXTERNAL_CONTENT_URI, MediaFile.DATA_PROJECTION, nameID + " = ?", new String[] { Long.toString(id) }, null, cursor);
+			WhereClause groupWhere = WhereClause.create(nameID + " = ?", Long.toString(id));
+			if (where != null) {
+				groupWhere = groupWhere.and(where);
+			}
+			Utilities.query(Media.EXTERNAL_CONTENT_URI, MediaFile.DATA_PROJECTION, groupWhere, sort, cursor);
 		} else if (this == MediaGroup.Song) {
+			// NOTE: we'll ignore the where/sort clauses since this will only return one song
 			Utilities.query(Media.EXTERNAL_CONTENT_URI, id, MediaFile.DATA_PROJECTION, cursor);
 		} else if (this == MediaGroup.All) {
-			Utilities.query(Media.EXTERNAL_CONTENT_URI, MediaFile.DATA_PROJECTION, cursor);
+			Utilities.query(Media.EXTERNAL_CONTENT_URI, MediaFile.DATA_PROJECTION, where, sort, cursor);
 		}
 		ProgressManager.endProgress(progress);
 		return mediaFiles;

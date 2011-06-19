@@ -1,5 +1,9 @@
 package dev.paddock.adp.mCubed.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public abstract class WhereClause {
 	public static enum Operator {
 		OR, AND
@@ -16,68 +20,82 @@ public abstract class WhereClause {
 		}
 		
 		@Override
-		protected void toSQL(StringBuilder builder) {
+		protected void getSelection(StringBuilder builder) {
 			builder.append("(");
-			leftClause.toSQL(builder);
+			leftClause.getSelection(builder);
 			builder.append(" ");
 			builder.append(operator);
 			builder.append(" ");
-			rightClause.toSQL(builder);
+			rightClause.getSelection(builder);
 			builder.append(")");
+		}
+		
+		@Override
+		protected void getSelectionArgs(List<String> args) {
+			leftClause.getSelectionArgs(args);
+			rightClause.getSelectionArgs(args);
 		}
 	}
 	
 	private static class ConditionWhereClause extends WhereClause {
 		private String condition;
+		private String[] selectionArgs;
 		
-		public ConditionWhereClause(String condition) {
+		public ConditionWhereClause(String condition, String... selectionArgs) {
 			this.condition = condition;
+			this.selectionArgs = selectionArgs;
 		}
 		
 		@Override
-		protected void toSQL(StringBuilder builder) {
+		protected void getSelection(StringBuilder builder) {
 			builder.append(condition);
+		}
+		
+		@Override
+		protected void getSelectionArgs(List<String> args) {
+			if (selectionArgs != null) {
+				args.addAll(Arrays.asList(selectionArgs));
+			}
 		}
 	}
 	
-	public final String toSQL() {
+	public final String getSelection() {
 		StringBuilder builder = new StringBuilder();
-		toSQL(builder);
+		getSelection(builder);
 		return builder.toString();
 	}
 	
-	protected abstract void toSQL(StringBuilder builder);
-	
-	public static WhereClause create(String condition) {
-		return new ConditionWhereClause(condition);
+	public final String[] getSelectionArgs() {
+		List<String> args = new ArrayList<String>();
+		getSelectionArgs(args);
+		return args.toArray(new String[0]);
 	}
 	
-	public static WhereClause or(String leftCondition, String rightCondition) {
-		return or(create(leftCondition), create(rightCondition));
+	protected abstract void getSelection(StringBuilder builder);
+	protected abstract void getSelectionArgs(List<String> args);
+	
+	public static WhereClause create(String condition, String... selectionArgs) {
+		return new ConditionWhereClause(condition, selectionArgs);
 	}
 	
 	public static WhereClause or(WhereClause leftClause, WhereClause rightClause) {
 		return new AggregateWhereClause(leftClause, Operator.OR, rightClause);
 	}
 	
-	public static WhereClause and(String leftCondition, String rightCondition) {
-		return and(create(leftCondition), create(rightCondition));
-	}
-	
 	public static WhereClause and(WhereClause leftClause, WhereClause rightClause) {
 		return new AggregateWhereClause(leftClause, Operator.AND, rightClause);
 	}
 	
-	public WhereClause or(String condition) {
-		return or(create(condition));
+	public WhereClause or(String condition, String... selectionArgs) {
+		return or(create(condition, selectionArgs));
 	}
 	
 	public WhereClause or(WhereClause clause) {
 		return or(this, clause);
 	}
 	
-	public WhereClause and(String condition) {
-		return and(create(condition));
+	public WhereClause and(String condition, String... selectionArgs) {
+		return and(create(condition, selectionArgs));
 	}
 	
 	public WhereClause and(WhereClause clause) {

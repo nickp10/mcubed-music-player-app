@@ -21,6 +21,7 @@ import dev.paddock.adp.mCubed.model.MediaStatus;
 import dev.paddock.adp.mCubed.model.NotificationArgs;
 import dev.paddock.adp.mCubed.model.Playlist;
 import dev.paddock.adp.mCubed.model.Progress;
+import dev.paddock.adp.mCubed.model.TimerTask;
 import dev.paddock.adp.mCubed.preferences.PlaybackAction;
 import dev.paddock.adp.mCubed.preferences.PreviousAction;
 import dev.paddock.adp.mCubed.receivers.HeadsetReceiver;
@@ -38,6 +39,18 @@ public class App extends Application {
 	private static MediaPlayerState mountState;
 	private static final List<Runnable> initCallbacks = new ArrayList<Runnable>();
 	private static final List<Runnable> deinitCallbacks = new ArrayList<Runnable>();
+	private static final TimerTask appStateSaver = new TimerTask(new Runnable() {
+		@Override
+		public void run() {
+			Utilities.pushContext(getAppContext());
+			try {
+				saveAppStateXML();
+				Log.i("Application state saved");
+			} finally {
+				Utilities.popContext();
+			}
+		}
+	}, 600000);
 	
 	private static void staticInitialization() {
 		// Make sure this only gets run once
@@ -329,6 +342,9 @@ public class App extends Application {
 							loadAppStateXML(rootNode);
 						}
 						
+						// Start the application state saver thread
+						appStateSaver.start();
+						
 						// Send the initialized property changed
 						initStatus = InitStatus.Initialized;
 						PlaybackServer.propertyChanged(0, Schema.PROP_INIT_STATUS, initStatus);
@@ -361,6 +377,9 @@ public class App extends Application {
 						// Send the de-initializing property changed
 						initStatus = InitStatus.Deinitializing;
 						PlaybackServer.propertyChanged(0, Schema.PROP_INIT_STATUS, initStatus);
+						
+						// Stop the application state saver thread
+						appStateSaver.stop();
 						
 						// Attempt to save its state
 						saveAppStateXML();

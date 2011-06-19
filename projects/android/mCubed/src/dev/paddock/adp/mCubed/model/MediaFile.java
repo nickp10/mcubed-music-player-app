@@ -229,9 +229,8 @@ public class MediaFile {
 					long id = Utilities.getCursorLongValue(genreCursor, MediaStore.Audio.Genres._ID);
 					Uri uri = MediaStore.Audio.Genres.Members.getContentUri("external", id);
 					String[] projection = new String[] { MediaStore.Audio.Media._ID };
-					String selection = MediaStore.Audio.Media._ID + " = ?";
-					String[] selectionArgs = new String[] { Long.toString(getID()) };
-					Utilities.query(uri, projection, selection, selectionArgs, null, new ICursor() {
+					WhereClause where = WhereClause.create(MediaStore.Audio.Media._ID + " = ?", Long.toString(getID()));
+					Utilities.query(uri, projection, where, null, new ICursor() {
 						@Override
 						public boolean run(Cursor cursor) {
 							found.setValue(true);
