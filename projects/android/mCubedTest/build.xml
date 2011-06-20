@@ -31,11 +31,53 @@
          This file is an integral part of the build system for your
          application and should be checked into Version Control Systems. -->
     <property file="default.properties" />
-
+	
+	<!-- These properties are for the processing-libs directory -->
+	<property name="processing.libs.dir" value="processing-libs"/>
+	<property name="processing.libs.absolute.dir" value="${processing.libs.dir}"/>
 
     <!-- Required pre-setup import -->
     <import file="${sdk.dir}/tools/ant/pre_setup.xml" />
+	
+	<!-- AndroidMockRuntime must be converted to .dex -->
+	<path id="out.dex.jar.input.ref">
+		<path refid="jar.libs.ref" />
+		<fileset dir="${processing.libs.absolute.dir}">
+			<include name="AndroidMockRuntime.jar"/>
+		</fileset>
+	</path>
 
+	<!-- This overrides the one in ${sdk.dir}/tools/ant/main_build.xml -->
+	<target name="compile"
+		depends="-pre-build, -aidl, -renderscript, -resource-src, -pre-compile"
+		description="(custom) Compiles project's .java files into .class files">
+		<property name="extensible.classpath" value="${tested.project.absolute.dir}/bin/classes"/>
+		<property name="extensible.libs.classpath" value="${tested.project.absolute.dir}/libs"/>
+		<javac encoding="${java.encoding}"
+			includeantruntime="false"
+			source="${java.source}" target="${java.target}"
+			debug="true" extdirs=""
+			destdir="${out.classes.absolute.dir}"
+			bootclasspathref="android.target.classpath"
+			verbose="${verbose}"
+			classpath="${extensible.classpath}"
+			classpathref="jar.libs.ref">
+			<src path="${source.absolute.dir}"/>
+			<src path="${gen.absolute.dir}"/>
+			<src refid="project.libraries.src"/>
+			<classpath>
+				<!-- AndroidMock requires that these be included here -->
+				<fileset dir="${processing.libs.absolute.dir}">
+					<include name="AndroidMockGenerator.jar"/>
+					<include name="android_framework_mocks.jar"/>
+				</fileset>
+				<!-- This lets your test project mock android classes -->
+				<path location="${android.jar}"/>
+				<!-- This is the standard classpath extension -->
+				<fileset dir="${extensible.libs.classpath}" includes="*.jar"/>
+			</classpath>
+		</javac>
+	</target>
 
 <!-- extension targets. Uncomment the ones where you want to do custom work
      in between standard targets -->

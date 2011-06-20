@@ -9,7 +9,6 @@
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="libs/AndroidMockRuntime.jar.bak"/>
-	<classpathentry kind="lib" path="libs/AndroidMockGenerator.jar"/>
+	<classpathentry kind="lib" path="processing-libs/AndroidMockGenerator.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
