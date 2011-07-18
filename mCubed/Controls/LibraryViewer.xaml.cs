@@ -80,7 +80,7 @@ namespace mCubed.Controls {
 
 		#region Data Store
 
-		private bool _itemsChanging;
+		private bool _isColumnCollectionChanging, _itemsChanging;
 		private ObservableCollection<ColumnVector> _displayColumns;
 		private GridLength _prevMDIHeight = new GridLength(.4, GridUnitType.Star);
 
@@ -482,7 +482,9 @@ namespace mCubed.Controls {
 					LibraryGridView.Columns.RemoveAt(e.NewStartingIndex);
 					LibraryGridView.Columns.Insert(e.OldStartingIndex, item);
 				} else {
+					_isColumnCollectionChanging = true;
 					DisplayColumns.Move(e.OldStartingIndex - 1, e.NewStartingIndex - 1);
+					_isColumnCollectionChanging = false;
 				}
 			}
 		}
@@ -500,6 +502,10 @@ namespace mCubed.Controls {
 		/// <param name="sender">The sender object</param>
 		/// <param name="e">The event arguments</param>
 		private void OnDisplayCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+			// Ignore this event if it came from the grid view itself
+			if (_isColumnCollectionChanging)
+				return;
+
 			// Clear the original columns
 			while (LibraryGridView.Columns.Count > 1)
 				LibraryGridView.Columns.RemoveAt(1);

@@ -12,6 +12,7 @@ namespace mCubed.Core {
 	public static class Utilities {
 		#region Data Store
 
+		private static readonly string[] _byteUnits = { "B", "KB", "MB", "GB", "TB", "PB" };
 		private static readonly ProcessManager _mainProcessManager = new ProcessManager();
 		private static readonly Settings _mainSettings = new Settings();
 		private static Type[] numericTypes;
@@ -27,6 +28,11 @@ namespace mCubed.Core {
 		#endregion
 
 		#region Static Properties
+
+		/// <summary>
+		/// Get the array of byte units such as B, KB, MB, GB, etc.
+		/// </summary>
+		public static string[] ByteUnits { get { return _byteUnits; } }
 
 		/// <summary>
 		/// Get the directory of the executable file
@@ -82,6 +88,21 @@ namespace mCubed.Core {
 		#endregion
 
 		#region Static Members
+
+		/// <summary>
+		/// Formats the given number of bytes into a human-readable string in it's most simplet form
+		/// </summary>
+		/// <param name="bytes">The number of bytes that should be formatted into a string</param>
+		/// <returns>The string that represents the number of bytes</returns>
+		public static string FormatBytesToString(long bytes) {
+			if (bytes <= 0) {
+				return bytes + ByteUnits[0];
+			} else {
+				int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
+				double num = bytes / Math.Pow(1024, place);
+				return string.Format("{0:0.##} {1}", num, ByteUnits[place]);
+			}
+		}
 
 		/// <summary>
 		/// Get the element/item type out of a IEnumerable generic type

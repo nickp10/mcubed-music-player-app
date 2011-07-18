@@ -22,6 +22,7 @@ namespace mCubed.Core {
 		private uint _disc;
 		private uint _discCount;
 		private string _filePath;
+		private long _fileSizeBytes;
 		private string[] _genres;
 		private string _grouping;
 		private TimeSpan _length;
@@ -148,6 +149,20 @@ namespace mCubed.Core {
 		public string FilePath {
 			get { return _filePath; }
 			set { this.SetAndNotify(ref _filePath, value, "FilePath", "FileName"); }
+		}
+
+		/// <summary>
+		/// Get the size of the file as a human-readable string [Bindable]
+		/// </summary>
+		[MetaData("The size of the file.")]
+		public string FileSize { get { return Utilities.FormatBytesToString(FileSizeBytes); } }
+
+		/// <summary>
+		/// Get the size of the file calculated in bytes [Bindable]
+		/// </summary>
+		public long FileSizeBytes {
+			get { return _fileSizeBytes; }
+			protected set { this.SetAndNotify(ref _fileSizeBytes, value, "FileSizeBytes", "FileSize"); }
 		}
 
 		/// <summary>
@@ -461,10 +476,14 @@ namespace mCubed.Core {
 		/// </summary>
 		/// <param name="filePath">The path to the file to load the information from</param>
 		public MDITagLib(string filePath) {
-			if (File.Exists(FilePath = Path.GetFullPath(filePath)))
+			FilePath = Path.GetFullPath(filePath);
+			FileInfo info = new FileInfo(FilePath);
+			if (info.Exists) {
+				FileSizeBytes = info.Length;
 				Load();
-			else
+			} else {
 				throw new IOException("The specifed file does not exist");
+			}
 		}
 
 		#endregion
