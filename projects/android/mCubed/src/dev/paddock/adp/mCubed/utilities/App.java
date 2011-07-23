@@ -162,6 +162,18 @@ public class App extends Application {
 		return appContext;
 	}
 	
+	public static <T> T getSystemService(Class<T> clazz, String service) {
+		return getSystemService(clazz, getAppContext(), service);
+	}
+	
+	public static <T> T getSystemService(Class<T> clazz, Context context, String service) {
+		if (context != null) {
+			Object systemService = context.getSystemService(service);
+			return Utilities.cast(clazz, systemService);
+		}
+		return null;
+	}
+	
 	@Override
 	public void onCreate() {
 		// Create the app

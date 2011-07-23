@@ -1,20 +1,12 @@
 package dev.paddock.adp.mCubed.preferences;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.preference.DialogPreference;
-import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CheckedTextView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.controls.NumberPicker;
 import dev.paddock.adp.mCubed.controls.NumberPicker.OnValueChangedListener;
@@ -23,7 +15,7 @@ import dev.paddock.adp.mCubed.model.BindingListAdapter;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class DimensionPreference extends DialogPreference {
-	private final BindingList<Dimension> dimensions = new BindingList<Dimension>(new ArrayList<Dimension>());
+	private final BindingList<Dimension> dimensions = new BindingList<Dimension>();
 	private NumberPicker numberPicker;
 	private Spinner unitSpinner;
 	private String dimensionsAttr;
@@ -34,6 +26,10 @@ public class DimensionPreference extends DialogPreference {
 		private int minimum, maximium;
 		private char unit;
 		private String display;
+		@Override
+		public String toString() {
+			return display;
+		}
 	}
 	
 	public DimensionPreference(Context context, AttributeSet attrs) {
@@ -86,40 +82,7 @@ public class DimensionPreference extends DialogPreference {
 		});
 		
 		// Set the available items for the unit spinner
-		unitSpinner.setAdapter(new BindingListAdapter<Dimension>(dimensions) {
-			@Override
-			public View getDropDownView(int position, View convertView, ViewGroup parent) {
-				Dimension dimension = (Dimension)getItem(position);
-				CheckedTextView view = new CheckedTextView(parent.getContext());
-				view.setTextSize(25);
-				view.setTextColor(Color.BLACK);
-				view.setSingleLine(true);
-				view.setEllipsize(TruncateAt.MARQUEE);
-				view.setText(dimension.display);
-				view.setPadding(15, 5, 15, 5);
-				view.setGravity(Gravity.CENTER_VERTICAL);
-				view.setChecked(getUnit() == dimension.unit);
-				if (view.isChecked()) {
-					view.setCheckMarkDrawable(android.R.drawable.radiobutton_on_background);
-				} else {
-					view.setCheckMarkDrawable(android.R.drawable.radiobutton_off_background);
-				}
-				return view;
-			}
-			
-			@Override
-			public View getView(int position, View convertView, ViewGroup parent) {
-				Dimension dimension = (Dimension)getItem(position);
-				TextView view = new TextView(parent.getContext());
-				view.setTextColor(Color.BLACK);
-				view.setSingleLine(true);
-				view.setEllipsize(TruncateAt.MARQUEE);
-				view.setText(dimension.display);
-				view.setPadding(5, 5, 5, 5);
-				view.setGravity(Gravity.CENTER_VERTICAL);
-				return view;
-			}
-		});
+		unitSpinner.setAdapter(new BindingListAdapter<Dimension>(getContext(), dimensions));
 		
 		// Register to the spinner selection changed
 		unitSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

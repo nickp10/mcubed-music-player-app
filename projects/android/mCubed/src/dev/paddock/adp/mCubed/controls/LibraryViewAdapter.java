@@ -1,0 +1,87 @@
+package dev.paddock.adp.mCubed.controls;
+
+import java.util.Comparator;
+
+import android.content.Context;
+import android.widget.SectionIndexer;
+import dev.paddock.adp.mCubed.R;
+import dev.paddock.adp.mCubed.model.BindingList;
+import dev.paddock.adp.mCubed.model.BindingListAdapter;
+import dev.paddock.adp.mCubed.model.IViewHolder;
+import dev.paddock.adp.mCubed.model.IViewHolderFactory;
+import dev.paddock.adp.mCubed.model.MediaGrouping;
+import dev.paddock.adp.mCubed.utilities.Utilities;
+
+public class LibraryViewAdapter extends BindingListAdapter<MediaGrouping> implements SectionIndexer {
+	private Object[] sections;
+	
+	public LibraryViewAdapter(Context context, BindingList<MediaGrouping> items) {
+		super(context, items);
+		setViewResource(R.layout.library_view_item);
+		setViewHolderFactory(new IViewHolderFactory<MediaGrouping>() {
+			@Override
+			public IViewHolder<MediaGrouping> createViewHolder() {
+				return new LibraryViewItem();
+			}
+		});
+		setSorter(new Comparator<MediaGrouping>() {
+			@Override
+			public int compare(MediaGrouping leftGrouping, MediaGrouping rightGrouping) {
+				if (leftGrouping == null) {
+					return rightGrouping == null ? 0 : -1;
+				} else if (rightGrouping == null) {
+					return 1;
+				} else {
+					return leftGrouping.getName().compareToIgnoreCase(rightGrouping.getName());
+				}
+			}
+		});
+	}
+
+	@Override
+	public Object[] getSections() {
+		if (sections == null) {
+			sections = new Object[27];
+			sections[0] = "#";
+			for (int i = 'A'; i <= 'Z'; i++) {
+				sections[(i - 'A') + 1] = Character.toString((char)i);
+			}
+		}
+		return sections;
+	}
+
+	@Override
+	public int getPositionForSection(int section) {
+		if (section == 0) {
+			return 0;
+		}
+		String letter = (String)getSections()[section];
+		int position = 0;
+		for (MediaGrouping grouping : getList()) {
+			String name = grouping.getName();
+			if (letter.compareToIgnoreCase(name) <= 0) {
+				break;
+			}
+			position++;
+		}
+		return position;
+	}
+
+	@Override
+	public int getSectionForPosition(int position) {
+		MediaGrouping grouping = Utilities.cast(MediaGrouping.class, getItem(position));
+		if (grouping != null) {
+			String name = grouping.getName();
+			if (!Utilities.isNullOrEmpty(name)) {
+				char character = Character.toUpperCase(name.charAt(0));
+				if (character >= 'A') {
+					if (character > 'Z') {
+						character = 'Z';
+					}
+					return (character - 'A') + 1;
+				}
+			}
+		}
+		return 0;
+	}
+}

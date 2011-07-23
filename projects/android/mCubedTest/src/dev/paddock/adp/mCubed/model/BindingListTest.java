@@ -49,6 +49,11 @@ public class BindingListTest extends TestCase {
 			public void itemsCleared() {
 				fail("Shouldn't be called");
 			}
+			
+			@Override
+			public void itemsSorted() {
+				fail("Shouldn't be called");
+			}
 		});
 		
 		// Assert setup
@@ -112,6 +117,11 @@ public class BindingListTest extends TestCase {
 			public void itemsCleared() {
 				fail("Shouldn't be called");
 			}
+			
+			@Override
+			public void itemsSorted() {
+				fail("Shouldn't be called");
+			}
 		});
 		
 		// Assert setup
@@ -153,6 +163,11 @@ public class BindingListTest extends TestCase {
 
 			@Override
 			public void itemsCleared() {
+				fail("Shouldn't be called");
+			}
+			
+			@Override
+			public void itemsSorted() {
 				fail("Shouldn't be called");
 			}
 		});
@@ -223,6 +238,11 @@ public class BindingListTest extends TestCase {
 			public void itemsCleared() {
 				executed.setValue(true);
 			}
+			
+			@Override
+			public void itemsSorted() {
+				fail("Shouldn't be called");
+			}
 		});
 		
 		assertEquals(3, list.size());
@@ -254,6 +274,11 @@ public class BindingListTest extends TestCase {
 
 			@Override
 			public void itemsCleared() {
+				fail("Shouldn't be called");
+			}
+			
+			@Override
+			public void itemsSorted() {
 				fail("Shouldn't be called");
 			}
 		};
@@ -317,6 +342,11 @@ public class BindingListTest extends TestCase {
 
 			@Override
 			public void itemsCleared() {
+				fail("Shouldn't be called");
+			}
+			
+			@Override
+			public void itemsSorted() {
 				fail("Shouldn't be called");
 			}
 		});

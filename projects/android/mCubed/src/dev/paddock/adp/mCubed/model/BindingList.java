@@ -2,6 +2,8 @@ package dev.paddock.adp.mCubed.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -14,6 +16,11 @@ public class BindingList<E> implements List<E> {
 		void itemAdded(int location, T item);
 		void itemRemoved(int location, T item);
 		void itemsCleared();
+		void itemsSorted();
+	}
+	
+	public BindingList() {
+		this(new ArrayList<E>());
 	}
 	
 	public BindingList(List<E> startItems) {
@@ -46,6 +53,12 @@ public class BindingList<E> implements List<E> {
 	private void notifyItemsCleared() {
 		for (BindingListObserver<E> observer : observers) {
 			observer.itemsCleared();
+		}
+	}
+	
+	private void notifyItemsSorted() {
+		for (BindingListObserver<E> observer : observers) {
+			observer.itemsSorted();
 		}
 	}
 
@@ -182,6 +195,11 @@ public class BindingList<E> implements List<E> {
 		notifyItemRemoved(location, oldItem);
 		notifyItemAdded(location, object);
 		return oldItem;
+	}
+	
+	public void sort(Comparator<E> comparator) {
+		Collections.sort(items, comparator);
+		notifyItemsSorted();
 	}
 
 	@Override

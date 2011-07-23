@@ -42,6 +42,15 @@ public class Utilities {
 		return str == null || str.length() == 0;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static <T> T cast(Class<T> clazz, Object obj) {
+		if (obj == null || !clazz.isAssignableFrom(obj.getClass())) {
+			return null;
+		} else {
+			return (T)obj;
+		}
+	}
+	
 	public static boolean getCursorBooleanValue(Cursor cursor, String columnName) {
 		return getCursorIntValue(cursor, columnName) != 0;
 	}

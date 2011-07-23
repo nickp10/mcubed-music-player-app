@@ -17,8 +17,8 @@ import dev.paddock.adp.mCubed.utilities.PropertyManager;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class Playlist {
-	private final BindingList<Composite> composition = new BindingList<Composite>(new ArrayList<Composite>());
-	private final BindingList<MediaFile> files = new BindingList<MediaFile>(new ArrayList<MediaFile>());
+	private final BindingList<Composite> composition = new BindingList<Composite>();
+	private final BindingList<MediaFile> files = new BindingList<MediaFile>();
 	private final PlayMode playMode;
 	private String name;
 	private MediaFile current;
