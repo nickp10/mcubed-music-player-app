@@ -1,8 +1,8 @@
 package dev.paddock.adp.mCubed.controls;
 
 import dev.paddock.adp.mCubed.R;
-import dev.paddock.adp.mCubed.model.BindingList;
-import dev.paddock.adp.mCubed.model.BindingListAdapter;
+import dev.paddock.adp.mCubed.lists.BindingList;
+import dev.paddock.adp.mCubed.lists.BindingListAdapter;
 import dev.paddock.adp.mCubed.model.MediaGroup;
 import dev.paddock.adp.mCubed.model.MediaGrouping;
 import dev.paddock.adp.mCubed.utilities.App;
@@ -41,8 +41,7 @@ public class LibraryView extends LinearLayout {
 		
 		// Find and initialize the list view
 		listView = (ListView)findViewById(R.id.lv_listView);
-		listView.setAdapter(itemsAdapter);
-		listView.setFastScrollEnabled(true);
+		itemsAdapter.registerWithListView(listView);
 	}
 	
 	private void initAttributes(AttributeSet attrs) {

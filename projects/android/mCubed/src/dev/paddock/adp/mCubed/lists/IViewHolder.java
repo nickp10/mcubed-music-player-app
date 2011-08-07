@@ -1,4 +1,4 @@
-package dev.paddock.adp.mCubed.model;
+package dev.paddock.adp.mCubed.lists;
 
 import android.view.View;
 

@@ -1,18 +1,14 @@
-package dev.paddock.adp.mCubed.model;
+package dev.paddock.adp.mCubed.lists;
 
 import java.util.ArrayList;
 
 import junit.framework.TestCase;
 
-import dev.paddock.adp.mCubed.model.BindingList;
-import dev.paddock.adp.mCubed.model.BindingList.BindingListObserver;
+import dev.paddock.adp.mCubed.lists.BindingList;
+import dev.paddock.adp.mCubed.lists.BindingList.BindingListObserver;
 import dev.paddock.adp.mCubed.model.Holder;
 
 public class BindingListTest extends TestCase {
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
-	
 	public void testAddItem() {
 		ArrayList<Integer> startItems = new ArrayList<Integer>();
 		BindingList<Integer> list = new BindingList<Integer>(startItems);
@@ -35,23 +31,18 @@ public class BindingListTest extends TestCase {
 		final Holder<Integer> valHolder = new Holder<Integer>(-1);
 		list.addObserver(new BindingListObserver<Integer>() {
 			@Override
-			public void itemAdded(int location, Integer item) {
+			public void itemAdded(BindingList<Integer> list, int location, Integer item) {
 				locHolder.setValue(location);
 				valHolder.setValue(item);
 			}
 
 			@Override
-			public void itemRemoved(int location, Integer item) {
+			public void itemRemoved(BindingList<Integer> list, int location, Integer item) {
 				fail("Shouldn't be called");
 			}
 
 			@Override
-			public void itemsCleared() {
-				fail("Shouldn't be called");
-			}
-			
-			@Override
-			public void itemsSorted() {
+			public void itemsCleared(BindingList<Integer> list) {
 				fail("Shouldn't be called");
 			}
 		});
@@ -103,23 +94,18 @@ public class BindingListTest extends TestCase {
 		final Holder<Integer> valHolder = new Holder<Integer>(-1);
 		list.addObserver(new BindingListObserver<Integer>() {
 			@Override
-			public void itemAdded(int location, Integer item) {
+			public void itemAdded(BindingList<Integer> list, int location, Integer item) {
 				fail("Shouldn't be called");
 			}
 
 			@Override
-			public void itemRemoved(int location, Integer item) {
+			public void itemRemoved(BindingList<Integer> list, int location, Integer item) {
 				locHolder.setValue(location);
 				valHolder.setValue(item);
 			}
 
 			@Override
-			public void itemsCleared() {
-				fail("Shouldn't be called");
-			}
-			
-			@Override
-			public void itemsSorted() {
+			public void itemsCleared(BindingList<Integer> list) {
 				fail("Shouldn't be called");
 			}
 		});
@@ -151,23 +137,18 @@ public class BindingListTest extends TestCase {
 		final ArrayList<Integer> valHolder = new ArrayList<Integer>();
 		list.addObserver(new BindingListObserver<Integer>() {
 			@Override
-			public void itemAdded(int location, Integer item) {
+			public void itemAdded(BindingList<Integer> list, int location, Integer item) {
 				fail("Shouldn't be called");
 			}
 
 			@Override
-			public void itemRemoved(int location, Integer item) {
+			public void itemRemoved(BindingList<Integer> list, int location, Integer item) {
 				locHolder.add(location);
 				valHolder.add(item);
 			}
 
 			@Override
-			public void itemsCleared() {
-				fail("Shouldn't be called");
-			}
-			
-			@Override
-			public void itemsSorted() {
+			public void itemsCleared(BindingList<Integer> list) {
 				fail("Shouldn't be called");
 			}
 		});
@@ -225,23 +206,18 @@ public class BindingListTest extends TestCase {
 		final Holder<Boolean> executed = new Holder<Boolean>(false);
 		list.addObserver(new BindingListObserver<Integer>() {
 			@Override
-			public void itemAdded(int location, Integer item) {
+			public void itemAdded(BindingList<Integer> list, int location, Integer item) {
 				fail("Shouldn't be called");
 			}
 
 			@Override
-			public void itemRemoved(int location, Integer item) {
+			public void itemRemoved(BindingList<Integer> list, int location, Integer item) {
 				fail("Shouldn't be called");
 			}
 
 			@Override
-			public void itemsCleared() {
+			public void itemsCleared(BindingList<Integer> list) {
 				executed.setValue(true);
-			}
-			
-			@Override
-			public void itemsSorted() {
-				fail("Shouldn't be called");
 			}
 		});
 		
@@ -263,22 +239,17 @@ public class BindingListTest extends TestCase {
 		final Holder<Boolean> executed = new Holder<Boolean>(false);
 		BindingListObserver<Integer> observer = new BindingListObserver<Integer>() {
 			@Override
-			public void itemAdded(int location, Integer item) {
+			public void itemAdded(BindingList<Integer> list, int location, Integer item) {
 				executed.setValue(true);
 			}
 
 			@Override
-			public void itemRemoved(int location, Integer item) {
+			public void itemRemoved(BindingList<Integer> list, int location, Integer item) {
 				fail("Shouldn't be called");
 			}
 
 			@Override
-			public void itemsCleared() {
-				fail("Shouldn't be called");
-			}
-			
-			@Override
-			public void itemsSorted() {
+			public void itemsCleared(BindingList<Integer> list) {
 				fail("Shouldn't be called");
 			}
 		};
@@ -329,24 +300,19 @@ public class BindingListTest extends TestCase {
 		final Holder<Integer> remValHolder = new Holder<Integer>(-1);
 		list.addObserver(new BindingListObserver<Integer>() {
 			@Override
-			public void itemAdded(int location, Integer item) {
+			public void itemAdded(BindingList<Integer> list, int location, Integer item) {
 				addLocHolder.setValue(location);
 				addValHolder.setValue(item);
 			}
 
 			@Override
-			public void itemRemoved(int location, Integer item) {
+			public void itemRemoved(BindingList<Integer> list, int location, Integer item) {
 				remLocHolder.setValue(location);
 				remValHolder.setValue(item);
 			}
 
 			@Override
-			public void itemsCleared() {
-				fail("Shouldn't be called");
-			}
-			
-			@Override
-			public void itemsSorted() {
+			public void itemsCleared(BindingList<Integer> list) {
 				fail("Shouldn't be called");
 			}
 		});

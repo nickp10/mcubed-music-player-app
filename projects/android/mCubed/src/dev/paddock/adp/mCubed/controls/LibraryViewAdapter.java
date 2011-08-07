@@ -1,24 +1,28 @@
 package dev.paddock.adp.mCubed.controls;
 
 import java.util.Comparator;
+import java.util.List;
 
 import android.content.Context;
-import android.widget.SectionIndexer;
 import dev.paddock.adp.mCubed.R;
-import dev.paddock.adp.mCubed.model.BindingList;
-import dev.paddock.adp.mCubed.model.BindingListAdapter;
-import dev.paddock.adp.mCubed.model.IViewHolder;
-import dev.paddock.adp.mCubed.model.IViewHolderFactory;
+import dev.paddock.adp.mCubed.lists.BindingList;
+import dev.paddock.adp.mCubed.lists.BindingListAdapter;
+import dev.paddock.adp.mCubed.lists.IViewHolder;
+import dev.paddock.adp.mCubed.lists.IViewHolderFactory;
 import dev.paddock.adp.mCubed.model.MediaGrouping;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
-public class LibraryViewAdapter extends BindingListAdapter<MediaGrouping> implements SectionIndexer {
+public class LibraryViewAdapter extends BindingListAdapter<MediaGrouping> {
 	private Object[] sections;
 	
 	public LibraryViewAdapter(Context context, BindingList<MediaGrouping> items) {
 		super(context, items);
-		setViewResource(R.layout.library_view_item);
-		setViewHolderFactory(new IViewHolderFactory<MediaGrouping>() {
+	}
+	
+	@Override
+	protected void onBeforeInitialize() {
+		setItemViewResource(R.layout.library_view_item);
+		setItemViewHolderFactory(new IViewHolderFactory<MediaGrouping>() {
 			@Override
 			public IViewHolder<MediaGrouping> createViewHolder() {
 				return new LibraryViewItem();
@@ -39,7 +43,7 @@ public class LibraryViewAdapter extends BindingListAdapter<MediaGrouping> implem
 	}
 
 	@Override
-	public Object[] getSections() {
+	public Object[] getSections(List<MediaGrouping> items) {
 		if (sections == null) {
 			sections = new Object[27];
 			sections[0] = "#";
@@ -51,13 +55,13 @@ public class LibraryViewAdapter extends BindingListAdapter<MediaGrouping> implem
 	}
 
 	@Override
-	public int getPositionForSection(int section) {
+	public int getPositionForSection(List<MediaGrouping> items, int section) {
 		if (section == 0) {
 			return 0;
 		}
 		String letter = (String)getSections()[section];
 		int position = 0;
-		for (MediaGrouping grouping : getList()) {
+		for (MediaGrouping grouping : items) {
 			String name = grouping.getName();
 			if (letter.compareToIgnoreCase(name) <= 0) {
 				break;
@@ -68,8 +72,8 @@ public class LibraryViewAdapter extends BindingListAdapter<MediaGrouping> implem
 	}
 
 	@Override
-	public int getSectionForPosition(int position) {
-		MediaGrouping grouping = Utilities.cast(MediaGrouping.class, getItem(position));
+	public int getSectionForPosition(List<MediaGrouping> items, int position) {
+		MediaGrouping grouping = items.get(position);
 		if (grouping != null) {
 			String name = grouping.getName();
 			if (!Utilities.isNullOrEmpty(name)) {

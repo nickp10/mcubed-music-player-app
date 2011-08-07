@@ -2,6 +2,7 @@ package dev.paddock.adp.mCubed;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.fail;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +21,9 @@ public class TestUtils {
 			assertNull(actual);
 		} else {
 			assertEquals(0, actual.size());
+			for (T item : actual) {
+				fail("Item found when no items were expected: " + item);
+			}
 		}
 	}
 	

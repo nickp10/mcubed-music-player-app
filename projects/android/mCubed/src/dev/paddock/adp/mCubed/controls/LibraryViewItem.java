@@ -3,7 +3,7 @@ package dev.paddock.adp.mCubed.controls;
 import android.view.View;
 import android.widget.TextView;
 import dev.paddock.adp.mCubed.R;
-import dev.paddock.adp.mCubed.model.IViewHolder;
+import dev.paddock.adp.mCubed.lists.IViewHolder;
 import dev.paddock.adp.mCubed.model.MediaGrouping;
 
 public class LibraryViewItem implements IViewHolder<MediaGrouping> {

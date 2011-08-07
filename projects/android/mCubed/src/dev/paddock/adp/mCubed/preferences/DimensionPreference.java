@@ -10,8 +10,8 @@ import android.widget.Spinner;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.controls.NumberPicker;
 import dev.paddock.adp.mCubed.controls.NumberPicker.OnValueChangedListener;
-import dev.paddock.adp.mCubed.model.BindingList;
-import dev.paddock.adp.mCubed.model.BindingListAdapter;
+import dev.paddock.adp.mCubed.lists.BindingList;
+import dev.paddock.adp.mCubed.lists.BindingListAdapter;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class DimensionPreference extends DialogPreference {

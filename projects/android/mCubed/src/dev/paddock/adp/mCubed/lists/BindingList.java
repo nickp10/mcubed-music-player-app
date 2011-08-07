@@ -1,9 +1,7 @@
-package dev.paddock.adp.mCubed.model;
+package dev.paddock.adp.mCubed.lists;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -12,11 +10,10 @@ public class BindingList<E> implements List<E> {
 	private List<E> items;
 	private final List<BindingListObserver<E>> observers = new ArrayList<BindingListObserver<E>>();
 	
-	public static interface BindingListObserver<T> {
-		void itemAdded(int location, T item);
-		void itemRemoved(int location, T item);
-		void itemsCleared();
-		void itemsSorted();
+	public static interface BindingListObserver<E> {
+		void itemAdded(BindingList<E> list, int location, E item);
+		void itemRemoved(BindingList<E> list, int location, E item);
+		void itemsCleared(BindingList<E> list);
 	}
 	
 	public BindingList() {
@@ -40,25 +37,19 @@ public class BindingList<E> implements List<E> {
 	
 	private void notifyItemAdded(int location, E item) {
 		for (BindingListObserver<E> observer : observers) {
-			observer.itemAdded(location, item);
+			observer.itemAdded(this, location, item);
 		}
 	}
 	
 	private void notifyItemRemoved(int location, E item) {
 		for (BindingListObserver<E> observer : observers) {
-			observer.itemRemoved(location, item);
+			observer.itemRemoved(this, location, item);
 		}
 	}
 	
 	private void notifyItemsCleared() {
 		for (BindingListObserver<E> observer : observers) {
-			observer.itemsCleared();
-		}
-	}
-	
-	private void notifyItemsSorted() {
-		for (BindingListObserver<E> observer : observers) {
-			observer.itemsSorted();
+			observer.itemsCleared(this);
 		}
 	}
 
@@ -195,11 +186,6 @@ public class BindingList<E> implements List<E> {
 		notifyItemRemoved(location, oldItem);
 		notifyItemAdded(location, object);
 		return oldItem;
-	}
-	
-	public void sort(Comparator<E> comparator) {
-		Collections.sort(items, comparator);
-		notifyItemsSorted();
 	}
 
 	@Override
