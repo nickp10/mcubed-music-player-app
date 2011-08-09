@@ -451,13 +451,18 @@ public class App extends Application {
 				protected void run() {
 					// Begin re-initialization
 					Log.i("Application scanned-finished initialization started");
+					Progress progress = ProgressManager.startProgress(Schema.PROG_APP_INIT, "Initializing...", true);
 					try {
 						// Send the initializing property changed
 						initStatus = InitStatus.Initializing;
 						PlaybackServer.propertyChanged(0, Schema.PROP_INIT_STATUS, initStatus);
 						
+						// Update the sub-progress IDs
+						progress.setSubIDs(Schema.PROG_PLAYLIST_VALIDATE, Schema.PROG_MEDIAGROUP_REFRESHALL);
+						
 						// Check for updates in the media files
 						getNowPlaying().validate();
+						MediaGroup.refreshAll();
 						
 						// Restore the media player state
 						if (mountState != null) {
@@ -473,6 +478,7 @@ public class App extends Application {
 						Log.e(t);
 					} finally {
 						// End re-initialization
+						ProgressManager.endProgress(progress);
 						Log.i("Application scanned-finished initialization ended");
 					}
 				}

@@ -59,6 +59,7 @@ public class Schema {
 	public static final String PROG_APP_LOADXML = "prog_app_loadxml";
 	public static final String PROG_MEDIAGROUP_GETGROUPINGS = "prog_mg_getgroupings";
 	public static final String PROG_MEDIAGROUP_GETFILES = "prog_mg_getfiles";
+	public static final String PROG_MEDIAGROUP_REFRESHALL = "prog_mg_refreshall";
 	public static final String PROG_PLAYLIST_ADDCOMPOSITE = "prog_pl_addcomposite";
 	public static final String PROG_PLAYLIST_REMOVECOMPOSITE = "prog_pl_removecomposite";
 	public static final String PROG_PLAYLIST_ADDFILES = "prog_pl_addfiles";

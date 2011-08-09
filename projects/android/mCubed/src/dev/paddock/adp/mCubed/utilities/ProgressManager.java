@@ -61,7 +61,7 @@ public class ProgressManager {
 		}
 	}
 	
-	private static void cleanup(Progress progress) {
+	public static void cleanup(Progress progress) {
 		ProgressManager.progress.remove(progress);
 	}
 }

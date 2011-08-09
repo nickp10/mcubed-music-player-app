@@ -17,6 +17,7 @@ import dev.paddock.adp.mCubed.receivers.ClientReceiver;
 import dev.paddock.adp.mCubed.services.ClientCallback;
 import dev.paddock.adp.mCubed.services.IClientCallback;
 import dev.paddock.adp.mCubed.services.PlaybackClient;
+import dev.paddock.adp.mCubed.utilities.App;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class LibraryActivity extends TabActivity {
@@ -105,6 +106,12 @@ public class LibraryActivity extends TabActivity {
 	}
 	
 	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+		return App.isInitialized();
+	}
+	
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Utilities.pushContext(this);
 		try {
@@ -176,7 +183,6 @@ public class LibraryActivity extends TabActivity {
 	private ClientReceiver getClientReceiver() {
 		if (clientReceiver == null) {
 			clientReceiver = new ClientReceiver(getClientCallback(), false);
-			clientReceiver.addAction(Schema.I_MCUBED_PROGRESS);
 		}
 		return clientReceiver;
 	}

@@ -4,18 +4,25 @@
 	android:layout_height="fill_parent"
 	android:layout_width="fill_parent"
 	android:id="@android:id/tabhost">
-	<LinearLayout
+	<FrameLayout
 		android:layout_height="fill_parent"
-		android:layout_width="fill_parent"
-		android:orientation="vertical">
-		<TabWidget
-			android:layout_height="wrap_content"
-			android:layout_width="fill_parent"
-			android:id="@android:id/tabs"/>
-		<FrameLayout
+		android:layout_width="fill_parent">
+		<LinearLayout
 			android:layout_height="fill_parent"
 			android:layout_width="fill_parent"
-			android:id="@android:id/tabcontent">
-		</FrameLayout>
-	</LinearLayout>
+			android:orientation="vertical">
+			<TabWidget
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:id="@android:id/tabs"/>
+			<FrameLayout
+				android:layout_height="fill_parent"
+				android:layout_width="fill_parent"
+				android:id="@android:id/tabcontent">
+			</FrameLayout>
+		</LinearLayout>
+		<dev.paddock.adp.mCubed.controls.ProgressDisplay
+			android:layout_height="fill_parent"
+			android:layout_width="fill_parent" />
+	</FrameLayout>
 </TabHost>

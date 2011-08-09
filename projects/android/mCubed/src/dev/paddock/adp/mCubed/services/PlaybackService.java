@@ -139,14 +139,14 @@ public class PlaybackService extends Service {
 	
 	private void cancelNotification(NotificationManager manager) {
 		if (manager == null) {
-			manager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+			manager = App.getSystemService(NotificationManager.class, NOTIFICATION_SERVICE);
 		}
-		manager.notify(Schema.NOTIF_PLAYING_MEDIA, new Notification());
+		manager.cancel(Schema.TAG, Schema.NOTIF_PLAYING_MEDIA);
 	}
 	
 	private void updateNotification(boolean doTicker) {
 		// Grab some data
-		NotificationManager manager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+		NotificationManager manager = App.getSystemService(NotificationManager.class, NOTIFICATION_SERVICE);
 		NotificationVisibility visibility = PreferenceManager.getSettingEnum(NotificationVisibility.class, R.string.pref_notification_visibility);
 		MediaFile media = App.getPlayingMedia();
 		boolean isPlaying = App.getPlayer().isPlaying();
@@ -193,7 +193,8 @@ public class PlaybackService extends Service {
 		// Create and show the notification
 		Notification notification = new Notification(icon, ticker, System.currentTimeMillis());
 		notification.setLatestEventInfo(this, title, content, pendingIntent);
-		manager.notify(Schema.NOTIF_PLAYING_MEDIA, notification);
+		notification.flags |= Notification.FLAG_ONGOING_EVENT;
+		manager.notify(Schema.TAG, Schema.NOTIF_PLAYING_MEDIA, notification);
 	}
 	
 	private void updatePlayMode() {
