@@ -1,10 +1,8 @@
 package dev.paddock.adp.mCubed.model;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import dev.paddock.adp.mCubed.utilities.ProgressManager;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class Progress {
@@ -138,11 +136,6 @@ public class Progress {
 	}
 	
 	public void end() {
-		Iterator<Progress> it = subProgress.iterator();
-		while (it.hasNext()) {
-			ProgressManager.cleanup(it.next());
-			it.remove();
-		}
 		subProgress.clear();
 		setIsFinished(true);
 		setValue(1d);
@@ -151,7 +144,9 @@ public class Progress {
 	private void notify(String title) {
 		title = allowChildTitle() ? title : getTitle();
 		if (parent == null) {
-			Utilities.publishProgress(new PublishProgress(getID(), title, (byte)(getValue() * 100d), isBlocking()));
+			double value = getValue() * 100d;
+			value = isFinished() ? 100d : Math.max(0d, Math.min(value, 99d));
+			Utilities.publishProgress(new PublishProgress(getID(), title, (byte)value, isBlocking()));
 		} else {
 			parent.notify(title);
 		}

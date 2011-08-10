@@ -346,7 +346,6 @@ public class App extends Application {
 						if (rootNode == null) {
 							// Load the initial playlist as all files
 							progress.setSubIDs(Schema.PROG_PLAYLIST_ADDCOMPOSITE);
-							// TODO IMPROVE
 							getNowPlaying().addComposite(new Composite(MediaGroup.All.getGrouping(0), ListAction.Add));
 						} else {
 							// Load from its previous state

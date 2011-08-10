@@ -316,10 +316,6 @@ public class PlaybackService extends Service {
 						Intent intent = queuedIntents.poll();
 						PlaybackServer.handleIntent(intent, getServerCallback(), false);
 					}
-					
-					// TODO REMOVE
-					//App.getNowPlaying().addComposition(MediaGroup.Genre.getGrouping(51));
-					//App.getNowPlaying().addComposition(MediaGroup.All.getGrouping(0));
 				}
 			};
 		}
