@@ -10,6 +10,7 @@ public class Progress {
 	private double value;
 	private String id, title;
 	private Progress parent;
+	private byte previousNotify = -1;
 	private final List<Progress> subProgress = new ArrayList<Progress>();
 	
 	public Progress() { }
@@ -146,7 +147,11 @@ public class Progress {
 		if (parent == null) {
 			double value = getValue() * 100d;
 			value = isFinished() ? 100d : Math.max(0d, Math.min(value, 99d));
-			Utilities.publishProgress(new PublishProgress(getID(), title, (byte)value, isBlocking()));
+			byte notifyValue = (byte)value;
+			if (notifyValue != previousNotify) {
+				previousNotify = notifyValue;
+				Utilities.publishProgress(new PublishProgress(getID(), title, (byte)value, isBlocking()));
+			}
 		} else {
 			parent.notify(title);
 		}

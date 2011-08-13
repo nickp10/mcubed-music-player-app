@@ -256,20 +256,30 @@ public class Playlist {
 	}
 	
 	private static Collection<MediaFile> generateList(String ids) {
-		Collection<MediaFile> files = new ArrayList<MediaFile>();
-		if (!Utilities.isNullOrEmpty(ids)) {
-			String[] idArray = ids.split(",");
-			for (String idString : idArray) {
-				try {
-					long id = Long.parseLong(idString);
-					MediaFile file = MediaFile.get(id);
-					if (file != null) {
-						files.add(file);
+		Progress progress = ProgressManager.startProgress(Schema.PROG_PLAYLIST_GENERATELIST, "Loading files...");
+		try {
+			Collection<MediaFile> files = new ArrayList<MediaFile>();
+			if (!Utilities.isNullOrEmpty(ids)) {
+				String[] idArray = ids.split(",");
+				int current = 0;
+				for (String idString : idArray) {
+					try {
+						long id = Long.parseLong(idString);
+						MediaFile file = MediaFile.get(id);
+						if (file != null) {
+							files.add(file);
+						}
+					} catch (Exception e) {
+					} finally {
+						current++;
+						progress.setValue((double)current / (double)idArray.length);
 					}
-				} catch (Exception e) { }
+				}
 			}
+			return files;
+		} finally {
+			ProgressManager.endProgress(progress);
 		}
-		return files;
 	}
 	
 	private static void setList(Collection<MediaFile> destinationList, String ids) {
@@ -287,26 +297,32 @@ public class Playlist {
 	}
 	
 	public void reset(String historyIDs, String queueIDs, long currentID) {
-		// Update the history
-		setList(playMode.getHistory(), historyIDs);
-		for (MediaFile file : playMode.getHistory()) {
-			addFileInternal(false, file);
+		Progress progress = ProgressManager.startProgress(Schema.PROG_PLAYLIST_RESET, "Restoring the playlist");
+		progress.appendSubID(Schema.PROG_PLAYLIST_GENERATELIST, 2);
+		try {
+			// Update the history
+			setList(playMode.getHistory(), historyIDs);
+			for (MediaFile file : playMode.getHistory()) {
+				addFileInternal(false, file);
+			}
+			
+			// Update the queue
+			setList(playMode.getQueue(), queueIDs);
+			for (MediaFile file : playMode.getQueue()) {
+				addFileInternal(false, file);
+			}
+			
+			// Update the current
+			MediaFile file = MediaFile.get(currentID);
+			if (file != null) {
+				addFileInternal(false, file);
+			}
+			playMode.setCurrent(file);
+			playMode.reset(false);
+			resetCurrent(true);
+		} finally {
+			ProgressManager.endProgress(progress);
 		}
-		
-		// Update the queue
-		setList(playMode.getQueue(), queueIDs);
-		for (MediaFile file : playMode.getQueue()) {
-			addFileInternal(false, file);
-		}
-		
-		// Update the current
-		MediaFile file = MediaFile.get(currentID);
-		if (file != null) {
-			addFileInternal(false, file);
-		}
-		playMode.setCurrent(file);
-		playMode.reset(false);
-		resetCurrent(true);
 	}
 	
 	public void resetPlayMode(PlayModeEnum playMode, boolean clearQueue) {

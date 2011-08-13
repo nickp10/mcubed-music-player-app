@@ -260,46 +260,51 @@ public class App extends Application {
 	private static void loadAppStateXML(XMLDocument rootNode) {
 		// Setup the progress
 		Progress progress = ProgressManager.startProgress(Schema.PROG_APP_LOADXML, "Restoring application state...");
-		progress.setSubIDs(Schema.PROG_PLAYLIST_VALIDATE);
-		
-		// Load the now playing playlist
-		Playlist nowPlaying = getNowPlaying();
-		String historyIDs = rootNode.getNodePathValue("NowPlaying/History");
-		String queueIDs = rootNode.getNodePathValue("NowPlaying/Queue");
-		long currentID = Utilities.parseLong(rootNode.getNodePathValue("NowPlaying/Current"));
-		nowPlaying.reset(historyIDs, queueIDs, currentID);
-		XMLNode compositionNode = rootNode.getNodePath("NowPlaying/Composition", false);
-		if (compositionNode != null) {
-			// Setup the composition
-			List<XMLNode> itemNodes = compositionNode.getChildNodes();
-			
-			// Adjust the progress
-			String[] subIDs = new String[itemNodes.size()];
-			for (int i = 0; i < subIDs.length; i++) {
-				subIDs[i] = Schema.PROG_PLAYLIST_ADDCOMPOSITE;
+		progress.setSubIDs(Schema.PROG_PLAYLIST_RESET, Schema.PROG_PLAYLIST_VALIDATE);
+		try {
+			// Load the now playing playlist
+			Playlist nowPlaying = getNowPlaying();
+			String historyIDs = rootNode.getNodePathValue("NowPlaying/History");
+			String queueIDs = rootNode.getNodePathValue("NowPlaying/Queue");
+			long currentID = Utilities.parseLong(rootNode.getNodePathValue("NowPlaying/Current"));
+			XMLNode compositionNode = rootNode.getNodePath("NowPlaying/Composition", false);
+			if (compositionNode != null) {
+				// Setup the composition
+				List<XMLNode> itemNodes = compositionNode.getChildNodes();
+				
+				// Adjust the progress
+				String[] subIDs = new String[itemNodes.size()];
+				for (int i = 0; i < subIDs.length; i++) {
+					subIDs[i] = Schema.PROG_PLAYLIST_ADDCOMPOSITE;
+				}
+				progress.appendSubIDs(subIDs);
+				
+				// Reset the playlist
+				nowPlaying.reset(historyIDs, queueIDs, currentID);
+				
+				// Add the composition
+				for (XMLNode itemNode : compositionNode.getChildNodes()) {
+					nowPlaying.addComposite(Composite.parse(itemNode.getNodeText()));
+				}
+			} else {
+				nowPlaying.reset(historyIDs, queueIDs, currentID);
 			}
-			progress.appendSubIDs(subIDs);
 			
-			// Add the composition
-			for (XMLNode itemNode : compositionNode.getChildNodes()) {
-				nowPlaying.addComposite(Composite.parse(itemNode.getNodeText()));
+			// Validate the playlist
+			boolean currentChanged = nowPlaying.validate();
+			
+			// Load the player
+			MediaPlayer player = getPlayer();
+			XMLNode playerNode = rootNode.getChildNode("Player");
+			MediaPlayerState playerState = MediaPlayerState.fromXML(playerNode);
+			if (currentChanged) {
+				playerState.setIsSeekValueAcquired(false);
 			}
+			player.setMediaPlayerState(playerState);
+		} finally {
+			// End the progress
+			ProgressManager.endProgress(progress);
 		}
-		
-		// Validate the playlist
-		boolean currentChanged = nowPlaying.validate();
-		
-		// Load the player
-		MediaPlayer player = getPlayer();
-		XMLNode playerNode = rootNode.getChildNode("Player");
-		MediaPlayerState playerState = MediaPlayerState.fromXML(playerNode);
-		if (currentChanged) {
-			playerState.setIsSeekValueAcquired(false);
-		}
-		player.setMediaPlayerState(playerState);
-		
-		// End the progress
-		ProgressManager.endProgress(progress);
 	}
 	
 	public static void setIsServiceRunning(boolean isServiceRunning) {

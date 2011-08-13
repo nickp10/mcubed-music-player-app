@@ -238,7 +238,10 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 	 * @return The current duration of the loaded song in milliseconds.
 	 */
 	public int getDuration() {
-		return player == null ? 0 : player.getDuration();
+		if (player == null || mediaFile == null) {
+			return 0;
+		}
+		return player.getDuration();
 	}
 	
 	/**

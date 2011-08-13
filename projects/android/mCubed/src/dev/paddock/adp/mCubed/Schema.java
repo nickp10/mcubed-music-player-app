@@ -64,6 +64,8 @@ public class Schema {
 	public static final String PROG_PLAYLIST_REMOVECOMPOSITE = "prog_pl_removecomposite";
 	public static final String PROG_PLAYLIST_ADDFILES = "prog_pl_addfiles";
 	public static final String PROG_PLAYLIST_REMOVEFILES = "prog_pl_removefiles";
+	public static final String PROG_PLAYLIST_RESET = "prog_pl_reset";
+	public static final String PROG_PLAYLIST_GENERATELIST = "prog_pl_generatelist";
 	public static final String PROG_PLAYLIST_VALIDATE = "prog_pl_validate";
 	
 	/** ACTIVITY MENU SCHEMA **/
