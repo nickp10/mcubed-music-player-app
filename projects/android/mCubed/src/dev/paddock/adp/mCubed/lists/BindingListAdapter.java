@@ -12,33 +12,40 @@ import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.ListView;
+import android.widget.ListAdapter;
 import android.widget.SectionIndexer;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import dev.paddock.adp.mCubed.lists.BindingList.BindingListObserver;
 import dev.paddock.adp.mCubed.utilities.App;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
-public class BindingListAdapter<E> extends BaseAdapter implements BindingListObserver<E>, SectionIndexer {
+public class BindingListAdapter<E> extends BaseAdapter implements
+		BindingListObserver<E>,
+		SectionIndexer,
+		AdapterView.OnItemClickListener,
+		AdapterView.OnItemLongClickListener {
 	private static final String DEFAULT_KEY = "";
 	private static final int VIEW_TYPE_GROUP_HEADER = 0;
 	private static final int VIEW_TYPE_ITEM = 1;
 	private final TreeMap<String, List<E>> map = new TreeMap<String, List<E>>();
 	private final List<BindingListView> listViews = new LinkedList<BindingListView>();
-	private ListView currentListView;
+	private AbsListView currentListView;
 	private BindingList<E> list;
 	private boolean isNotifyOnChange = true;
 	private int headerDropDownViewResource, headerViewResource, itemDropDownViewResource, itemViewResource;
 	private LayoutInflater inflater;
-	private IViewHolderFactory<String> headerViewHolderFactory;
-	private IViewHolderFactory<E> itemViewHolderFactory;
+	private IViewItemFactory<String> headerViewItemFactory;
+	private IViewItemFactory<E> itemViewItemFactory;
 	private Grouper<E> grouper;
 	private Comparator<E> sorter;
 	
 	private static class BindingListView {
-		private ListView listView;
+		private AbsListView listView;
 		private DataSetObserver observer;
 		private boolean flagWidth;
 	}
@@ -196,15 +203,25 @@ public class BindingListAdapter<E> extends BaseAdapter implements BindingListObs
 		return Adapter.IGNORE_ITEM_VIEW_TYPE;
 	}
 	
-	public final void registerWithListView(ListView view) {
+	public final void registerWithListView(AbsListView view) {
 		currentListView = view;
-		view.setAdapter(this);
+		registerWithListAdapterView(view);
 		view.setFastScrollEnabled(true);
 		currentListView = null;
 	}
 	
+	public final void registerWithListAdapterView(AdapterView<ListAdapter> view) {
+		view.setAdapter(this);
+		view.setOnItemClickListener(this);
+		view.setOnItemLongClickListener(this);
+	}
+	
+	public final void registerWithSpinnerAdapterView(AdapterView<SpinnerAdapter> view) {
+		view.setAdapter(this);
+	}
+	
 	@Override
-	public void registerDataSetObserver(DataSetObserver observer) {
+	public final void registerDataSetObserver(DataSetObserver observer) {
 		super.registerDataSetObserver(observer);
 		if (currentListView != null) {
 			BindingListView view = new BindingListView();
@@ -215,7 +232,7 @@ public class BindingListAdapter<E> extends BaseAdapter implements BindingListObs
 	}
 	
 	@Override
-	public void unregisterDataSetObserver(DataSetObserver observer) {
+	public final void unregisterDataSetObserver(DataSetObserver observer) {
 		super.unregisterDataSetObserver(observer);
 		Iterator<BindingListView> it = listViews.iterator();
 		while (it.hasNext()) {
@@ -248,7 +265,7 @@ public class BindingListAdapter<E> extends BaseAdapter implements BindingListObs
 		updateSections();
 	}
 	
-	private void updateSections() {
+	private final void updateSections() {
 		for (BindingListView view : listViews) {
 			// Hack to re-query the sections for the list view
 			view.listView.setFastScrollEnabled(false);
@@ -285,7 +302,7 @@ public class BindingListAdapter<E> extends BaseAdapter implements BindingListObs
 		notifyDataSetChanged();
 	}
 	
-	private void addItem(E item) {
+	private final void addItem(E item) {
 		// Determine the item's key
 		String key = DEFAULT_KEY;
 		Grouper<E> grouper = getGrouper();
@@ -308,7 +325,7 @@ public class BindingListAdapter<E> extends BaseAdapter implements BindingListObs
 		list.add(item);
 	}
 	
-	private boolean removeItem(E item) {
+	private final boolean removeItem(E item) {
 		boolean itemRemoved = false;
 		for (Iterator<String> it = map.keySet().iterator(); it.hasNext(); ) {
 			String key = it.next();
@@ -328,22 +345,22 @@ public class BindingListAdapter<E> extends BaseAdapter implements BindingListObs
 		return itemRemoved;
 	}
 	
-	public Comparator<E> getSorter() {
+	public final Comparator<E> getSorter() {
 		return sorter;
 	}
 	
-	public void setSorter(Comparator<E> sorter) {
+	public final void setSorter(Comparator<E> sorter) {
 		if (this.sorter != sorter) {
 			this.sorter = sorter;
 			refreshView();
 		}
 	}
 	
-	public Grouper<E> getGrouper() {
+	public final Grouper<E> getGrouper() {
 		return grouper;
 	}
 	
-	public void setGrouper(Grouper<E> grouper) {
+	public final void setGrouper(Grouper<E> grouper) {
 		if (this.grouper != grouper) {
 			this.grouper = grouper;
 			refreshView();
@@ -361,62 +378,62 @@ public class BindingListAdapter<E> extends BaseAdapter implements BindingListObs
 		notifyDataSetChanged();
 	}
 	
-	public LayoutInflater getInflater() {
+	public final LayoutInflater getInflater() {
 		return inflater;
 	}
 	
-	private void setInflater(LayoutInflater inflater) {
+	private final void setInflater(LayoutInflater inflater) {
 		this.inflater = inflater;
 	}
 	
-	public IViewHolderFactory<String> getHeaderViewHolderFactory() {
-		return headerViewHolderFactory;
+	public final IViewItemFactory<String> getHeaderViewItemFactory() {
+		return headerViewItemFactory;
 	}
 	
-	public void setHeaderViewHolderFactory(IViewHolderFactory<String> headerViewHolderFactory) {
-		this.headerViewHolderFactory = headerViewHolderFactory;
+	public final void setHeaderViewItemFactory(IViewItemFactory<String> headerViewItemFactory) {
+		this.headerViewItemFactory = headerViewItemFactory;
 	}
 	
-	public IViewHolderFactory<E> getItemViewHolderFactory() {
-		return itemViewHolderFactory;
+	public final IViewItemFactory<E> getItemViewItemFactory() {
+		return itemViewItemFactory;
 	}
 	
-	public void setItemViewHolderFactory(IViewHolderFactory<E> itemViewHolderFactory) {
-		this.itemViewHolderFactory = itemViewHolderFactory;
+	public final void setItemViewItemFactory(IViewItemFactory<E> itemViewItemFactory) {
+		this.itemViewItemFactory = itemViewItemFactory;
 	}
 	
-	public int getHeaderViewResource() {
+	public final int getHeaderViewResource() {
 		return headerViewResource;
 	}
 	
-	public void setHeaderViewResource(int headerViewResource) {
+	public final void setHeaderViewResource(int headerViewResource) {
 		this.headerViewResource = headerViewResource;
 		notifyDataSetInvalidated();
 	}
 	
-	public int getHeaderDropDownViewResource() {
+	public final int getHeaderDropDownViewResource() {
 		return headerDropDownViewResource;
 	}
 	
-	public void setHeaderDropDownViewResource(int headerDropDownViewResource) {
+	public final void setHeaderDropDownViewResource(int headerDropDownViewResource) {
 		this.headerDropDownViewResource = headerDropDownViewResource;
 		notifyDataSetInvalidated();
 	}
 	
-	public int getItemViewResource() {
+	public final int getItemViewResource() {
 		return itemViewResource;
 	}
 	
-	public void setItemViewResource(int itemViewResource) {
+	public final void setItemViewResource(int itemViewResource) {
 		this.itemViewResource = itemViewResource;
 		notifyDataSetInvalidated();
 	}
 	
-	public int getItemDropDownViewResource() {
+	public final int getItemDropDownViewResource() {
 		return itemDropDownViewResource;
 	}
 	
-	public void setItemDropDownViewResource(int itemDropDownViewResource) {
+	public final void setItemDropDownViewResource(int itemDropDownViewResource) {
 		this.itemDropDownViewResource = itemDropDownViewResource;
 		notifyDataSetInvalidated();
 	}
@@ -426,22 +443,14 @@ public class BindingListAdapter<E> extends BaseAdapter implements BindingListObs
 	public final View getDropDownView(int position, View convertView, ViewGroup parent) {
 		Object item = getItem(position);
 		if (item != null && item instanceof BindingListHeader) {
-			String header = ((BindingListHeader)item).header;
 			int resource = getHeaderDropDownViewResource();
-			IViewHolderFactory<String> factory = getHeaderViewHolderFactory();
-			if (factory == null) {
-				return getHeaderDropDownView(position, header, convertView, parent, resource);
-			} else {
-				return getHeaderDropDownView(position, header, convertView, parent, resource, factory);
-			}
+			IViewItemFactory<String> factory = getHeaderViewItemFactory();
+			String header = ((BindingListHeader)item).header;
+			return getHeaderDropDownView(position, header, convertView, parent, resource, factory);
 		} else {
 			int resource = getItemDropDownViewResource();
-			IViewHolderFactory<E> factory = getItemViewHolderFactory();
-			if (factory == null) {
-				return getItemDropDownView(position, (E)item, convertView, parent, resource);
-			} else {
-				return getItemDropDownView(position, (E)item, convertView, parent, resource, factory);
-			}
+			IViewItemFactory<E> factory = getItemViewItemFactory();
+			return getItemDropDownView(position, (E)item, convertView, parent, resource, factory);
 		}
 	}
 	
@@ -450,40 +459,96 @@ public class BindingListAdapter<E> extends BaseAdapter implements BindingListObs
 	public final View getView(int position, View convertView, ViewGroup parent) {
 		Object item = getItem(position);
 		if (item != null && item instanceof BindingListHeader) {
-			String header = ((BindingListHeader)item).header;
 			int resource = getHeaderViewResource();
-			IViewHolderFactory<String> factory = getHeaderViewHolderFactory();
-			if (factory == null) {
-				return getHeaderView(position, header, convertView, parent, resource);
-			} else {
-				return getHeaderView(position, header, convertView, parent, resource, factory);
-			}
+			IViewItemFactory<String> factory = getHeaderViewItemFactory();
+			String header = ((BindingListHeader)item).header;
+			return getHeaderView(position, header, convertView, parent, resource, factory);
 		} else {
 			int resource = getItemViewResource();
-			IViewHolderFactory<E> factory = getItemViewHolderFactory();
-			if (factory == null) {
-				return getItemView(position, (E)item, convertView, parent, resource);
-			} else {
-				return getItemView(position, (E)item, convertView, parent, resource, factory);
-			}
+			IViewItemFactory<E> factory = getItemViewItemFactory();
+			return getItemView(position, (E)item, convertView, parent, resource, factory);
 		}
 	}
 	
 	/**
-	 * Called when generating a drop-down view for a header when a view holder factory has not been specified.
-	 * @param position
-	 * @param header
+	 * Reuses the given view unless it's null, in which case it will inflate
+	 * the view by using the given resource and parent to do so.
 	 * @param convertView
 	 * @param parent
 	 * @param resource
 	 * @return
 	 */
-	protected View getHeaderDropDownView(int position, String header, View convertView, ViewGroup parent, int resource) {
-		return getHeaderView(position, null, convertView, parent, resource);
+	protected final View inflateView(View convertView, ViewGroup parent, int resource) {
+		if (convertView == null) {
+			convertView = getInflater().inflate(resource, parent, false);
+		}
+		return convertView;
 	}
 	
 	/**
-	 * Called when generating a drop-down view for a header when a view holder factory has been specified.
+	 * Finds the view item associated with the given view or it will
+	 * create a view item and assign it to the view if one couldn't be found.
+	 * @param <T>
+	 * @param convertView
+	 * @param factory
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	protected final <T> IViewItem<T> getViewItem(View convertView, IViewItemFactory<T> factory) {
+		IViewItem<T> viewItem = null;
+		if (convertView != null) {
+			Object tag = convertView.getTag();
+			if (tag != null && tag instanceof IViewItem<?>) {
+				viewItem = (IViewItem<T>)tag;
+			}
+		}
+		if (viewItem == null && factory != null) {
+			viewItem = factory.createViewItem();
+			if (convertView != null) {
+				viewItem.findViews(convertView);
+				convertView.setTag(viewItem);
+			}
+		}
+		return viewItem;
+	}
+	
+	/**
+	 * Gets a generic version of the view of the items either using the view item
+	 * associated with the view or by assuming the view is a text view.
+	 * @param <T>
+	 * @param position
+	 * @param item
+	 * @param convertView
+	 * @param parent
+	 * @param resource
+	 * @param factory
+	 * @return
+	 */
+	protected final <T> View getView(int position, T item, View convertView, ViewGroup parent, int resource, IViewItemFactory<T> factory) {
+		// Inflate the view and find its view item
+		convertView = inflateView(convertView, parent, resource);
+		IViewItem<T> viewItem = getViewItem(convertView, factory);
+		
+		// Update the information in the view
+		if (viewItem == null) {
+			if (convertView != null && convertView instanceof TextView) {
+				TextView textView = (TextView)convertView;
+		        if (item == null) {
+		        	textView.setText("");
+		        } else if (item instanceof CharSequence) {
+		        	textView.setText((CharSequence)item);
+		        } else {
+		        	textView.setText(item.toString());
+		        }
+			}
+		} else {
+			viewItem.updateViews(item);
+		}
+		return convertView;
+	}
+	
+	/**
+	 * Called when generating a drop-down view for a header.
 	 * @param position
 	 * @param header
 	 * @param convertView
@@ -492,25 +557,12 @@ public class BindingListAdapter<E> extends BaseAdapter implements BindingListObs
 	 * @param factory
 	 * @return
 	 */
-	protected View getHeaderDropDownView(int position, String header, View convertView, ViewGroup parent, int resource, IViewHolderFactory<String> factory) {
-		return getHeaderView(position, null, convertView, parent, resource, factory);
+	protected View getHeaderDropDownView(int position, String header, View convertView, ViewGroup parent, int resource, IViewItemFactory<String> factory) {
+		return getHeaderView(position, header, convertView, parent, resource, factory);
 	}
 	
 	/**
-	 * Called when generating a drop-down view for an item when a view holder factory has not been specified.
-	 * @param position
-	 * @param item
-	 * @param convertView
-	 * @param parent
-	 * @param resource
-	 * @return
-	 */
-	protected View getItemDropDownView(int position, E item, View convertView, ViewGroup parent, int resource) {
-		return getItemView(position, item, convertView, parent, resource);
-	}
-	
-	/**
-	 * Called when generating a drop-down view for an item when a view holder factory has been specified.
+	 * Called when generating a drop-down view for an item.
 	 * @param position
 	 * @param item
 	 * @param convertView
@@ -519,25 +571,12 @@ public class BindingListAdapter<E> extends BaseAdapter implements BindingListObs
 	 * @param factory
 	 * @return
 	 */
-	protected View getItemDropDownView(int position, E item, View convertView, ViewGroup parent, int resource, IViewHolderFactory<E> factory) {
+	protected View getItemDropDownView(int position, E item, View convertView, ViewGroup parent, int resource, IViewItemFactory<E> factory) {
 		return getItemView(position, item, convertView, parent, resource, factory);
 	}
 	
 	/**
-	 * Called when generating a regular view for a header when a view holder factory has not been specified.
-	 * @param position
-	 * @param header
-	 * @param convertView
-	 * @param parent
-	 * @param resource
-	 * @return
-	 */
-	protected View getHeaderView(int position, String header, View convertView, ViewGroup parent, int resource) {
-		return createView(position, header, convertView, parent, resource);
-	}
-	
-	/**
-	 * Called when generating a regular view for a header when a view holder factory has been specified.
+	 * Called when generating a regular view for a header.
 	 * @param position
 	 * @param header
 	 * @param convertView
@@ -546,25 +585,12 @@ public class BindingListAdapter<E> extends BaseAdapter implements BindingListObs
 	 * @param factory
 	 * @return
 	 */
-	protected View getHeaderView(int position, String header, View convertView, ViewGroup parent, int resource, IViewHolderFactory<String> factory) {
-		return createView(position, header, convertView, parent, resource, factory);
+	protected View getHeaderView(int position, String header, View convertView, ViewGroup parent, int resource, IViewItemFactory<String> factory) {
+		return getView(position, header, convertView, parent, resource, factory);
 	}
 	
 	/**
-	 * Called when generating a regular view for an item when a view holder factory has not been specified.
-	 * @param position
-	 * @param item
-	 * @param convertView
-	 * @param parent
-	 * @param resource
-	 * @return
-	 */
-	protected View getItemView(int position, E item, View convertView, ViewGroup parent, int resource) {
-		return createView(position, item, convertView, parent, resource);
-	}
-	
-	/**
-	 * Called when generating a regular view for an item when a view holder factory has been specified.
+	 * Called when generating a regular view for an item.
 	 * @param position
 	 * @param item
 	 * @param convertView
@@ -573,48 +599,8 @@ public class BindingListAdapter<E> extends BaseAdapter implements BindingListObs
 	 * @param factory
 	 * @return
 	 */
-	protected View getItemView(int position, E item, View convertView, ViewGroup parent, int resource, IViewHolderFactory<E> factory) {
-		return createView(position, item, convertView, parent, resource, factory);
-	}
-	
-	protected final View createView(int position, Object item, View convertView, ViewGroup parent, int resource) {
-		// Inflate the view
-        View view = null;
-        if (convertView == null) {
-            view = getInflater().inflate(resource, parent, false);
-        } else {
-            view = convertView;
-        }
-
-        // Update the text view
-        TextView text = (TextView)view;
-        if (item == null) {
-        	text.setText("");
-        } else if (item instanceof CharSequence) {
-            text.setText((CharSequence)item);
-        } else {
-            text.setText(item.toString());
-        }
-
-        return view;
-	}
-	
-	@SuppressWarnings("unchecked")
-	protected final <F> View createView(int position, F item, View convertView, ViewGroup parent, int resource, IViewHolderFactory<F> factory) {
-		// Create the view and find its child views
-		IViewHolder<F> viewHolder = null;
-		if (convertView == null) {
-			convertView = getInflater().inflate(resource, null);
-			viewHolder = factory.createViewHolder();
-			viewHolder.findViews(convertView);
-			convertView.setTag(viewHolder);
-		} else {
-			viewHolder = (IViewHolder<F>)convertView.getTag();
-		}
-		
-		// Update the information in the view
-		viewHolder.updateViews(item);
-		return convertView;
+	protected View getItemView(int position, E item, View convertView, ViewGroup parent, int resource, IViewItemFactory<E> factory) {
+		return getView(position, item, convertView, parent, resource, factory);
 	}
 	
 	/**
@@ -704,4 +690,96 @@ public class BindingListAdapter<E> extends BaseAdapter implements BindingListObs
 		}
 		return 0;
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public final boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+		boolean handled = false;
+		Object item = getItem(position);
+		if (item != null && item instanceof BindingListHeader) {
+			IViewItemFactory<String> factory = getHeaderViewItemFactory();
+			IViewItem<String> viewItem = getViewItem(view, factory);
+			String header = ((BindingListHeader)item).header;
+			handled = onHeaderLongClick(parent, view, position, id, header);
+			if (viewItem != null) {
+				handled |= viewItem.onViewLongClick(header);
+			}
+		} else {
+			IViewItemFactory<E> factory = getItemViewItemFactory();
+			IViewItem<E> viewItem = getViewItem(view, factory);
+			handled = onItemLongClick(parent, view, position, id, (E)item);
+			if (viewItem != null) {
+				handled |= viewItem.onViewLongClick((E)item);
+			}
+		}
+		return handled;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public final void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		Object item = getItem(position);
+		if (item != null && item instanceof BindingListHeader) {
+			IViewItemFactory<String> factory = getHeaderViewItemFactory();
+			IViewItem<String> viewItem = getViewItem(view, factory);
+			String header = ((BindingListHeader)item).header;
+			onHeaderClick(parent, view, position, id, header);
+			if (viewItem != null) {
+				viewItem.onViewClick(header);
+			}
+		} else {
+			IViewItemFactory<E> factory = getItemViewItemFactory();
+			IViewItem<E> viewItem = getViewItem(view, factory);
+			onItemClick(parent, view, position, id, (E)item);
+			if (viewItem != null) {
+				viewItem.onViewClick((E)item);
+			}
+		}
+	}
+	
+	/**
+	 * Called when a header has been long-clicked upon.
+	 * @param parent
+	 * @param view
+	 * @param position
+	 * @param id
+	 * @param header
+	 * @return True if the long-click has been handled, or false otherwise.
+	 */
+	protected boolean onHeaderLongClick(AdapterView<?> parent, View view, int position, long id, String header) {
+		return false;
+	}
+	
+	/**
+	 * Called when a header has been clicked upon.
+	 * @param parent
+	 * @param view
+	 * @param position
+	 * @param id
+	 * @param header
+	 */
+	protected void onHeaderClick(AdapterView<?> parent, View view, int position, long id, String header) { }
+	
+	/**
+	 * Called when an item has been long-clicked upon.
+	 * @param parent
+	 * @param view
+	 * @param position
+	 * @param id
+	 * @param item
+	 * @return True if the long-click has been handled, or false otherwise.
+	 */
+	protected boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id, E item) {
+		return false;
+	}
+	
+	/**
+	 * Called when an item has been clicked upon.
+	 * @param parent
+	 * @param view
+	 * @param position
+	 * @param id
+	 * @param item
+	 */
+	protected void onItemClick(AdapterView<?> parent, View view, int position, long id, E item) { }
 }

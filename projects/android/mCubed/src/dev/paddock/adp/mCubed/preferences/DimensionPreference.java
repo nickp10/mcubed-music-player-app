@@ -82,7 +82,8 @@ public class DimensionPreference extends DialogPreference {
 		});
 		
 		// Set the available items for the unit spinner
-		unitSpinner.setAdapter(new BindingListAdapter<Dimension>(getContext(), dimensions));
+		BindingListAdapter<Dimension> unitAdapter = new BindingListAdapter<Dimension>(getContext(), dimensions);
+		unitAdapter.registerWithSpinnerAdapterView(unitSpinner);
 		
 		// Register to the spinner selection changed
 		unitSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

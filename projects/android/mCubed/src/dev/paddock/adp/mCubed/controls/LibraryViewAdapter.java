@@ -7,8 +7,8 @@ import android.content.Context;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.lists.BindingList;
 import dev.paddock.adp.mCubed.lists.BindingListAdapter;
-import dev.paddock.adp.mCubed.lists.IViewHolder;
-import dev.paddock.adp.mCubed.lists.IViewHolderFactory;
+import dev.paddock.adp.mCubed.lists.IViewItem;
+import dev.paddock.adp.mCubed.lists.IViewItemFactory;
 import dev.paddock.adp.mCubed.model.MediaGrouping;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
@@ -22,9 +22,9 @@ public class LibraryViewAdapter extends BindingListAdapter<MediaGrouping> {
 	@Override
 	protected void onBeforeInitialize() {
 		setItemViewResource(R.layout.library_view_item);
-		setItemViewHolderFactory(new IViewHolderFactory<MediaGrouping>() {
+		setItemViewItemFactory(new IViewItemFactory<MediaGrouping>() {
 			@Override
-			public IViewHolder<MediaGrouping> createViewHolder() {
+			public IViewItem<MediaGrouping> createViewItem() {
 				return new LibraryViewItem();
 			}
 		});
