@@ -1,5 +1,6 @@
 package dev.paddock.adp.mCubed.controls;
 
+import android.view.ContextMenu;
 import android.view.View;
 import android.widget.TextView;
 import dev.paddock.adp.mCubed.R;
@@ -25,6 +26,18 @@ public class LibraryViewItem implements IViewItem<MediaGrouping> {
 
 	@Override
 	public boolean onViewLongClick(MediaGrouping item) {
+		return false;
+	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, MediaGrouping item) {
+		menu.setHeaderTitle(item.getName());
+		menu.add(ContextMenu.NONE, 1, 1, "Play");
+		menu.add(ContextMenu.NONE, 2, 2, "Add to queue");
+	}
+
+	@Override
+	public boolean onContextItemClick(int menuId, MediaGrouping item) {
 		return false;
 	}
 }

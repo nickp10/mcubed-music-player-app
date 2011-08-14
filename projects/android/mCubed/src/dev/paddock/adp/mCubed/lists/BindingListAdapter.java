@@ -11,12 +11,16 @@ import android.content.Context;
 import android.database.DataSetObserver;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.SectionIndexer;
@@ -30,7 +34,9 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 		BindingListObserver<E>,
 		SectionIndexer,
 		AdapterView.OnItemClickListener,
-		AdapterView.OnItemLongClickListener {
+		AdapterView.OnItemLongClickListener,
+		View.OnCreateContextMenuListener,
+		MenuItem.OnMenuItemClickListener {
 	private static final Object DATA_SET_CHANGED_LOCK = new Object();
 	private static final Object DATA_SET_INVALIDATED_LOCK = new Object();
 	private static final String DEFAULT_KEY = "";
@@ -216,10 +222,12 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 		view.setAdapter(this);
 		view.setOnItemClickListener(this);
 		view.setOnItemLongClickListener(this);
+		view.setOnCreateContextMenuListener(this);
 	}
 	
 	public final void registerWithSpinnerAdapterView(AdapterView<SpinnerAdapter> view) {
 		view.setAdapter(this);
+		view.setOnCreateContextMenuListener(this);
 	}
 	
 	@Override
@@ -843,4 +851,65 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	 * @param item
 	 */
 	protected void onItemClick(AdapterView<?> parent, View view, int position, long id, E item) { }
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public final void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
+		Utilities.pushContext(view.getContext());
+		try {
+			// Create the menu items
+			AdapterContextMenuInfo info = (AdapterContextMenuInfo)menuInfo;
+			Object item = getItem(info.position);
+			if (item != null && item instanceof BindingListHeader) {
+				IViewItemFactory<String> factory = getHeaderViewItemFactory();
+				IViewItem<String> viewItem = getViewItem(view, factory);
+				String header = ((BindingListHeader)item).header;
+				if (viewItem != null) {
+					viewItem.onCreateContextMenu(menu, header);
+				}
+			} else {
+				IViewItemFactory<E> factory = getItemViewItemFactory();
+				IViewItem<E> viewItem = getViewItem(view, factory);
+				if (viewItem != null) {
+					viewItem.onCreateContextMenu(menu, (E)item);
+				}
+			}
+			
+			// Register for the click event on each menu item
+			for (int i = 0; i < menu.size(); i++) {
+				MenuItem menuItem = menu.getItem(i);
+				menuItem.setOnMenuItemClickListener(this);
+			}
+		} finally {
+			Utilities.popContext();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean onMenuItemClick(MenuItem menuItem) {
+		Utilities.pushContext(App.getAppContext());
+		try {
+			boolean handled = false;
+			AdapterContextMenuInfo info = (AdapterContextMenuInfo)menuItem.getMenuInfo();
+			Object item = getItem(info.position);
+			if (item != null && item instanceof BindingListHeader) {
+				IViewItemFactory<String> factory = getHeaderViewItemFactory();
+				IViewItem<String> viewItem = getViewItem(null, factory);
+				String header = ((BindingListHeader)item).header;
+				if (viewItem != null) {
+					handled = viewItem.onContextItemClick(menuItem.getItemId(), header);
+				}
+			} else {
+				IViewItemFactory<E> factory = getItemViewItemFactory();
+				IViewItem<E> viewItem = getViewItem(null, factory);
+				if (viewItem != null) {
+					handled = viewItem.onContextItemClick(menuItem.getItemId(), (E)item);
+				}
+			}
+			return handled;
+		} finally {
+			Utilities.popContext();
+		}
+	}
 }
