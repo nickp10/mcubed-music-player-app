@@ -9,6 +9,8 @@ import java.util.TreeMap;
 
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +31,8 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 		SectionIndexer,
 		AdapterView.OnItemClickListener,
 		AdapterView.OnItemLongClickListener {
+	private static final Object DATA_SET_CHANGED_LOCK = new Object();
+	private static final Object DATA_SET_INVALIDATED_LOCK = new Object();
 	private static final String DEFAULT_KEY = "";
 	private static final int VIEW_TYPE_GROUP_HEADER = 0;
 	private static final int VIEW_TYPE_ITEM = 1;
@@ -36,8 +40,9 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	private final List<BindingListView> listViews = new LinkedList<BindingListView>();
 	private AbsListView currentListView;
 	private BindingList<E> list;
-	private boolean isNotifyOnChange = true;
+	private boolean isNotifyOnChange = true, isDataSetChangedPosted, isDataSetInvalidatedPosted;
 	private int headerDropDownViewResource, headerViewResource, itemDropDownViewResource, itemViewResource;
+	private Handler handler;
 	private LayoutInflater inflater;
 	private IViewItemFactory<String> headerViewItemFactory;
 	private IViewItemFactory<E> itemViewItemFactory;
@@ -251,15 +256,57 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	@Override
 	public void notifyDataSetChanged() {
 		if (isNotifyOnChange()) {
-			super.notifyDataSetChanged();
-			updateSections();
+			postDataSetChanged();
 		}
 	}
 	
 	@Override
 	public void notifyDataSetInvalidated() {
-		super.notifyDataSetInvalidated();
-		updateSections();
+		postDataSetInvalidated();
+	}
+	
+	private final void doNotifyDataSetChanged() {
+		synchronized (DATA_SET_CHANGED_LOCK) {
+			super.notifyDataSetChanged();
+			updateSections();
+			isDataSetChangedPosted = false;
+		}
+	}
+	
+	private final void doNotifyDataSetInvalidated() {
+		synchronized (DATA_SET_INVALIDATED_LOCK) {
+			super.notifyDataSetInvalidated();
+			updateSections();
+			isDataSetInvalidatedPosted = false;
+		}
+	}
+	
+	private final void postDataSetChanged() {
+		synchronized(DATA_SET_CHANGED_LOCK) {
+			if (!isDataSetChangedPosted) {
+				getHandler().post(new Runnable() {
+					@Override
+					public void run() {
+						doNotifyDataSetChanged();
+					}
+				});
+				isDataSetChangedPosted = true;
+			}
+		}
+	}
+	
+	private final void postDataSetInvalidated() {
+		synchronized(DATA_SET_INVALIDATED_LOCK) {
+			if (!isDataSetInvalidatedPosted) {
+				getHandler().post(new Runnable() {
+					@Override
+					public void run() {
+						doNotifyDataSetInvalidated();
+					}
+				});
+				isDataSetInvalidatedPosted = true;
+			}
+		}
 	}
 	
 	private final void updateSections() {
@@ -373,6 +420,13 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 			}
 		}
 		notifyDataSetChanged();
+	}
+	
+	public final Handler getHandler() {
+		if (handler == null) {
+			handler = new Handler(Looper.getMainLooper());
+		}
+		return handler;
 	}
 	
 	public final LayoutInflater getInflater() {
