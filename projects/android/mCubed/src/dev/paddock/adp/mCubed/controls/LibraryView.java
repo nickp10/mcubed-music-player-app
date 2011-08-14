@@ -1,7 +1,6 @@
 package dev.paddock.adp.mCubed.controls;
 
 import dev.paddock.adp.mCubed.R;
-import dev.paddock.adp.mCubed.lists.BindingList;
 import dev.paddock.adp.mCubed.lists.BindingListAdapter;
 import dev.paddock.adp.mCubed.model.MediaGroup;
 import dev.paddock.adp.mCubed.model.MediaGrouping;
@@ -16,7 +15,6 @@ import android.widget.ListView;
 public class LibraryView extends LinearLayout {
 	private ListView listView;
 	private MediaGroup mediaGroup;
-	private BindingList<MediaGrouping> itemsList;
 	private BindingListAdapter<MediaGrouping> itemsAdapter;
 	
 	public LibraryView(Context context) {
@@ -32,8 +30,7 @@ public class LibraryView extends LinearLayout {
 	
 	private void initView(Context context) {
 		// Initialize the list for the list view
-		itemsList = new BindingList<MediaGrouping>();
-		itemsAdapter = new LibraryViewAdapter(context, itemsList);
+		itemsAdapter = new LibraryViewAdapter(context);
 		
 		// Inflate the layout
 		LayoutInflater inflater = App.getSystemService(LayoutInflater.class, context, Context.LAYOUT_INFLATER_SERVICE);
@@ -57,9 +54,10 @@ public class LibraryView extends LinearLayout {
 	public void setMediaGroup(MediaGroup mediaGroup) {
 		if (this.mediaGroup != mediaGroup) {
 			this.mediaGroup = mediaGroup;
-			itemsList.clear();
-			if (this.mediaGroup != null) {
-				itemsList.addAll(this.mediaGroup.getGroupings());
+			if (this.mediaGroup == null) {
+				itemsAdapter.setList(null);
+			} else {
+				itemsAdapter.setList(this.mediaGroup.getGroupings());
 			}
 		}
 	}

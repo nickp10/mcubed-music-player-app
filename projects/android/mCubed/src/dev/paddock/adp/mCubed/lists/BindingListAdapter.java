@@ -58,11 +58,11 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	}
 	
 	public BindingListAdapter() {
-		this(new BindingList<E>());
+		this(Utilities.getContext());
 	}
 	
 	public BindingListAdapter(List<E> list) {
-		this(new BindingList<E>(list));
+		this(Utilities.getContext(), list);
 	}
 	
 	public BindingListAdapter(BindingList<E> list) {
@@ -70,7 +70,7 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	}
 	
 	public BindingListAdapter(Context context) {
-		this(context, new BindingList<E>());
+		this(context, (BindingList<E>)null);
 	}
 	
 	public BindingListAdapter(Context context, List<E> list) {
@@ -96,9 +96,6 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	}
 	
 	public final void setList(BindingList<E> list) {
-		if (list == null) {
-			throw new IllegalArgumentException("The paramater 'list' may not be null.");
-		}
 		if (this.list != list) {
 			// Unregister from the old list
 			if (this.list != null) {

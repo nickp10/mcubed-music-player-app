@@ -5,7 +5,6 @@ import java.util.List;
 
 import android.content.Context;
 import dev.paddock.adp.mCubed.R;
-import dev.paddock.adp.mCubed.lists.BindingList;
 import dev.paddock.adp.mCubed.lists.BindingListAdapter;
 import dev.paddock.adp.mCubed.lists.IViewItem;
 import dev.paddock.adp.mCubed.lists.IViewItemFactory;
@@ -15,8 +14,8 @@ import dev.paddock.adp.mCubed.utilities.Utilities;
 public class LibraryViewAdapter extends BindingListAdapter<MediaGrouping> {
 	private Object[] sections;
 	
-	public LibraryViewAdapter(Context context, BindingList<MediaGrouping> items) {
-		super(context, items);
+	public LibraryViewAdapter(Context context) {
+		super(context);
 	}
 	
 	@Override
