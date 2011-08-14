@@ -694,46 +694,56 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	@SuppressWarnings("unchecked")
 	@Override
 	public final boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-		boolean handled = false;
-		Object item = getItem(position);
-		if (item != null && item instanceof BindingListHeader) {
-			IViewItemFactory<String> factory = getHeaderViewItemFactory();
-			IViewItem<String> viewItem = getViewItem(view, factory);
-			String header = ((BindingListHeader)item).header;
-			handled = onHeaderLongClick(parent, view, position, id, header);
-			if (viewItem != null) {
-				handled |= viewItem.onViewLongClick(header);
+		Utilities.pushContext(parent.getContext());
+		try {
+			boolean handled = false;
+			Object item = getItem(position);
+			if (item != null && item instanceof BindingListHeader) {
+				IViewItemFactory<String> factory = getHeaderViewItemFactory();
+				IViewItem<String> viewItem = getViewItem(view, factory);
+				String header = ((BindingListHeader)item).header;
+				handled = onHeaderLongClick(parent, view, position, id, header);
+				if (viewItem != null) {
+					handled |= viewItem.onViewLongClick(header);
+				}
+			} else {
+				IViewItemFactory<E> factory = getItemViewItemFactory();
+				IViewItem<E> viewItem = getViewItem(view, factory);
+				handled = onItemLongClick(parent, view, position, id, (E)item);
+				if (viewItem != null) {
+					handled |= viewItem.onViewLongClick((E)item);
+				}
 			}
-		} else {
-			IViewItemFactory<E> factory = getItemViewItemFactory();
-			IViewItem<E> viewItem = getViewItem(view, factory);
-			handled = onItemLongClick(parent, view, position, id, (E)item);
-			if (viewItem != null) {
-				handled |= viewItem.onViewLongClick((E)item);
-			}
+			return handled;
+		} finally {
+			Utilities.popContext();
 		}
-		return handled;
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public final void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		Object item = getItem(position);
-		if (item != null && item instanceof BindingListHeader) {
-			IViewItemFactory<String> factory = getHeaderViewItemFactory();
-			IViewItem<String> viewItem = getViewItem(view, factory);
-			String header = ((BindingListHeader)item).header;
-			onHeaderClick(parent, view, position, id, header);
-			if (viewItem != null) {
-				viewItem.onViewClick(header);
+		Utilities.pushContext(parent.getContext());
+		try {
+			Object item = getItem(position);
+			if (item != null && item instanceof BindingListHeader) {
+				IViewItemFactory<String> factory = getHeaderViewItemFactory();
+				IViewItem<String> viewItem = getViewItem(view, factory);
+				String header = ((BindingListHeader)item).header;
+				onHeaderClick(parent, view, position, id, header);
+				if (viewItem != null) {
+					viewItem.onViewClick(header);
+				}
+			} else {
+				IViewItemFactory<E> factory = getItemViewItemFactory();
+				IViewItem<E> viewItem = getViewItem(view, factory);
+				onItemClick(parent, view, position, id, (E)item);
+				if (viewItem != null) {
+					viewItem.onViewClick((E)item);
+				}
 			}
-		} else {
-			IViewItemFactory<E> factory = getItemViewItemFactory();
-			IViewItem<E> viewItem = getViewItem(view, factory);
-			onItemClick(parent, view, position, id, (E)item);
-			if (viewItem != null) {
-				viewItem.onViewClick((E)item);
-			}
+		} finally {
+			Utilities.popContext();
 		}
 	}
 	
