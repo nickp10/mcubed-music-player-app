@@ -12,7 +12,6 @@ import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.model.AsyncTask;
 import dev.paddock.adp.mCubed.model.Composite;
 import dev.paddock.adp.mCubed.model.InitStatus;
-import dev.paddock.adp.mCubed.model.ListAction;
 import dev.paddock.adp.mCubed.model.MediaFile;
 import dev.paddock.adp.mCubed.model.MediaGroup;
 import dev.paddock.adp.mCubed.model.MediaPlayer;
@@ -351,7 +350,7 @@ public class App extends Application {
 						if (rootNode == null) {
 							// Load the initial playlist as all files
 							progress.setSubIDs(Schema.PROG_PLAYLIST_ADDCOMPOSITE);
-							getNowPlaying().addComposite(new Composite(MediaGroup.All.getGrouping(0), ListAction.Add));
+							getNowPlaying().addComposite(new Composite(MediaGroup.All.getGrouping(0)));
 						} else {
 							// Load from its previous state
 							progress.setSubIDs(Schema.PROG_APP_LOADXML);
