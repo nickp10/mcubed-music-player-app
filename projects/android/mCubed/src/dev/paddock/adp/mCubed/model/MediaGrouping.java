@@ -3,6 +3,8 @@ package dev.paddock.adp.mCubed.model;
 import java.util.Collections;
 import java.util.List;
 
+import android.net.Uri;
+
 public class MediaGrouping {
 	private MediaGroup group;
 	private long id;
@@ -23,6 +25,10 @@ public class MediaGrouping {
 			return Collections.<MediaFile>emptyList();
 		}
 		return group.getMediaFilesForGrouping(this, where, sort);
+	}
+	
+	public Uri getAlbumArt() {
+		return group.getAlbumArt(id);
 	}
 	
 	public MediaGroup getGroup() {

@@ -69,13 +69,19 @@ public class Schema {
 	public static final String PROG_PLAYLIST_VALIDATE = "prog_pl_validate";
 	
 	/** MENU SCHEMA **/
-	public static final int MN_SETTINGS = 1;
-	public static final int MN_EXIT = 2;
-	public static final int MN_CTX_LVI_VIEWFILES = 3;
-	public static final int MN_CTX_LVI_VIEWDETAILS = 4;
-	public static final int MN_CTX_LVI_PLAY = 5;
-	public static final int MN_CTX_LVI_ADDTOPLAYLIST = 6;
-	public static final int MN_CTX_LVI_ADDTOQUEUE = 7;
+	public static final int MN_NOWPLAYING = 1;
+	public static final int MN_PLAYALL = 2;
+	public static final int MN_ABOUT = 3;
+	public static final int MN_FEEDBACK = 4;
+	public static final int MN_HELP = 5;
+	public static final int MN_SETTINGS = 6;
+	public static final int MN_EXIT = 7;
+	public static final int MN_CTX_LVI_VIEWFILES = 8;
+	public static final int MN_CTX_LVI_VIEWDETAILS = 9;
+	public static final int MN_CTX_LVI_PLAY = 10;
+	public static final int MN_CTX_LVI_ADDTOPLAYLIST = 11;
+	public static final int MN_CTX_LVI_REMOVEFROMPLAYLIST = 12;
+	public static final int MN_CTX_LVI_ADDTOQUEUE = 13;
 	
 	/** MISC SCHEMA **/
 	public static final int FLAG_ALL = 0;

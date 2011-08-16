@@ -202,6 +202,13 @@ public class Playlist {
 		}
 	}
 	
+	public void clear() {
+		files.clear();
+		composition.clear();
+		playMode.clear();
+		resetCurrent();
+	}
+	
 	public List<MediaFile> getFiles() {
 		return files;
 	}
@@ -210,28 +217,46 @@ public class Playlist {
 		return Collections.unmodifiableList(composition);
 	}
 	
+	public boolean containsComposite(Composite composite) {
+		for (Composite comp : composition) {
+			if (Composite.equals(comp, composite)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public void playComposite(Composite composite) {
+		clear();
+		addComposite(composite);
+		App.getPlayer().play();
+	}
+	
 	public void addComposite(Composite composite) {
 		if (composite != null) {
 			ListAction action = composite.getAction();
 			MediaGrouping grouping = composite.getGrouping();
 			Progress progress = ProgressManager.startProgress(Schema.PROG_PLAYLIST_ADDCOMPOSITE, "Adding composite to playlist...");
-			progress.setSubIDs(Schema.PROG_MEDIAGROUP_GETFILES);
-			if (action == ListAction.Add) {
-				progress.appendSubIDs(Schema.PROG_PLAYLIST_ADDFILES);
-				if (composite.isMediaGroupAll()) {
-					composition.clear();
+			try {
+				progress.setSubIDs(Schema.PROG_MEDIAGROUP_GETFILES);
+				if (action == ListAction.Add) {
+					progress.appendSubIDs(Schema.PROG_PLAYLIST_ADDFILES);
+					if (composite.isMediaGroupAll()) {
+						composition.clear();
+					}
+					composition.add(composite);
+					addFiles(grouping.getMediaFiles());
+				} else if (action == ListAction.Remove) {
+					progress.appendSubIDs(Schema.PROG_PLAYLIST_REMOVEFILES);
+					if (composite.isMediaGroupAll()) {
+						composition.clear();
+					}
+					composition.add(composite);
+					removeFiles(grouping.getMediaFiles());
 				}
-				composition.add(composite);
-				addFiles(grouping.getMediaFiles());
-			} else if (action == ListAction.Remove) {
-				progress.appendSubIDs(Schema.PROG_PLAYLIST_REMOVEFILES);
-				if (composite.isMediaGroupAll()) {
-					composition.clear();
-				}
-				composition.add(composite);
-				removeFiles(grouping.getMediaFiles());
+			} finally {
+				ProgressManager.endProgress(progress);
 			}
-			ProgressManager.endProgress(progress);
 		}
 	}
 	

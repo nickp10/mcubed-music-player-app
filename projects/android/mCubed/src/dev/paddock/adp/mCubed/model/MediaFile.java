@@ -7,7 +7,6 @@ import dev.paddock.adp.mCubed.utilities.ICursor;
 import dev.paddock.adp.mCubed.utilities.Log;
 import dev.paddock.adp.mCubed.utilities.PropertyManager;
 import dev.paddock.adp.mCubed.utilities.Utilities;
-import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -205,13 +204,7 @@ public class MediaFile {
 	 */
 	private void loadAlbumArt() {
 		if (!isAlbumArtLoaded) {
-			Uri artworkUri = Uri.parse("content://media/external/audio/albumart");
-			artworkUri = ContentUris.withAppendedId(artworkUri, getAlbumID());
-			if (Utilities.fileExists(artworkUri)) {
-				setAlbumArt(artworkUri);
-			} else {
-				setAlbumArt(null);
-			}
+			setAlbumArt(MediaGroup.Album.getAlbumArt(getAlbumID()));
 			isAlbumArtLoaded = true;
 		}
 	}

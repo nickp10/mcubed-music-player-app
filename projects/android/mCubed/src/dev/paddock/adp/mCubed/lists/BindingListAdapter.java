@@ -500,32 +500,42 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	@SuppressWarnings("unchecked")
 	@Override
 	public final View getDropDownView(int position, View convertView, ViewGroup parent) {
-		Object item = getItem(position);
-		if (item != null && item instanceof BindingListHeader) {
-			int resource = getHeaderDropDownViewResource();
-			IViewItemFactory<String> factory = getHeaderViewItemFactory();
-			String header = ((BindingListHeader)item).header;
-			return getHeaderDropDownView(position, header, convertView, parent, resource, factory);
-		} else {
-			int resource = getItemDropDownViewResource();
-			IViewItemFactory<E> factory = getItemViewItemFactory();
-			return getItemDropDownView(position, (E)item, convertView, parent, resource, factory);
+		Utilities.pushContext(parent.getContext());
+		try {
+			Object item = getItem(position);
+			if (item != null && item instanceof BindingListHeader) {
+				int resource = getHeaderDropDownViewResource();
+				IViewItemFactory<String> factory = getHeaderViewItemFactory();
+				String header = ((BindingListHeader)item).header;
+				return getHeaderDropDownView(position, header, convertView, parent, resource, factory);
+			} else {
+				int resource = getItemDropDownViewResource();
+				IViewItemFactory<E> factory = getItemViewItemFactory();
+				return getItemDropDownView(position, (E)item, convertView, parent, resource, factory);
+			}
+		} finally {
+			Utilities.popContext();
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public final View getView(int position, View convertView, ViewGroup parent) {
-		Object item = getItem(position);
-		if (item != null && item instanceof BindingListHeader) {
-			int resource = getHeaderViewResource();
-			IViewItemFactory<String> factory = getHeaderViewItemFactory();
-			String header = ((BindingListHeader)item).header;
-			return getHeaderView(position, header, convertView, parent, resource, factory);
-		} else {
-			int resource = getItemViewResource();
-			IViewItemFactory<E> factory = getItemViewItemFactory();
-			return getItemView(position, (E)item, convertView, parent, resource, factory);
+		Utilities.pushContext(parent.getContext());
+		try {
+			Object item = getItem(position);
+			if (item != null && item instanceof BindingListHeader) {
+				int resource = getHeaderViewResource();
+				IViewItemFactory<String> factory = getHeaderViewItemFactory();
+				String header = ((BindingListHeader)item).header;
+				return getHeaderView(position, header, convertView, parent, resource, factory);
+			} else {
+				int resource = getItemViewResource();
+				IViewItemFactory<E> factory = getItemViewItemFactory();
+				return getItemView(position, (E)item, convertView, parent, resource, factory);
+			}
+		} finally {
+			Utilities.popContext();
 		}
 	}
 	

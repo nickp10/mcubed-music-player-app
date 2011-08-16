@@ -76,6 +76,15 @@ public class PlayMode {
 		}
 	}
 	
+	public void clear() {
+		playMode.reset(getAllFiles());
+		history.clear();
+		queue.clear();
+		current = null;
+		currentRequiresRepeat = false;
+		resetCurrent();
+	}
+	
 	private void setPlayMode(IPlayMode playMode, boolean clearQueue) {
 		if (playMode != null && this.playMode != playMode) {
 			this.playMode = playMode;
@@ -98,12 +107,7 @@ public class PlayMode {
 	public void setPlaylist(Playlist playlist) {
 		if (playlist != null && this.playlist != playlist) {
 			this.playlist = playlist;
-			playMode.reset(getAllFiles());
-			history.clear();
-			queue.clear();
-			current = null;
-			currentRequiresRepeat = false;
-			resetCurrent();
+			clear();
 		}
 	}
 	
