@@ -57,8 +57,8 @@ public class LibraryViewItem implements IViewItem<MediaGrouping> {
 		}
 		menu.add(ContextMenu.NONE, Schema.MN_CTX_LVI_PLAY, 2, "Play");
 		menu.add(ContextMenu.NONE, Schema.MN_CTX_LVI_ADDTOQUEUE, 3, "Add to Queue");
-		menu.add(ContextMenu.NONE, Schema.MN_CTX_LVI_ADDTOPLAYLIST, 4, "Add to Playlist");
-		menu.add(ContextMenu.NONE, Schema.MN_CTX_LVI_REMOVEFROMPLAYLIST, 5, "Remove from Playlist");
+		menu.add(ContextMenu.NONE, Schema.MN_CTX_LVI_ADDTOPLAYLIST, 4, "Add to Now Playing");
+		menu.add(ContextMenu.NONE, Schema.MN_CTX_LVI_REMOVEFROMPLAYLIST, 5, "Remove from Now Playing");
 	}
 
 	@Override

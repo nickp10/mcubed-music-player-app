@@ -157,18 +157,18 @@ public enum MediaGroup {
 	public Uri getAlbumArt(final long id) {
 		if (this == Song) {
 			return MediaFile.get(id).getAlbumArt();
-		} else if (this == Artist) {
-			for (MediaFile file : getMediaFilesForGrouping(getGrouping(id), null, null)) {
-				Uri artworkUri = file.getAlbumArt();
-				if (artworkUri != null) {
-					return artworkUri;
-				}
-			}
 		} else if (this == Album) {
 			Uri artworkUri = Uri.parse("content://media/external/audio/albumart");
 			artworkUri = ContentUris.withAppendedId(artworkUri, id);
 			if (Utilities.fileExists(artworkUri)) {
 				return artworkUri;
+			}
+		} else {
+			for (MediaFile file : getGrouping(id).getMediaFiles()) {
+				Uri artworkUri = file.getAlbumArt();
+				if (artworkUri != null) {
+					return artworkUri;
+				}
 			}
 		}
 		return null;
