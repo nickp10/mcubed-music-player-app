@@ -95,7 +95,7 @@ public class HeadsetReceiver extends BroadcastReceiver implements IReceiver {
 				if (keyEvent != null && keyEvent.getAction() == KeyEvent.ACTION_UP) {
 					int key = keyEvent.getKeyCode();
 					boolean handled = true;
-					if (key == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
+					if (key == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE || key == KeyEvent.KEYCODE_HEADSETHOOK) {
 						MediaStatus status = App.getPlayer().getStatus();
 						if (status == MediaStatus.Play) {
 							App.getPlayer().pause();
