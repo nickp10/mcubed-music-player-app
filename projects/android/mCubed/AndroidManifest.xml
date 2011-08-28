@@ -16,6 +16,8 @@
 			</intent-filter>
 		</activity>
 		
+		<activity android:name=".activities.MediaFileListActivity" android:launchMode="singleTop" />
+		
 		<activity android:name=".activities.OverlayActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar" android:taskAffinity="" />
 		
 		<activity android:name=".activities.PreferenceActivity" android:launchMode="singleTop" />
@@ -27,7 +29,7 @@
 				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
 				<action android:name="dev.paddock.adp.mCubed.Schema.I_MCUBED" />
 			</intent-filter>
-			<meta-data android:name="android.appwidget.provider" android:resource="@xml/playback4x1info" />
+			<meta-data android:name="android.appwidget.provider" android:resource="@xml/playback4x1_info" />
 		</receiver>
 		
 		<receiver android:name=".widgets.Playback1x1Provider" android:label="mCubed (1x1)">
@@ -35,7 +37,7 @@
 				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
 				<action android:name="dev.paddock.adp.mCubed.Schema.I_MCUBED" />
 			</intent-filter>
-			<meta-data android:name="android.appwidget.provider" android:resource="@xml/playback1x1info" />
+			<meta-data android:name="android.appwidget.provider" android:resource="@xml/playback1x1_info" />
 		</receiver>
 	</application>
 	<uses-sdk android:minSdkVersion="7" android:targetSdkVersion="7" />

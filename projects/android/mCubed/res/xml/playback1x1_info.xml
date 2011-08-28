@@ -2,4 +2,4 @@
     android:minWidth="72dp"
     android:minHeight="72dp"
     android:updatePeriodMillis="0"
-    android:initialLayout="@layout/playback1x1widget"/>
+    android:initialLayout="@layout/playback1x1_widget"/>

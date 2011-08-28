@@ -1,8 +1,6 @@
 package dev.paddock.adp.mCubed.activities;
 
 import android.app.TabActivity;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,10 +20,9 @@ import dev.paddock.adp.mCubed.services.PlaybackClient;
 import dev.paddock.adp.mCubed.utilities.App;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
-public class LibraryActivity extends TabActivity {
+public class LibraryActivity extends TabActivity implements IActivity {
 	private ClientReceiver clientReceiver;
 	private IClientCallback clientCallback;
-	private boolean isInitialized;
 	private TabHost tabHost;
 	
 	/**
@@ -49,55 +46,14 @@ public class LibraryActivity extends TabActivity {
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		// Initialize the creation
-		Utilities.pushContext(this);
-		try {
-			super.onCreate(savedInstanceState);
-			
-			// Set the content view and retrieve the views
-			setContentView(R.layout.library);
-			findViews();
-			
-			// Register receiver and listeners
-			if (!isInitialized) {
-				// Do some initializations
-				isInitialized = true;
-				setupViews();
-				registerListeners();
-				
-				// Listen for service updates
-				ClientReceiver receiver = getClientReceiver();
-				IntentFilter filter = receiver.getIntentFilter();
-				if (filter != null) {
-					registerReceiver(receiver, filter);
-				}
-				
-				// Notify the service of the new client
-				PlaybackClient.startService();
-			}
-			
-			// Update the views
-			updateViews();
-		} finally {
-			Utilities.popContext();
-		}
+		super.onCreate(savedInstanceState);
+		ActivityUtils.onCreate(this, savedInstanceState);
 	}
 	
 	@Override
 	protected void onDestroy() {
-		// Start the destroy process
-		Utilities.pushContext(this);
-		try {
-			super.onDestroy();
-			
-			// Unregister receivers and listeners
-			isInitialized = false;
-			if (clientReceiver != null) {
-				unregisterReceiver(clientReceiver);
-			}
-		} finally {
-			Utilities.popContext();
-		}
+		super.onDestroy();
+		ActivityUtils.onDestroy(this);
 	}
 	
 	@Override
@@ -130,9 +86,7 @@ public class LibraryActivity extends TabActivity {
 				App.getNowPlaying().playComposite(new Composite(MediaGroup.All.getGrouping(0)));
 				return true;
 			case Schema.MN_SETTINGS:
-				Intent intent = new Intent(this, PreferenceActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
+				ActivityUtils.startActivity(this, PreferenceActivity.class);
 				return true;
 			case Schema.MN_EXIT:
 				PlaybackClient.stopService();
@@ -155,17 +109,18 @@ public class LibraryActivity extends TabActivity {
 		}
 	}
 	
-	/**
-	 * Finds the views from in the layout and assigns them to member variables.
-	 */
-	private void findViews() {
+	@Override
+	public int getLayoutID() {
+		return R.layout.library_activity;
+	}
+	
+	@Override
+	public void findViews() {
 		tabHost = (TabHost)findViewById(android.R.id.tabhost);
 	}
 	
-	/**
-	 * Sets up the views for the first time. Once setup, the views will never be setup again.
-	 */
-	private void setupViews() {
+	@Override
+	public void setupViews() {
 		createTabSpec("Artists");
 		createTabSpec("Albums");
 		createTabSpec("Genres");
@@ -173,16 +128,16 @@ public class LibraryActivity extends TabActivity {
 		createTabSpec("Playlists");
 	}
 	
-	/**
-	 * Updates all the views so that they have the latest information.
-	 */
-	private void updateViews() {
+	@Override
+	public void updateViews() {
 	}
 	
-	/**
-	 * Registers onclick and other listeners to the views associated with the layout.
-	 */
-	private void registerListeners() {
+	@Override
+	public void registerListeners() {
+	}
+	
+	@Override
+	public void handleExtras(Bundle extras) {
 	}
 	
 	private void createTabSpec(String display) {
@@ -202,7 +157,8 @@ public class LibraryActivity extends TabActivity {
 		tabHost.addTab(tabSpec);
 	}
 	
-	private ClientReceiver getClientReceiver() {
+	@Override
+	public ClientReceiver getClientReceiver() {
 		if (clientReceiver == null) {
 			clientReceiver = new ClientReceiver(getClientCallback(), false);
 		}

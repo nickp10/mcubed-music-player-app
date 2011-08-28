@@ -98,6 +98,24 @@ public class MediaFile {
 		activeCache.clear();
 	}
 	
+	public static int compare(MediaFile first, MediaFile second, MediaFileValue... fileValues) {
+		if (first == null) {
+			return second == null ? 0 : -1;
+		} else if (second == null) {
+			return 1;
+		} else {
+			for (MediaFileValue fileValue : fileValues) {
+				String firstValue = first.getValue(fileValue);
+				String secondValue = second.getValue(fileValue);
+				int compare = Utilities.stringCompare(firstValue, secondValue, true);
+				if (compare != 0) {
+					return compare;
+				}
+			}
+			return 0;
+		}
+	}
+	
 	{
 		values.put("AlbumArt", (Uri)null);
 		values.put("Genre", "");
@@ -259,6 +277,15 @@ public class MediaFile {
 			setGenreID(grouping.getID());
 			isGenreLoaded = true;
 		}
+	}
+	
+	/**
+	 * Gets the string representation of the value for the given media file value enumeration.
+	 * @param value The enumeration value to the get the value of.
+	 * @return The string representation of the value for this media file.
+	 */
+	public String getValue(MediaFileValue value) {
+		return value.getValue(this);
 	}
 	
 	private <T> T getValue(Class<T> clazz, String property) {
@@ -496,6 +523,14 @@ public class MediaFile {
 			this.isPlaying = isPlaying;
 			PropertyManager.notifyPropertyChanged(this, "IsPlaying", args);
 		}
+	}
+	
+	/**
+	 * Get the media grouping associated with the media file.
+	 * @return The media grouping associated with the media file.
+	 */
+	public MediaGrouping getMediaGrouping() {
+		return new MediaGrouping(MediaGroup.Song, getID(), getTitle());
 	}
 	
 	/**

@@ -30,13 +30,7 @@ public class LibraryViewAdapter extends BindingListAdapter<MediaGrouping> {
 		setSorter(new Comparator<MediaGrouping>() {
 			@Override
 			public int compare(MediaGrouping leftGrouping, MediaGrouping rightGrouping) {
-				if (leftGrouping == null) {
-					return rightGrouping == null ? 0 : -1;
-				} else if (rightGrouping == null) {
-					return 1;
-				} else {
-					return leftGrouping.getName().compareToIgnoreCase(rightGrouping.getName());
-				}
+				return MediaGrouping.compare(leftGrouping, rightGrouping);
 			}
 		});
 	}

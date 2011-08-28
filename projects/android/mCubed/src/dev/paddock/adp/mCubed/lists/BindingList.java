@@ -16,6 +16,13 @@ public class BindingList<E> implements List<E> {
 		void itemsCleared(BindingList<E> list);
 	}
 	
+	public static <E> BindingList<E> fromList(List<E> items) {
+		if (items != null && items instanceof BindingList<?>) {
+			return (BindingList<E>)items;
+		}
+		return new BindingList<E>(items);
+	}
+	
 	public BindingList() {
 		this(new ArrayList<E>());
 	}

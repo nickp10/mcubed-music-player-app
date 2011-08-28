@@ -1,5 +1,5 @@
 package dev.paddock.adp.mCubed.lists;
 
-public interface Grouper<E> {
+public interface IGrouper<E> {
 	String getGroup(E item);
 }

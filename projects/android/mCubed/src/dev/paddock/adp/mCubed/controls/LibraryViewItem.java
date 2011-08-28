@@ -6,9 +6,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.activities.ActivityUtils;
+import dev.paddock.adp.mCubed.activities.MediaFileListActivity;
 import dev.paddock.adp.mCubed.lists.IViewItem;
 import dev.paddock.adp.mCubed.model.Composite;
 import dev.paddock.adp.mCubed.model.ListAction;
+import dev.paddock.adp.mCubed.model.MediaFile;
 import dev.paddock.adp.mCubed.model.MediaGroup;
 import dev.paddock.adp.mCubed.model.MediaGrouping;
 import dev.paddock.adp.mCubed.utilities.App;
@@ -57,8 +60,9 @@ public class LibraryViewItem implements IViewItem<MediaGrouping> {
 		}
 		menu.add(ContextMenu.NONE, Schema.MN_CTX_LVI_PLAY, 2, "Play");
 		menu.add(ContextMenu.NONE, Schema.MN_CTX_LVI_ADDTOQUEUE, 3, "Add to Queue");
-		menu.add(ContextMenu.NONE, Schema.MN_CTX_LVI_ADDTOPLAYLIST, 4, "Add to Now Playing");
-		menu.add(ContextMenu.NONE, Schema.MN_CTX_LVI_REMOVEFROMPLAYLIST, 5, "Remove from Now Playing");
+		menu.add(ContextMenu.NONE, Schema.MN_CTX_LVI_PREPENDTOQUEUE, 4, "Prepend to Queue");
+		menu.add(ContextMenu.NONE, Schema.MN_CTX_LVI_ADDTONOWPLAYING, 5, "Add to Now Playing");
+		menu.add(ContextMenu.NONE, Schema.MN_CTX_LVI_REMOVEFROMNOWPLAYING, 6, "Remove from Now Playing");
 	}
 
 	@Override
@@ -68,19 +72,26 @@ public class LibraryViewItem implements IViewItem<MediaGrouping> {
 			// TODO Launch activity for MediaFile details
 			break;
 		case Schema.MN_CTX_LVI_VIEWFILES:
-			// TODO Launch activity for a List<MediaFile> using MediaFileView/Adapter
+			ActivityUtils.startActivity(MediaFileListActivity.class, item);
 			break;
 		case Schema.MN_CTX_LVI_PLAY:
-			App.getNowPlaying().playComposite(new Composite(item));
-			break;
-		case Schema.MN_CTX_LVI_ADDTOPLAYLIST:
-			App.getNowPlaying().addComposite(new Composite(item));
-			break;
-		case Schema.MN_CTX_LVI_REMOVEFROMPLAYLIST:
-			App.getNowPlaying().addComposite(new Composite(item, ListAction.Remove));
+			if (item.getGroup() == MediaGroup.Song) {
+				App.getNowPlaying().playFile(MediaFile.get(item.getID()));
+			} else {
+				App.getNowPlaying().playComposite(new Composite(item));
+			}
 			break;
 		case Schema.MN_CTX_LVI_ADDTOQUEUE:
 			App.getNowPlaying().addFilesToQueue(item.getMediaFiles());
+			break;
+		case Schema.MN_CTX_LVI_PREPENDTOQUEUE:
+			App.getNowPlaying().prependFilesToQueue(item.getMediaFiles());
+			break;
+		case Schema.MN_CTX_LVI_ADDTONOWPLAYING:
+			App.getNowPlaying().addComposite(new Composite(item));
+			break;
+		case Schema.MN_CTX_LVI_REMOVEFROMNOWPLAYING:
+			App.getNowPlaying().addComposite(new Composite(item, ListAction.Remove));
 			break;
 		}
 		return false;

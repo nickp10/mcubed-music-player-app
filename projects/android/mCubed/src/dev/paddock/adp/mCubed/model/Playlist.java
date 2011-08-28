@@ -11,6 +11,7 @@ import dev.paddock.adp.mCubed.lists.BindingList;
 import dev.paddock.adp.mCubed.preferences.PlayModeEnum;
 import dev.paddock.adp.mCubed.preferences.RepeatStatus;
 import dev.paddock.adp.mCubed.utilities.App;
+import dev.paddock.adp.mCubed.utilities.Delegate;
 import dev.paddock.adp.mCubed.utilities.Log;
 import dev.paddock.adp.mCubed.utilities.PreferenceManager;
 import dev.paddock.adp.mCubed.utilities.ProgressManager;
@@ -97,24 +98,52 @@ public class Playlist {
 	}
 	
 	protected void addFiles(MediaFile... files) {
-		addFilesInternal(false, files);
+		addFilesInternal(null, files);
 	}
 	
 	protected void addFiles(Collection<MediaFile> files) {
-		addFilesInternal(false, files);
+		addFilesInternal(null, files);
 	}
 	
 	public void addFilesToQueue(MediaFile... files) {
-		addFilesInternal(true, files);
+		addFilesInternal(new Delegate.Action<MediaFile>() {
+			@Override
+			public void act(MediaFile file) {
+				playMode.appendToQueue(file);
+			}
+		}, files);
 	}
 	
 	public void addFilesToQueue(Collection<MediaFile> files) {
-		addFilesInternal(true, files);
+		addFilesInternal(new Delegate.Action<MediaFile>() {
+			@Override
+			public void act(MediaFile file) {
+				playMode.appendToQueue(file);
+			}
+		}, files);
 	}
 	
-	private void addFilesInternal(boolean addToQueue, MediaFile... files) {
+	public void prependFilesToQueue(MediaFile... files) {
+		addFilesInternal(new Delegate.Action<MediaFile>() {
+			@Override
+			public void act(MediaFile file) {
+				playMode.prependToQueue(file);
+			}
+		}, files);
+	}
+	
+	public void prependFilesToQueue(Collection<MediaFile> files) {
+		addFilesInternal(new Delegate.Action<MediaFile>() {
+			@Override
+			public void act(MediaFile file) {
+				playMode.prependToQueue(file);
+			}
+		}, files);
+	}
+	
+	private void addFilesInternal(Delegate.Action<MediaFile> queueAction, MediaFile... files) {
 		if (files != null) {
-			String subject = addToQueue ? "queue" : "playlist";
+			String subject = queueAction == null ? "playlist" : "queue";
 			Progress progress = ProgressManager.startProgress(Schema.PROG_PLAYLIST_ADDFILES, "Adding files to " + subject + "...");
 			int count = 0;
 			for (MediaFile file : files) {
@@ -123,8 +152,8 @@ public class Playlist {
 					addFileInternal(true, file);
 					
 					// Add to the queue
-					if (addToQueue) {
-						playMode.appendToQueue(file);
+					if (queueAction != null) {
+						queueAction.act(file);
 					}
 				}
 				
@@ -138,9 +167,9 @@ public class Playlist {
 		}
 	}
 	
-	private void addFilesInternal(boolean addToQueue, Collection<MediaFile> files) {
+	private void addFilesInternal(Delegate.Action<MediaFile> queueAction, Collection<MediaFile> files) {
 		if (files != null) {
-			addFilesInternal(addToQueue, files.toArray(new MediaFile[0]));
+			addFilesInternal(queueAction, files.toArray(new MediaFile[0]));
 		}
 	}
 	
@@ -224,6 +253,12 @@ public class Playlist {
 			}
 		}
 		return false;
+	}
+	
+	public void playFile(MediaFile file) {
+		prependFilesToQueue(file);
+		next();
+		App.getPlayer().play();
 	}
 	
 	public void playComposite(Composite composite) {

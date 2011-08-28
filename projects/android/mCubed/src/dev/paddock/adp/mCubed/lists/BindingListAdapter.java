@@ -52,7 +52,7 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	private LayoutInflater inflater;
 	private IViewItemFactory<String> headerViewItemFactory;
 	private IViewItemFactory<E> itemViewItemFactory;
-	private Grouper<E> grouper;
+	private IGrouper<E> grouper;
 	private Comparator<E> sorter;
 	
 	private static class BindingListView {
@@ -357,7 +357,7 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	private final void addItem(E item) {
 		// Determine the item's key
 		String key = DEFAULT_KEY;
-		Grouper<E> grouper = getGrouper();
+		IGrouper<E> grouper = getGrouper();
 		if (grouper != null) {
 			key = grouper.getGroup(item);
 		}
@@ -408,11 +408,11 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 		}
 	}
 	
-	public final Grouper<E> getGrouper() {
+	public final IGrouper<E> getGrouper() {
 		return grouper;
 	}
 	
-	public final void setGrouper(Grouper<E> grouper) {
+	public final void setGrouper(IGrouper<E> grouper) {
 		if (this.grouper != grouper) {
 			this.grouper = grouper;
 			refreshView();

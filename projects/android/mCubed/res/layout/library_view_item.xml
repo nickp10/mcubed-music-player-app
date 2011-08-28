@@ -19,6 +19,5 @@
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		android:gravity="center_vertical"
-		android:text="hi"
 		android:id="@+id/lvi_text_view" />
 </LinearLayout>

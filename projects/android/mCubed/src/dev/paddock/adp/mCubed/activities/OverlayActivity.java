@@ -74,7 +74,7 @@ public class OverlayActivity extends Activity {
 			super.onCreate(savedInstanceState);
 			
 			// Set the content view and retrieve the views
-			setContentView(R.layout.overlay);
+			setContentView(R.layout.overlay_activity);
 			playButton = (Button)findViewById(R.id.ov_play_button);
 			openButton = (Button)findViewById(R.id.ov_open_button);
 			dismissButton = (Button)findViewById(R.id.ov_dismiss_button);

@@ -135,6 +135,10 @@ public class PlayMode {
 		insertIntoQueue(file, queue.size());
 	}
 	
+	public void prependToQueue(MediaFile file) {
+		insertIntoQueue(file, 0);
+	}
+	
 	public void insertIntoQueue(MediaFile file, int index) {
 		if (index >= 0 && index <= queue.size()) {
 			queue.add(index, file);

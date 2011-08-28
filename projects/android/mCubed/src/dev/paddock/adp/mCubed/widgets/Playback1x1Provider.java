@@ -13,7 +13,7 @@ import dev.paddock.adp.mCubed.utilities.App;
 public class Playback1x1Provider extends PlaybackProvider {
 	@Override
 	protected int getLayoutID() {
-		return R.layout.playback1x1widget;
+		return R.layout.playback1x1_widget;
 	}
 	
 	@Override

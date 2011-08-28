@@ -42,6 +42,16 @@ public class Utilities {
 		return str == null || str.length() == 0;
 	}
 	
+	public static int stringCompare(String leftString, String rightString, boolean ignoreCase) {
+		if (leftString == null) {
+			return rightString == null ? 0 : -1;
+		} else if (rightString == null) {
+			return 1;
+		} else {
+			return ignoreCase ? leftString.compareToIgnoreCase(rightString) : leftString.compareTo(rightString);
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static <T> T cast(Class<T> clazz, Object obj) {
 		if (obj == null || !clazz.isAssignableFrom(obj.getClass())) {
