@@ -7,6 +7,7 @@ import android.widget.TextView;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.activities.ActivityUtils;
+import dev.paddock.adp.mCubed.activities.MediaFileDetailsActivity;
 import dev.paddock.adp.mCubed.activities.MediaFileListActivity;
 import dev.paddock.adp.mCubed.lists.IViewItem;
 import dev.paddock.adp.mCubed.model.Composite;
@@ -69,7 +70,7 @@ public class LibraryViewItem implements IViewItem<MediaGrouping> {
 	public boolean onContextItemClick(int menuId, MediaGrouping item) {
 		switch (menuId) {
 		case Schema.MN_CTX_LVI_VIEWDETAILS:
-			// TODO Launch activity for MediaFile details
+			ActivityUtils.startActivity(MediaFileDetailsActivity.class, item.getID());
 			break;
 		case Schema.MN_CTX_LVI_VIEWFILES:
 			ActivityUtils.startActivity(MediaFileListActivity.class, item);

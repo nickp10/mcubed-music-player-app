@@ -25,25 +25,6 @@ public class LibraryActivity extends TabActivity implements IActivity {
 	private IClientCallback clientCallback;
 	private TabHost tabHost;
 	
-	/**
-	 * Click listener for the play/pause button
-	 */
-//	private OnClickListener clickListener = new OnClickListener() {
-//		@Override
-//		public void onClick(View v) {
-//			Utilities.pushContext(LibraryActivity.this);
-//			try {
-//				if (App.getPlayer().getStatus() == MediaStatus.Play) {
-//					PlaybackClient.pause();
-//				} else {
-//					PlaybackClient.play();
-//				}
-//			} finally {
-//				Utilities.popContext();
-//			}
-//		}
-//	};
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -80,7 +61,7 @@ public class LibraryActivity extends TabActivity implements IActivity {
 		try {
 			switch (item.getItemId()) {
 			case Schema.MN_NOWPLAYING:
-				// TODO Launch activity for the now playing playlist/media details
+				ActivityUtils.startActivity(this, NowPlayingActivity.class);
 				return true;
 			case Schema.MN_PLAYALL:
 				App.getNowPlaying().playComposite(new Composite(MediaGroup.All.getGrouping(0)));

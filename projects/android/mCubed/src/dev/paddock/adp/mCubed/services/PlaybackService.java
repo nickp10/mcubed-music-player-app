@@ -308,9 +308,6 @@ public class PlaybackService extends Service {
 			initCallback = new Runnable() {
 				@Override
 				public void run() {
-					// TODO REMOVE
-					//String logs = Log.readLogFile();
-					
 					// Execute the queued intents
 					while (!queuedIntents.isEmpty()) {
 						Intent intent = queuedIntents.poll();

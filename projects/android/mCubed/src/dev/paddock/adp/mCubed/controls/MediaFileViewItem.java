@@ -5,6 +5,8 @@ import android.view.View;
 import android.widget.TextView;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.activities.ActivityUtils;
+import dev.paddock.adp.mCubed.activities.MediaFileDetailsActivity;
 import dev.paddock.adp.mCubed.lists.IViewItem;
 import dev.paddock.adp.mCubed.model.Composite;
 import dev.paddock.adp.mCubed.model.ListAction;
@@ -52,7 +54,7 @@ public class MediaFileViewItem implements IViewItem<MediaFile> {
 			App.getNowPlaying().playFile(item);
 			break;
 		case Schema.MN_CTX_MFVI_VIEWDETAILS:
-			// TODO Launch activity for MediaFile details
+			ActivityUtils.startActivity(MediaFileDetailsActivity.class, item.getID());
 			break;
 		case Schema.MN_CTX_MFVI_ADDTOQUEUE:
 			App.getNowPlaying().addFilesToQueue(item);

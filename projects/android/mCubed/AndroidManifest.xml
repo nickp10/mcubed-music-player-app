@@ -15,11 +15,10 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		
+		<activity android:name=".activities.MediaFileDetailsActivity" android:launchMode="singleTop" />
 		<activity android:name=".activities.MediaFileListActivity" android:launchMode="singleTop" />
-		
+		<activity android:name=".activities.NowPlayingActivity" android:launchMode="singleTop" />
 		<activity android:name=".activities.OverlayActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar" android:taskAffinity="" />
-		
 		<activity android:name=".activities.PreferenceActivity" android:launchMode="singleTop" />
 
 		<service android:name=".services.PlaybackService" android:enabled="true" />
