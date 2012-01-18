@@ -2,6 +2,7 @@ package dev.paddock.adp.mCubed.receivers;
 
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.model.DelayedTask;
 import dev.paddock.adp.mCubed.model.MediaStatus;
 import dev.paddock.adp.mCubed.model.NotificationArgs;
 import dev.paddock.adp.mCubed.services.PlaybackServer;
@@ -48,14 +49,25 @@ public class HeadsetReceiver extends BroadcastReceiver implements IReceiver {
 	public boolean isBluetoothConnected() {
 		return isBluetoothConnected;
 	}
-	private void setBluetoothConnected(boolean isBluetoothConnected) {
+	private void setBluetoothConnected(final boolean isBluetoothConnected) {
 		if (this.isBluetoothConnected != isBluetoothConnected) {
-			NotificationArgs args = new NotificationArgs(this, "BluetoothConnected", this.isBluetoothConnected, isBluetoothConnected);
-			PropertyManager.notifyPropertyChanging(this, "BluetoothConnected", args);
-			this.isBluetoothConnected = isBluetoothConnected;
-			PropertyManager.notifyPropertyChanged(this, "BluetoothConnected", args);
-			PlaybackServer.propertyChanged(0, Schema.PROP_BLUETOOTH, this.isBluetoothConnected);
+			if (isBluetoothConnected) {
+				new DelayedTask(Utilities.getContext(), new Runnable() {
+					public void run() {
+						doSetBluetoothConnected(isBluetoothConnected);
+					}
+				}, 7000);
+			} else {
+				doSetBluetoothConnected(isBluetoothConnected);
+			}
 		}
+	}
+	private void doSetBluetoothConnected(boolean isBluetoothConnected) {
+		NotificationArgs args = new NotificationArgs(this, "BluetoothConnected", this.isBluetoothConnected, isBluetoothConnected);
+		PropertyManager.notifyPropertyChanging(this, "BluetoothConnected", args);
+		this.isBluetoothConnected = isBluetoothConnected;
+		PropertyManager.notifyPropertyChanged(this, "BluetoothConnected", args);
+		PlaybackServer.propertyChanged(0, Schema.PROP_BLUETOOTH, this.isBluetoothConnected);
 	}
 	
 	@Override
