@@ -77,19 +77,20 @@ public class Schema {
 	public static final int MN_HELP = 5;
 	public static final int MN_SETTINGS = 6;
 	public static final int MN_EXIT = 7;
-	public static final int MN_CTX_LVI_VIEWDETAILS = 8;
-	public static final int MN_CTX_LVI_VIEWFILES = 9;
-	public static final int MN_CTX_LVI_PLAY = 10;
-	public static final int MN_CTX_LVI_ADDTOQUEUE = 11;
-	public static final int MN_CTX_LVI_PREPENDTOQUEUE = 12;
-	public static final int MN_CTX_LVI_ADDTONOWPLAYING = 13;
-	public static final int MN_CTX_LVI_REMOVEFROMNOWPLAYING = 14;
-	public static final int MN_CTX_MFVI_PLAY = 15;
-	public static final int MN_CTX_MFVI_VIEWDETAILS = 16;
-	public static final int MN_CTX_MFVI_ADDTOQUEUE = 17;
-	public static final int MN_CTX_MFVI_PREPENDTOQUEUE = 18;
-	public static final int MN_CTX_MFVI_ADDTONOWPLAYING = 19;
-	public static final int MN_CTX_MFVI_REMOVEFROMNOWPLAYING = 20;
+	public static final int MN_LIBRARY = 8;
+	public static final int MN_CTX_LVI_VIEWDETAILS = 10;
+	public static final int MN_CTX_LVI_VIEWFILES = 11;
+	public static final int MN_CTX_LVI_PLAY = 12;
+	public static final int MN_CTX_LVI_ADDTOQUEUE = 13;
+	public static final int MN_CTX_LVI_PREPENDTOQUEUE = 14;
+	public static final int MN_CTX_LVI_ADDTONOWPLAYING = 15;
+	public static final int MN_CTX_LVI_REMOVEFROMNOWPLAYING = 16;
+	public static final int MN_CTX_MFVI_PLAY = 17;
+	public static final int MN_CTX_MFVI_VIEWDETAILS = 18;
+	public static final int MN_CTX_MFVI_ADDTOQUEUE = 19;
+	public static final int MN_CTX_MFVI_PREPENDTOQUEUE = 20;
+	public static final int MN_CTX_MFVI_ADDTONOWPLAYING = 21;
+	public static final int MN_CTX_MFVI_REMOVEFROMNOWPLAYING = 22;
 	
 	/** MISC SCHEMA **/
 	public static final int FLAG_ALL = 0;

@@ -9,9 +9,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.receivers.ClientReceiver;
 import dev.paddock.adp.mCubed.services.PlaybackClient;
+import dev.paddock.adp.mCubed.utilities.App;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class ActivityUtils {
@@ -73,6 +76,32 @@ public class ActivityUtils {
 			if (receiver != null) {
 				activity.unregisterReceiver(receiver);
 			}
+		} finally {
+			Utilities.popContext();
+		}
+	}
+	
+	public static <E extends Activity & IActivity> boolean onCreateOptionsMenu(E activity, Menu menu) {
+		List<Integer> menuOptions = activity.getMenuOptions();
+		if (menuOptions != null) {
+			int order = 1;
+			for (Integer menuOption : menuOptions) {
+				int itemID = menuOption.intValue();
+				ActivityMenu.addMenuItem(menu, itemID, order);
+				order++;
+			}
+		}
+		return true;
+	}
+	
+	public static <E extends Activity & IActivity> boolean onPrepareOptionsMenu(E activity, Menu menu) {
+		return App.isInitialized();
+	}
+	
+	public static <E extends Activity & IActivity> boolean onOptionsItemSelected(E activity, MenuItem item) {
+		Utilities.pushContext(activity);
+		try {
+			return ActivityMenu.runMenuItem(activity, item.getItemId());
 		} finally {
 			Utilities.popContext();
 		}

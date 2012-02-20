@@ -1,5 +1,7 @@
 package dev.paddock.adp.mCubed.activities;
 
+import java.util.List;
+
 import android.os.Bundle;
 import dev.paddock.adp.mCubed.receivers.ClientReceiver;
 
@@ -9,6 +11,14 @@ public interface IActivity {
 	 * @return The ID of the layout to inflate for the activity.
 	 */
 	int getLayoutID();
+	
+	/**
+	 * Get the list of menu options that will be available with the activity.
+	 * Each integer should represent an ID defined by ActivityMenu. Returning
+	 * null or an empty list results in no menu options.
+	 * @return The list of menu options that will be available with the activity.
+	 */
+	List<Integer> getMenuOptions();
 	
 	/**
 	 * Find the views from in the layout and assign them to member variables.

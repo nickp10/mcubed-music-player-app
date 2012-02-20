@@ -1,5 +1,8 @@
 package dev.paddock.adp.mCubed.activities;
 
+import java.util.Arrays;
+import java.util.List;
+
 import android.app.TabActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,14 +13,10 @@ import android.widget.TabHost.TabSpec;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.controls.LibraryView;
-import dev.paddock.adp.mCubed.model.Composite;
-import dev.paddock.adp.mCubed.model.MediaGroup;
 import dev.paddock.adp.mCubed.model.MediaStatus;
 import dev.paddock.adp.mCubed.receivers.ClientReceiver;
 import dev.paddock.adp.mCubed.services.ClientCallback;
 import dev.paddock.adp.mCubed.services.IClientCallback;
-import dev.paddock.adp.mCubed.services.PlaybackClient;
-import dev.paddock.adp.mCubed.utilities.App;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class LibraryActivity extends TabActivity implements IActivity {
@@ -39,55 +38,27 @@ public class LibraryActivity extends TabActivity implements IActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(Menu.NONE, Schema.MN_NOWPLAYING, 1, "Now Playing").setIcon(R.drawable.menu_nowplaying);
-		menu.add(Menu.NONE, Schema.MN_PLAYALL, 2, "Play All").setIcon(R.drawable.menu_playall);
-		menu.add(Menu.NONE, Schema.MN_SETTINGS, 3, "Settings").setIcon(R.drawable.menu_settings);
-		menu.add(Menu.NONE, Schema.MN_HELP, 4, "Help").setIcon(R.drawable.menu_help);
-		menu.add(Menu.NONE, Schema.MN_EXIT, 5, "Exit").setIcon(R.drawable.menu_exit);
-		menu.add(Menu.NONE, Schema.MN_ABOUT, 6, "About").setIcon(R.drawable.menu_about);
-		menu.add(Menu.NONE, Schema.MN_FEEDBACK, 7, "Feedback").setIcon(R.drawable.menu_feedback);
-		return true;
+		return super.onCreateOptionsMenu(menu) &&
+				ActivityUtils.onCreateOptionsMenu(this, menu);
 	}
 	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		super.onPrepareOptionsMenu(menu);
-		return App.isInitialized();
+		return super.onPrepareOptionsMenu(menu) &&
+				ActivityUtils.onPrepareOptionsMenu(this, menu);
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Utilities.pushContext(this);
-		try {
-			switch (item.getItemId()) {
-			case Schema.MN_NOWPLAYING:
-				ActivityUtils.startActivity(this, NowPlayingActivity.class);
-				return true;
-			case Schema.MN_PLAYALL:
-				App.getNowPlaying().playComposite(new Composite(MediaGroup.All.getGrouping(0)));
-				return true;
-			case Schema.MN_SETTINGS:
-				ActivityUtils.startActivity(this, PreferenceActivity.class);
-				return true;
-			case Schema.MN_EXIT:
-				PlaybackClient.stopService();
-				finish();
-				return true;
-			case Schema.MN_HELP:
-				// TODO Launch activity for the help
-				return true;
-			case Schema.MN_ABOUT:
-				// TODO Launch activity for the about
-				return true;
-			case Schema.MN_FEEDBACK:
-				// TODO Launch activity for the feedback
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
-			}
-		} finally {
-			Utilities.popContext();
-		}
+		return ActivityUtils.onOptionsItemSelected(this, item) ||
+				super.onOptionsItemSelected(item);
+	}
+	
+	@Override
+	public List<Integer> getMenuOptions() {
+		return Arrays.asList(Schema.MN_NOWPLAYING, Schema.MN_PLAYALL,
+				Schema.MN_SETTINGS, Schema.MN_HELP, Schema.MN_EXIT,
+				Schema.MN_ABOUT, Schema.MN_FEEDBACK);
 	}
 	
 	@Override
