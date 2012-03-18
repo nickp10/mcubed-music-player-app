@@ -92,23 +92,6 @@ public class LibraryActivity extends TabActivity implements IActivity {
 	public void handleExtras(Bundle extras) {
 	}
 	
-	private void createTabSpec(String display) {
-		TabSpec tabSpec = tabHost.newTabSpec(display).setIndicator(display).setContent(new TabHost.TabContentFactory() {
-			@Override
-			public View createTabContent(String tag) {
-				Utilities.pushContext(LibraryActivity.this);
-				try {
-					LibraryView view = new LibraryView(LibraryActivity.this);
-					view.setMediaGroup(tag.substring(0, tag.length() - 1));
-					return view;
-				} finally {
-					Utilities.popContext();
-				}
-			}
-		});
-		tabHost.addTab(tabSpec);
-	}
-	
 	@Override
 	public ClientReceiver getClientReceiver() {
 		if (clientReceiver == null) {
@@ -138,5 +121,22 @@ public class LibraryActivity extends TabActivity implements IActivity {
 			};
 		}
 		return clientCallback;
+	}
+	
+	private void createTabSpec(String display) {
+		TabSpec tabSpec = tabHost.newTabSpec(display).setIndicator(display).setContent(new TabHost.TabContentFactory() {
+			@Override
+			public View createTabContent(String tag) {
+				Utilities.pushContext(LibraryActivity.this);
+				try {
+					LibraryView view = new LibraryView(LibraryActivity.this);
+					view.setMediaGroup(tag.substring(0, tag.length() - 1));
+					return view;
+				} finally {
+					Utilities.popContext();
+				}
+			}
+		});
+		tabHost.addTab(tabSpec);
 	}
 }

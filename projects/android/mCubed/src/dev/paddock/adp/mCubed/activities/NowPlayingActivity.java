@@ -3,49 +3,26 @@ package dev.paddock.adp.mCubed.activities;
 import java.util.Arrays;
 import java.util.List;
 
-import dev.paddock.adp.mCubed.R;
-import dev.paddock.adp.mCubed.Schema;
-import dev.paddock.adp.mCubed.model.MediaFile;
-import dev.paddock.adp.mCubed.model.MediaStatus;
-import dev.paddock.adp.mCubed.receivers.ClientReceiver;
-import dev.paddock.adp.mCubed.services.ClientCallback;
-import dev.paddock.adp.mCubed.services.IClientCallback;
-import dev.paddock.adp.mCubed.services.PlaybackClient;
-import dev.paddock.adp.mCubed.utilities.App;
-import dev.paddock.adp.mCubed.utilities.Utilities;
-import android.app.Activity;
+import android.app.TabActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.TextView;
+import android.widget.TabHost;
+import android.widget.TabHost.TabSpec;
+import dev.paddock.adp.mCubed.R;
+import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.controls.NowPlayingView;
+import dev.paddock.adp.mCubed.model.MediaStatus;
+import dev.paddock.adp.mCubed.receivers.ClientReceiver;
+import dev.paddock.adp.mCubed.services.ClientCallback;
+import dev.paddock.adp.mCubed.services.IClientCallback;
 
-public class NowPlayingActivity extends Activity implements IActivity {
+public class NowPlayingActivity extends TabActivity implements IActivity {
 	private ClientReceiver clientReceiver;
 	private ClientCallback clientCallback;
-	private TextView artistTextView, titleTextView;
-	private Button actionButton;
-	
-	/**
-	 * Click listener for the play/pause action button.
-	 */
-	private OnClickListener actionClickListener = new OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			Utilities.pushContext(NowPlayingActivity.this);
-			try {
-				if (App.getPlayer().isPlaying()) {
-					PlaybackClient.pause();
-				} else {
-					PlaybackClient.play();
-				}
-			} finally {
-				Utilities.popContext();
-			}
-		}
-	};
+	private NowPlayingView nowPlayingView;
+	private TabHost tabHost;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -91,35 +68,22 @@ public class NowPlayingActivity extends Activity implements IActivity {
 
 	@Override
 	public void findViews() {
-		artistTextView = (TextView)findViewById(R.id.np_artist_textView);
-		titleTextView = (TextView)findViewById(R.id.np_title_textView);
-		actionButton = (Button)findViewById(R.id.np_action_button);
+		tabHost = (TabHost)findViewById(android.R.id.tabhost);
 	}
 
 	@Override
 	public void setupViews() {
+		nowPlayingView = new NowPlayingView(this);
+		createTabSpec("Now Playing", nowPlayingView);
 	}
 
 	@Override
 	public void updateViews() {
-		MediaFile mediaFile = App.getPlayingMedia();
-		if (mediaFile == null) {
-			artistTextView.setText("Unknown");
-			titleTextView.setText("Unknown");
-		} else {
-			artistTextView.setText(mediaFile.getArtist());
-			titleTextView.setText(mediaFile.getTitle());
-		}
-		if (App.getPlayer().isPlaying()) {
-			actionButton.setText("Pause");
-		} else {
-			actionButton.setText("Play");
-		}
+		nowPlayingView.updateViews();
 	}
 
 	@Override
 	public void registerListeners() {
-		actionButton.setOnClickListener(actionClickListener);
 	}
 	
 	@Override
@@ -147,5 +111,15 @@ public class NowPlayingActivity extends Activity implements IActivity {
 			};
 		}
 		return clientCallback;
+	}
+	
+	private void createTabSpec(String display, final View contentView) {
+		TabSpec tabSpec = tabHost.newTabSpec(display).setIndicator(display).setContent(new TabHost.TabContentFactory() {
+			@Override
+			public View createTabContent(String tag) {
+				return contentView;
+			}
+		});
+		tabHost.addTab(tabSpec);
 	}
 }

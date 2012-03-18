@@ -1,0 +1,43 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent"
+	android:layout_width="fill_parent"
+	android:orientation="vertical">
+	<dev.paddock.adp.mCubed.controls.MediaFileDetailsView
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent"
+		android:id="@+id/npv_media_file_details_view" />"
+	<RelativeLayout
+		android:layout_height="0dp"
+		android:layout_width="fill_parent"
+		android:layout_weight="1">
+		<ImageButton
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:layout_centerInParent="true"
+			android:layout_toLeftOf="@+id/npv_action_button"
+			android:contentDescription="@string/button_prev_content"
+			android:src="@drawable/ic_media_previous"
+			android:background="@drawable/media_button_background"
+			android:id="@+id/npv_prev_button" />
+		<ImageButton
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:layout_marginLeft="15dp"
+			android:layout_marginRight="15dp"
+			android:layout_centerInParent="true"
+			android:contentDescription="@string/button_action_content"
+			android:src="@drawable/ic_media_play"
+			android:background="@drawable/media_button_background"
+			android:id="@+id/npv_action_button" />
+		<ImageButton
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:layout_toRightOf="@id/npv_action_button"
+			android:layout_centerInParent="true"
+			android:contentDescription="@string/button_next_content"
+			android:src="@drawable/ic_media_next"
+			android:background="@drawable/media_button_background"
+			android:id="@+id/npv_next_button" />
+	</RelativeLayout>
+</LinearLayout>

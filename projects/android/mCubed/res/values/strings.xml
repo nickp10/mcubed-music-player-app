@@ -2,7 +2,17 @@
 <resources>
 	<string name="app_name">mCubed</string>
 	<string name="app_version">1.00</string>
+	<string name="button_action_content">Play/Pause</string>
+	<string name="button_next_content">Next</string>
+	<string name="button_prev_content">Previous</string>
 	<string name="dp_prompt">Select a Unit</string>
+	<string name="mfdv_artist_label">Artist</string>
+	<string name="mfdv_album_label">Album</string>
+	<string name="mfdv_cover_content">Cover Artwork</string>
+	<string name="mfdv_genre_label">Genre</string>
+	<string name="mfdv_title_label">Title</string>
+	<string name="mfdv_track_label">Track #</string>
+	<string name="mfdv_year_label">Year</string>
 	<string name="pref_repeat_status">pref_repeat_status</string>
 	<string name="pref_play_mode">pref_play_mode</string>
 	<string name="pref_clear_queue_with_play_mode">pref_clear_queue_with_play_mode</string>

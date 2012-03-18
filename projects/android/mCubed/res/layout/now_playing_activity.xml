@@ -1,35 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<TabHost
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="fill_parent"
-	android:layout_width="fill_parent">
-	<LinearLayout
+	android:layout_width="fill_parent"
+	android:id="@android:id/tabhost">
+	<FrameLayout
 		android:layout_height="fill_parent"
-		android:layout_width="fill_parent"
-		android:orientation="vertical">
-		<TextView
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:text="Artist" />
-		<TextView
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:id="@+id/np_artist_textView" />
-		<TextView
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:text="Title" />
-		<TextView
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:id="@+id/np_title_textView" />
-		<Button
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:layout_gravity="center_horizontal"
-			android:id="@+id/np_action_button" />
-	</LinearLayout>
-	<dev.paddock.adp.mCubed.controls.ProgressDisplay
-		android:layout_height="fill_parent"
-		android:layout_width="fill_parent" />
-</FrameLayout>
+		android:layout_width="fill_parent">
+		<LinearLayout
+			android:layout_height="fill_parent"
+			android:layout_width="fill_parent"
+			android:orientation="vertical">
+			<TabWidget
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:id="@android:id/tabs" />
+			<FrameLayout
+				android:layout_height="fill_parent"
+				android:layout_width="fill_parent"
+				android:id="@android:id/tabcontent" />
+		</LinearLayout>
+		<dev.paddock.adp.mCubed.controls.ProgressDisplay
+			android:layout_height="fill_parent"
+			android:layout_width="fill_parent" />
+	</FrameLayout>
+</TabHost>

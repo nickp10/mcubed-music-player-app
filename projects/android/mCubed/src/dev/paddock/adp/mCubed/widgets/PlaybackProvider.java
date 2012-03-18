@@ -109,7 +109,7 @@ public abstract class PlaybackProvider extends AppWidgetProvider {
 			
 			// Handle other intents
 			else if (Schema.WI_PLAY_CLICK.equals(action)) {
-				if (App.getPlayer().getStatus() == MediaStatus.Play) {
+				if (App.getPlayer().isPlaying()) {
 					PlaybackClient.pause();
 				} else {
 					PlaybackClient.play();

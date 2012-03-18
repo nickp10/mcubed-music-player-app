@@ -3,20 +3,19 @@ package dev.paddock.adp.mCubed.activities;
 import java.util.Arrays;
 import java.util.List;
 
-import dev.paddock.adp.mCubed.R;
-import dev.paddock.adp.mCubed.Schema;
-import dev.paddock.adp.mCubed.model.MediaFile;
-import dev.paddock.adp.mCubed.receivers.ClientReceiver;
-import dev.paddock.adp.mCubed.utilities.Utilities;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import dev.paddock.adp.mCubed.R;
+import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.controls.MediaFileDetailsView;
+import dev.paddock.adp.mCubed.model.MediaFile;
+import dev.paddock.adp.mCubed.receivers.ClientReceiver;
+import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class MediaFileDetailsActivity extends Activity implements IActivity {
-	private TextView artistTextView;
-	private MediaFile mediaFile;
+	private MediaFileDetailsView mediaFileView;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -62,7 +61,7 @@ public class MediaFileDetailsActivity extends Activity implements IActivity {
 
 	@Override
 	public void findViews() {
-		artistTextView = (TextView)findViewById(R.id.mfd_artist_textView);
+		mediaFileView = (MediaFileDetailsView)findViewById(R.id.mfda_media_file_details_view);
 	}
 
 	@Override
@@ -71,11 +70,6 @@ public class MediaFileDetailsActivity extends Activity implements IActivity {
 
 	@Override
 	public void updateViews() {
-		if (mediaFile == null) {
-			artistTextView.setText("Unknown");
-		} else {
-			artistTextView.setText(mediaFile.getArtist());
-		}
 	}
 
 	@Override
@@ -89,7 +83,7 @@ public class MediaFileDetailsActivity extends Activity implements IActivity {
 		if (idObj != null) {
 			MediaFile file = MediaFile.get(idObj.longValue());
 			if (file != null) {
-				mediaFile = file;
+				mediaFileView.setMediaFile(file);
 			}
 		}
 	}
