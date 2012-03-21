@@ -17,7 +17,7 @@
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:layout_marginBottom="10dp"
-			android:text="Initializing..."
+			android:text="@string/prog_initializing"
 			android:id="@+id/pd_title" />
 		<ProgressBar
 			style="@android:style/Widget.ProgressBar.Horizontal"

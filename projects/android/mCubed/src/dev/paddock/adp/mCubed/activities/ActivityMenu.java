@@ -5,7 +5,6 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.view.Menu;
-
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.model.Composite;
@@ -42,7 +41,7 @@ public class ActivityMenu {
 		});
 		createMenuItem(Schema.MN_HELP, "Help", R.drawable.menu_help, new Action<Activity>() {
 			public void act(Activity activity) {
-				// TODO Launch activity for the help
+				ActivityUtils.startActivity(activity, HelpActivity.class);
 			}
 		});
 		createMenuItem(Schema.MN_EXIT, "Exit", R.drawable.menu_exit, new Action<Activity>() {
@@ -52,13 +51,13 @@ public class ActivityMenu {
 			}
 		});
 		createMenuItem(Schema.MN_ABOUT, "About", R.drawable.menu_about, new Action<Activity>() {
-			public void act(Activity object) {
-				// TODO Launch activity for the about
+			public void act(Activity activity) {
+				ActivityUtils.startActivity(activity, AboutActivity.class);
 			}
 		});
 		createMenuItem(Schema.MN_FEEDBACK, "Feedback", R.drawable.menu_feedback, new Action<Activity>() {
-			public void act(Activity object) {
-				// TODO Launch activity for the feedback
+			public void act(Activity activity) {
+				ActivityUtils.startActivity(activity, FeedbackActivity.class);
 			}
 		});
 	}

@@ -75,6 +75,8 @@ public class NowPlayingActivity extends TabActivity implements IActivity {
 	public void setupViews() {
 		nowPlayingView = new NowPlayingView(this);
 		createTabSpec("Now Playing", nowPlayingView);
+		createTabSpec("History", new View(this));
+		createTabSpec("Queue", new View(this));
 	}
 
 	@Override

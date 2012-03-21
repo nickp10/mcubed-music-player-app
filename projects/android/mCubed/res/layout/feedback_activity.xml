@@ -7,10 +7,10 @@
 		android:layout_height="fill_parent"
 		android:layout_width="fill_parent"
 		android:orientation="vertical">
-		<dev.paddock.adp.mCubed.controls.MediaFileView
-			android:layout_height="fill_parent"
-			android:layout_width="fill_parent"
-			android:id="@+id/mfa_media_file_view" />
+		<TextView 
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="@string/feedback_tmp_text" />
 	</LinearLayout>
 	<dev.paddock.adp.mCubed.controls.ProgressDisplay
 		android:layout_height="fill_parent"

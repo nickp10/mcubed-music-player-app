@@ -17,6 +17,7 @@
 			android:layout_width="70dp"
 			android:layout_gravity="center_vertical"
 			android:layout_marginLeft="10dp"
+			android:contentDescription="@string/cover_art_content"
 			android:scaleType="centerInside"
 			android:id="@+id/w41_cover_image" />
 		<LinearLayout
@@ -60,6 +61,7 @@
 				<ImageButton
 					android:layout_height="wrap_content"
 					android:layout_width="wrap_content"
+					android:contentDescription="@string/button_prev_content"
 					android:src="@drawable/ic_media_previous"
 					android:background="@drawable/media_button_background"
 					android:id="@+id/w41_prev_button" />
@@ -68,12 +70,14 @@
 					android:layout_width="wrap_content"
 					android:layout_marginLeft="15dp"
 					android:layout_marginRight="15dp"
+					android:contentDescription="@string/button_action_content"
 					android:src="@drawable/ic_media_play"
 					android:background="@drawable/media_button_background"
 					android:id="@+id/w41_play_button" />
 				<ImageButton
 					android:layout_height="wrap_content"
 					android:layout_width="wrap_content"
+					android:contentDescription="@string/button_next_content"
 					android:src="@drawable/ic_media_next"
 					android:background="@drawable/media_button_background"
 					android:id="@+id/w41_next_button" />
@@ -93,7 +97,7 @@
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:layout_marginBottom="10dp"
-			android:text="Initializing..." />
+			android:text="@string/prog_initializing" />
 		<ProgressBar
 			style="@android:style/Widget.ProgressBar.Horizontal"
 			android:layout_height="wrap_content"

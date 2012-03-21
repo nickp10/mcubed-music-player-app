@@ -2,13 +2,18 @@
 <resources>
 	<string name="app_name">mCubed</string>
 	<string name="app_version">1.00</string>
+	<string name="app_widget_1x1">mCubed (1x1)</string>
+	<string name="app_widget_4x1">mCubed (4x1)</string>
+	<string name="about_tmp_text">About</string>
 	<string name="button_action_content">Play/Pause</string>
 	<string name="button_next_content">Next</string>
 	<string name="button_prev_content">Previous</string>
+	<string name="cover_art_content">Cover Artwork</string>
 	<string name="dp_prompt">Select a Unit</string>
+	<string name="feedback_tmp_text">Feedback</string>
+	<string name="help_tmp_text">Help</string>
 	<string name="mfdv_artist_label">Artist</string>
 	<string name="mfdv_album_label">Album</string>
-	<string name="mfdv_cover_content">Cover Artwork</string>
 	<string name="mfdv_genre_label">Genre</string>
 	<string name="mfdv_title_label">Title</string>
 	<string name="mfdv_track_label">Track #</string>
@@ -32,4 +37,5 @@
 	<string name="pref_record_logs">pref_record_logs</string>
 	<string name="pref_resume_automatically">pref_resume_automatically</string>
 	<string name="pref_defaults_loaded">pref_defaults_loaded</string>
+	<string name="prog_initializing">Initializing&#8230;</string>
 </resources>

@@ -2,19 +2,23 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="dev.paddock.adp.mCubed"
 	android:versionCode="1"
-	android:versionName="1.0">
+	android:versionName="@string/app_version">
 	<uses-permission android:name="android.permission.BLUETOOTH" />
 	<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 	<uses-permission android:name="android.permission.READ_PHONE_STATE" />
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
+	<uses-sdk android:minSdkVersion="7" android:targetSdkVersion="7" />
 	
-	<application android:name=".utilities.App" android:icon="@drawable/icon" android:label="mCubed" android:debuggable="true">
+	<application android:name=".utilities.App" android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
 		<activity android:name=".activities.LibraryActivity" android:launchMode="singleTop">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+		<activity android:name=".activities.AboutActivity" android:launchMode="singleTop" />
+		<activity android:name=".activities.FeedbackActivity" android:launchMode="singleTop" />
+		<activity android:name=".activities.HelpActivity" android:launchMode="singleTop" />
 		<activity android:name=".activities.MediaFileDetailsActivity" android:launchMode="singleTop" />
 		<activity android:name=".activities.MediaFileListActivity" android:launchMode="singleTop" />
 		<activity android:name=".activities.NowPlayingActivity" android:launchMode="singleTop" />
@@ -23,7 +27,7 @@
 
 		<service android:name=".services.PlaybackService" android:enabled="true" />
 
-		<receiver android:name=".widgets.Playback4x1Provider" android:label="mCubed (4x1)">
+		<receiver android:name=".widgets.Playback4x1Provider" android:label="@string/app_widget_4x1">
 			<intent-filter>
 				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
 				<action android:name="dev.paddock.adp.mCubed.Schema.I_MCUBED" />
@@ -31,7 +35,7 @@
 			<meta-data android:name="android.appwidget.provider" android:resource="@xml/playback4x1_info" />
 		</receiver>
 		
-		<receiver android:name=".widgets.Playback1x1Provider" android:label="mCubed (1x1)">
+		<receiver android:name=".widgets.Playback1x1Provider" android:label="@string/app_widget_1x1">
 			<intent-filter>
 				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
 				<action android:name="dev.paddock.adp.mCubed.Schema.I_MCUBED" />
@@ -39,5 +43,4 @@
 			<meta-data android:name="android.appwidget.provider" android:resource="@xml/playback1x1_info" />
 		</receiver>
 	</application>
-	<uses-sdk android:minSdkVersion="7" android:targetSdkVersion="7" />
 </manifest> 
