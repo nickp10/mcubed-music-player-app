@@ -1,22 +1,22 @@
 package dev.paddock.adp.mCubed.controls;
 
-import dev.paddock.adp.mCubed.R;
-import dev.paddock.adp.mCubed.Schema;
-import dev.paddock.adp.mCubed.model.InitStatus;
-import dev.paddock.adp.mCubed.receivers.ClientReceiver;
-import dev.paddock.adp.mCubed.services.ClientCallback;
-import dev.paddock.adp.mCubed.services.IClientCallback;
-import dev.paddock.adp.mCubed.utilities.App;
 import android.content.Context;
-import android.content.IntentFilter;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import dev.paddock.adp.mCubed.R;
+import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.model.InitStatus;
+import dev.paddock.adp.mCubed.receivers.ClientReceiver;
+import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
+import dev.paddock.adp.mCubed.services.ClientCallback;
+import dev.paddock.adp.mCubed.services.IClientCallback;
+import dev.paddock.adp.mCubed.utilities.App;
 
-public class ProgressDisplay extends LinearLayout implements View.OnClickListener {
+public class ProgressDisplay extends LinearLayout implements View.OnClickListener, IProvideClientReceiver {
 	private TextView titleView;
 	private ProgressBar progressBar;
 	private ClientReceiver clientReceiver;
@@ -41,13 +41,6 @@ public class ProgressDisplay extends LinearLayout implements View.OnClickListene
 		
 		// Register listeners
 		setOnClickListener(this);
-		
-		// Listen for service updates
-		ClientReceiver receiver = getClientReceiver();
-		IntentFilter filter = receiver.getIntentFilter();
-		if (filter != null) {
-			context.registerReceiver(receiver, filter);
-		}
 	}
 	
 	private void initProgress(InitStatus initStatus) {
@@ -70,7 +63,8 @@ public class ProgressDisplay extends LinearLayout implements View.OnClickListene
 		setVisibility(View.GONE);
 	}
 	
-	private ClientReceiver getClientReceiver() {
+	@Override
+	public ClientReceiver getClientReceiver() {
 		if (clientReceiver == null) {
 			clientReceiver = new ClientReceiver(getClientCallback(), false);
 			clientReceiver.addAction(Schema.I_MCUBED_PROGRESS);
@@ -99,6 +93,8 @@ public class ProgressDisplay extends LinearLayout implements View.OnClickListene
 		}
 		return clientCallback;
 	}
+	
+	
 
 	@Override
 	public void onClick(View v) {

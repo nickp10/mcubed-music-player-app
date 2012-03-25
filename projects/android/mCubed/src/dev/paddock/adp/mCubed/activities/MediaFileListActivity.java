@@ -3,19 +3,21 @@ package dev.paddock.adp.mCubed.activities;
 import java.util.Arrays;
 import java.util.List;
 
-import dev.paddock.adp.mCubed.R;
-import dev.paddock.adp.mCubed.Schema;
-import dev.paddock.adp.mCubed.controls.MediaFileView;
-import dev.paddock.adp.mCubed.model.IMediaFileProvider;
-import dev.paddock.adp.mCubed.receivers.ClientReceiver;
-import dev.paddock.adp.mCubed.utilities.Utilities;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import dev.paddock.adp.mCubed.R;
+import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.controls.MediaFileView;
+import dev.paddock.adp.mCubed.controls.ProgressDisplay;
+import dev.paddock.adp.mCubed.model.IMediaFileProvider;
+import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
+import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class MediaFileListActivity extends Activity implements IActivity {
 	private MediaFileView mediaFileView;
+	private ProgressDisplay progressDisplay;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -61,7 +63,8 @@ public class MediaFileListActivity extends Activity implements IActivity {
 
 	@Override
 	public void findViews() {
-		mediaFileView = (MediaFileView)findViewById(R.id.mfa_media_file_view);
+		mediaFileView = (MediaFileView)findViewById(R.id.mfla_media_file_view);
+		progressDisplay = (ProgressDisplay)findViewById(R.id.mfla_progress_display);
 	}
 
 	@Override
@@ -84,7 +87,7 @@ public class MediaFileListActivity extends Activity implements IActivity {
 	}
 
 	@Override
-	public ClientReceiver getClientReceiver() {
-		return null;
+	public List<IProvideClientReceiver> getClientReceivers() {
+		return Arrays.<IProvideClientReceiver>asList(progressDisplay);
 	}
 }

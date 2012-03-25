@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.receivers.ClientReceiver;
+import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
 import dev.paddock.adp.mCubed.services.PlaybackClient;
 import dev.paddock.adp.mCubed.utilities.App;
 import dev.paddock.adp.mCubed.utilities.Utilities;
@@ -36,11 +37,16 @@ public class ActivityUtils {
 				activity.registerListeners();
 				
 				// Listen for service updates
-				ClientReceiver receiver = activity.getClientReceiver();
-				if (receiver != null) {
-					IntentFilter filter = receiver.getIntentFilter();
-					if (filter != null) {
-						activity.registerReceiver(receiver, filter);
+				List<IProvideClientReceiver> receivers = activity.getClientReceivers();
+				if (receivers != null) {
+					for (IProvideClientReceiver receiver : receivers) {
+						ClientReceiver clientReceiver = receiver.getClientReceiver();
+						if (clientReceiver != null) {
+							IntentFilter filter = clientReceiver.getIntentFilter();
+							if (filter != null) {
+								activity.registerReceiver(clientReceiver, filter);
+							}
+						}
 					}
 				}
 				
@@ -72,9 +78,14 @@ public class ActivityUtils {
 			activities.remove(activity);
 			
 			// Unregister receivers and listeners
-			ClientReceiver receiver = activity.getClientReceiver();
-			if (receiver != null) {
-				activity.unregisterReceiver(receiver);
+			List<IProvideClientReceiver> receivers = activity.getClientReceivers();
+			if (receivers != null) {
+				for (IProvideClientReceiver receiver : receivers) {
+					ClientReceiver clientReceiver = receiver.getClientReceiver();
+					if (clientReceiver != null) {
+						activity.unregisterReceiver(clientReceiver);
+					}
+				}
 			}
 		} finally {
 			Utilities.popContext();
@@ -126,5 +137,15 @@ public class ActivityUtils {
 			intent.putExtra(Schema.I_PARAM_ACTIVITY_DATA, data);
 		}
 		context.startActivity(intent);
+	}
+	
+	public static void startMainActivity() {
+		startActivity(LibraryActivity.class);
+	}
+	
+	public static void finishAllActivities() {
+		for (Activity activity : activities) {
+			activity.finish();
+		}
 	}
 }

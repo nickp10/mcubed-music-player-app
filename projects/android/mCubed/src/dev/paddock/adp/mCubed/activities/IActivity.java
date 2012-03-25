@@ -3,7 +3,7 @@ package dev.paddock.adp.mCubed.activities;
 import java.util.List;
 
 import android.os.Bundle;
-import dev.paddock.adp.mCubed.receivers.ClientReceiver;
+import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
 
 public interface IActivity {
 	/**
@@ -47,8 +47,8 @@ public interface IActivity {
 	void handleExtras(Bundle extras);
 	
 	/**
-	 * Get the receiver of the specified server intents. Return null to not register to any.
-	 * @return The client receiver of server intents.
+	 * Get the receivers of the specified server intents. Return null or any empty list to not register to any.
+	 * @return The client receivers of server intents.
 	 */
-	ClientReceiver getClientReceiver();
+	List<IProvideClientReceiver> getClientReceivers();
 }

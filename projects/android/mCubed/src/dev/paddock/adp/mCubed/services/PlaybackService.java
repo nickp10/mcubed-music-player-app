@@ -211,6 +211,7 @@ public class PlaybackService extends Service {
 				
 				@Override
 				public void stopService(int intentID) {
+					PlaybackService.this.cancelNotification(null);
 					PlaybackService.this.stopSelf();
 				}
 				

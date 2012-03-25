@@ -10,12 +10,14 @@ import android.view.MenuItem;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.controls.MediaFileDetailsView;
+import dev.paddock.adp.mCubed.controls.ProgressDisplay;
 import dev.paddock.adp.mCubed.model.MediaFile;
-import dev.paddock.adp.mCubed.receivers.ClientReceiver;
+import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class MediaFileDetailsActivity extends Activity implements IActivity {
 	private MediaFileDetailsView mediaFileView;
+	private ProgressDisplay progressDisplay;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +64,7 @@ public class MediaFileDetailsActivity extends Activity implements IActivity {
 	@Override
 	public void findViews() {
 		mediaFileView = (MediaFileDetailsView)findViewById(R.id.mfda_media_file_details_view);
+		progressDisplay = (ProgressDisplay)findViewById(R.id.mfda_progress_display);
 	}
 
 	@Override
@@ -89,7 +92,7 @@ public class MediaFileDetailsActivity extends Activity implements IActivity {
 	}
 
 	@Override
-	public ClientReceiver getClientReceiver() {
-		return null;
+	public List<IProvideClientReceiver> getClientReceivers() {
+		return Arrays.<IProvideClientReceiver>asList(progressDisplay);
 	}
 }

@@ -17,6 +17,7 @@ import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 	// State members
+	private static final int STATE_DEFAULT = 0;
 	private static final int STATE_PREPARED = 1;
 	private static final int STATE_STARTED = 2;
 	private static final int STATE_PAUSED = 3;
@@ -26,7 +27,7 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 	// Media player members
 	private static final MediaPlayer instance = new MediaPlayer();
 	private android.media.MediaPlayer player;
-	private int currentState, seekLockCount, statusLockCount;
+	private int currentState = STATE_DEFAULT, seekLockCount, statusLockCount;
 	private MediaPlayerState internalState;
 	private MediaFile mediaFile;
 	private MediaStatus status = MediaStatus.Stop;
@@ -87,7 +88,7 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 			setMediaFile(null, false);
 		}
 		setStatus(MediaStatus.Stop, false);
-		currentState = 0;
+		currentState = STATE_DEFAULT;
 		seek = 0;
 	}
 	
@@ -238,7 +239,7 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 	 * @return The current duration of the loaded song in milliseconds.
 	 */
 	public int getDuration() {
-		if (player == null || mediaFile == null) {
+		if (player == null || mediaFile == null || currentState == STATE_DEFAULT || currentState == STATE_STOPPED) {
 			return 0;
 		}
 		return player.getDuration();

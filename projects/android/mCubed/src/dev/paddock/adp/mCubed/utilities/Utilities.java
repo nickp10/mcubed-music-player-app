@@ -15,14 +15,12 @@ import java.util.Stack;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import dev.paddock.adp.mCubed.Schema;
-import dev.paddock.adp.mCubed.activities.LibraryActivity;
 import dev.paddock.adp.mCubed.model.AsyncTask;
 import dev.paddock.adp.mCubed.model.Holder;
 import dev.paddock.adp.mCubed.model.PublishProgress;
@@ -413,13 +411,6 @@ public class Utilities {
 				}
 			}
 		}
-	}
-	
-	public static void launchMainActivity() {
-		Context context = Utilities.getContext();
-		Intent intent = new Intent(context, LibraryActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-		context.startActivity(intent);
 	}
 	
 	public static int parseInt(String str) {

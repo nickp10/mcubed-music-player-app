@@ -3,14 +3,6 @@ package dev.paddock.adp.mCubed.widgets;
 import java.util.HashMap;
 import java.util.Map;
 
-import dev.paddock.adp.mCubed.Schema;
-import dev.paddock.adp.mCubed.model.InitStatus;
-import dev.paddock.adp.mCubed.model.MediaStatus;
-import dev.paddock.adp.mCubed.services.ClientCallback;
-import dev.paddock.adp.mCubed.services.IClientCallback;
-import dev.paddock.adp.mCubed.services.PlaybackClient;
-import dev.paddock.adp.mCubed.utilities.App;
-import dev.paddock.adp.mCubed.utilities.Utilities;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -18,6 +10,15 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
+import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.activities.ActivityUtils;
+import dev.paddock.adp.mCubed.model.InitStatus;
+import dev.paddock.adp.mCubed.model.MediaStatus;
+import dev.paddock.adp.mCubed.services.ClientCallback;
+import dev.paddock.adp.mCubed.services.IClientCallback;
+import dev.paddock.adp.mCubed.services.PlaybackClient;
+import dev.paddock.adp.mCubed.utilities.App;
+import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public abstract class PlaybackProvider extends AppWidgetProvider {
 	private static final Map<Class<?>, IClientCallback> clientCallbacks = new HashMap<Class<?>, IClientCallback>();
@@ -119,7 +120,7 @@ public abstract class PlaybackProvider extends AppWidgetProvider {
 			} else if (Schema.WI_NEXT_CLICK.equals(action)) {
 				PlaybackClient.movePlaybackNext();
 			} else if (Schema.WI_OPEN_APP_CLICK.equals(action)) {
-				Utilities.launchMainActivity();
+				ActivityUtils.startMainActivity();
 			}
 		} finally {
 			Utilities.popContext();

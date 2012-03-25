@@ -47,7 +47,7 @@ public class ActivityMenu {
 		createMenuItem(Schema.MN_EXIT, "Exit", R.drawable.menu_exit, new Action<Activity>() {
 			public void act(Activity activity) {
 				PlaybackClient.stopService();
-				activity.finish();
+				ActivityUtils.finishAllActivities();
 			}
 		});
 		createMenuItem(Schema.MN_ABOUT, "About", R.drawable.menu_about, new Action<Activity>() {

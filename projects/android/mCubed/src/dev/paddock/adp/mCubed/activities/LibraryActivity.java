@@ -13,16 +13,19 @@ import android.widget.TabHost.TabSpec;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.controls.LibraryView;
+import dev.paddock.adp.mCubed.controls.ProgressDisplay;
 import dev.paddock.adp.mCubed.model.MediaStatus;
 import dev.paddock.adp.mCubed.receivers.ClientReceiver;
+import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
 import dev.paddock.adp.mCubed.services.ClientCallback;
 import dev.paddock.adp.mCubed.services.IClientCallback;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
-public class LibraryActivity extends TabActivity implements IActivity {
+public class LibraryActivity extends TabActivity implements IActivity, IProvideClientReceiver {
 	private ClientReceiver clientReceiver;
 	private IClientCallback clientCallback;
 	private TabHost tabHost;
+	private ProgressDisplay progressDisplay;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -69,6 +72,7 @@ public class LibraryActivity extends TabActivity implements IActivity {
 	@Override
 	public void findViews() {
 		tabHost = (TabHost)findViewById(android.R.id.tabhost);
+		progressDisplay = (ProgressDisplay)findViewById(R.id.la_progress_display);
 	}
 	
 	@Override
@@ -90,6 +94,11 @@ public class LibraryActivity extends TabActivity implements IActivity {
 	
 	@Override
 	public void handleExtras(Bundle extras) {
+	}
+	
+	@Override
+	public List<IProvideClientReceiver> getClientReceivers() {
+		return Arrays.<IProvideClientReceiver>asList(this, progressDisplay);
 	}
 	
 	@Override
