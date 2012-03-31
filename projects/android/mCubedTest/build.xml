@@ -169,6 +169,11 @@
 
     <import file="${sdk.dir}/tools/ant/build.xml" />
 
+    <path id="jar.libs.ref">
+	    <fileset dir="${jar.libs.absolute.dir}" includes="*.jar" />
+	    <path refid="project.libraries.jars" />
+	</path>
+
     <target name="run-coverage">
         <exec executable="cmd" failonerror="true">
             <arg value="/c" />
