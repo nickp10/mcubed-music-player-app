@@ -45,31 +45,30 @@
             unless="sdk.dir"
     />
 
+    <!--
+        Import per project custom build rules if present at the root of the project.
+        This is the place to put custom intermediary targets such as:
+            -pre-build
+            -pre-compile
+            -post-compile (This is typically used for code obfuscation.
+                           Compiled code location: ${out.classes.absolute.dir}
+                           If this is not done in place, override ${out.dex.input.absolute.dir})
+            -post-package
+            -post-build
+            -pre-clean
+    -->
+    <import file="custom_rules.xml" optional="true" />
+
     <property name="processing.libs.dir" value="processing-libs"/>
     <property name="processing.libs.absolute.dir" value="${processing.libs.dir}"/>
 
     <!-- AndroidMockRuntime must be converted to .dex -->
     <path id="out.dex.jar.input.ref">
-        <path refid="jar.libs.ref" />
+        <path refid="project.libraries.jars" />
         <fileset dir="${processing.libs.absolute.dir}">
             <include name="AndroidMockRuntime.jar"/>
         </fileset>
     </path>
-
-<!-- extension targets. Uncomment the ones where you want to do custom work
-     in between standard targets -->
-<!--
-    <target name="-pre-build">
-    </target>
-    <target name="-pre-compile">
-    </target>
-
-    /* This is typically used for code obfuscation.
-       Compiled code location: ${out.classes.absolute.dir}
-       If this is not done in place, override ${out.dex.input.absolute.dir} */
-    <target name="-post-compile">
-    </target>
--->
 
     <!-- Import the actual build file.
 
@@ -90,7 +89,7 @@
          in order to avoid having your file be overridden by tools such as "android update project"
     -->
     <!-- version-tag: custom -->
-    <!-- this overrides the one in ${sdk.dir}/tools/ant/main_build.xml -->
+    <!-- this overrides the one in ${sdk.dir}/tools/ant/build.xml -->
     <target name="-compile" depends="-build-setup, -pre-build, -code-gen, -pre-compile">
         <do-only-if-manifest-hasCode elseText="hasCode = false. Skipping...">
             <!-- If android rules are used for a test project, its classpath should include
@@ -112,7 +111,8 @@
                     bootclasspathref="android.target.classpath"
                     verbose="${verbose}"
                     classpath="${extensible.classpath}"
-                    classpathref="jar.libs.ref">
+                    classpathref="project.libraries.jars"
+                    fork="${need.javac.fork}">
                 <src path="${source.absolute.dir}" />
                 <src path="${gen.absolute.dir}" />
                 <classpath>
@@ -124,7 +124,7 @@
                     <!-- This lets your test project mock android classes -->
                     <path location="${android.jar}"/>
                     <!-- This is the standard classpath extension -->
-                    <fileset dir="${extensible.libs.classpath}" includes="*.jar"/>
+                    <fileset dir="${extensible.libs.classpath}" includes="*.jar" />
                 </classpath>
                 <compilerarg line="${java.compilerargs}" />
             </javac>
@@ -141,8 +141,13 @@
                             <echo>Custom jar packaging exclusion: ${android.package.excludes}</echo>
                         </then>
                     </if>
+
+                    <propertybyreplace name="manifest.package.path" input="${manifest.package}" replace="." with="/" />
+
                     <jar destfile="${out.library.jar.file}">
-                        <fileset dir="${out.classes.absolute.dir}" excludes="**/R.class **/R$*.class"/>
+                        <fileset dir="${out.classes.absolute.dir}"
+                                includes="**/*.class"
+                                excludes="${manifest.package.path}/R.class ${manifest.package.path}/R$*.class ${manifest.package.path}/Manifest.class ${manifest.package.path}/Manifest$*.class ${manifest.package.path}/BuildConfig.class"/>
                         <fileset dir="${source.absolute.dir}" excludes="**/*.java ${android.package.excludes}" />
                     </jar>
                 </then>
@@ -158,9 +163,9 @@
                                mode="overwrite"
                                instrpath="${out.absolute.dir}/classes"
                                outdir="${out.absolute.dir}/classes">
+                            <filter excludes="${manifest.package}.R,${manifest.package}.R$$*,${manifest.package}.BuildConfig" />
+                            <filter value="${emma.filter}" />
                         </instr>
-                        <!-- TODO: exclusion filters on R*.class and allowing custom exclusion from
-                             user defined file -->
                     </emma>
                 </then>
             </if>
@@ -168,11 +173,6 @@
     </target>
 
     <import file="${sdk.dir}/tools/ant/build.xml" />
-
-    <path id="jar.libs.ref">
-	    <fileset dir="${jar.libs.absolute.dir}" includes="*.jar" />
-	    <path refid="project.libraries.jars" />
-	</path>
 
     <target name="run-coverage">
         <exec executable="cmd" failonerror="true">

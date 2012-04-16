@@ -9,7 +9,8 @@
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="processing-libs/AndroidMockGenerator.jar"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry kind="lib" path="processing-libs/AndroidMockGenerator.jar"/>
+	<classpathentry kind="lib" path="processing-libs/android_framework_mocks.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
