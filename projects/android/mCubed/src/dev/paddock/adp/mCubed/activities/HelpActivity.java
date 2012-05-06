@@ -9,10 +9,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.controls.MountDisplay;
 import dev.paddock.adp.mCubed.controls.ProgressDisplay;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
 
 public class HelpActivity extends Activity implements IActivity {
+	private MountDisplay mountDisplay;
 	private ProgressDisplay progressDisplay;
 	
 	@Override
@@ -59,6 +61,7 @@ public class HelpActivity extends Activity implements IActivity {
 
 	@Override
 	public void findViews() {
+		mountDisplay = (MountDisplay)findViewById(R.id.ha_mount_display);
 		progressDisplay = (ProgressDisplay)findViewById(R.id.ha_progress_display);
 	}
 
@@ -80,6 +83,6 @@ public class HelpActivity extends Activity implements IActivity {
 
 	@Override
 	public List<IProvideClientReceiver> getClientReceivers() {
-		return Arrays.<IProvideClientReceiver>asList(progressDisplay);
+		return Arrays.<IProvideClientReceiver>asList(mountDisplay, progressDisplay);
 	}
 }

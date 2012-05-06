@@ -18,6 +18,7 @@
 	<string name="mfdv_title_label">Title</string>
 	<string name="mfdv_track_label">Track #</string>
 	<string name="mfdv_year_label">Year</string>
+	<string name="mount_display_text">The SD card is currently not accessible. Please either re-insert the SD card or un-mount the SD card as a disk drive.</string>
 	<string name="pref_repeat_status">pref_repeat_status</string>
 	<string name="pref_play_mode">pref_play_mode</string>
 	<string name="pref_clear_queue_with_play_mode">pref_clear_queue_with_play_mode</string>

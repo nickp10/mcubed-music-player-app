@@ -13,6 +13,7 @@ import android.widget.TabHost.TabSpec;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.controls.LibraryView;
+import dev.paddock.adp.mCubed.controls.MountDisplay;
 import dev.paddock.adp.mCubed.controls.ProgressDisplay;
 import dev.paddock.adp.mCubed.model.MediaStatus;
 import dev.paddock.adp.mCubed.receivers.ClientReceiver;
@@ -25,6 +26,7 @@ public class LibraryActivity extends TabActivity implements IActivity, IProvideC
 	private ClientReceiver clientReceiver;
 	private IClientCallback clientCallback;
 	private TabHost tabHost;
+	private MountDisplay mountDisplay;
 	private ProgressDisplay progressDisplay;
 	
 	@Override
@@ -72,6 +74,7 @@ public class LibraryActivity extends TabActivity implements IActivity, IProvideC
 	@Override
 	public void findViews() {
 		tabHost = (TabHost)findViewById(android.R.id.tabhost);
+		mountDisplay = (MountDisplay)findViewById(R.id.la_mount_display);
 		progressDisplay = (ProgressDisplay)findViewById(R.id.la_progress_display);
 	}
 	
@@ -98,7 +101,7 @@ public class LibraryActivity extends TabActivity implements IActivity, IProvideC
 	
 	@Override
 	public List<IProvideClientReceiver> getClientReceivers() {
-		return Arrays.<IProvideClientReceiver>asList(this, progressDisplay);
+		return Arrays.<IProvideClientReceiver>asList(this, mountDisplay, progressDisplay);
 	}
 	
 	@Override

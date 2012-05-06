@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import dev.paddock.adp.mCubed.R;
+import dev.paddock.adp.mCubed.controls.MountDisplay;
 import dev.paddock.adp.mCubed.controls.ProgressDisplay;
 import dev.paddock.adp.mCubed.model.MediaStatus;
 import dev.paddock.adp.mCubed.receivers.ClientReceiver;
@@ -25,6 +26,7 @@ public class OverlayActivity extends Activity implements IActivity, IProvideClie
 	private ClientReceiver clientReceiver;
 	private IClientCallback clientCallback;
 	private Button playButton, openButton, dismissButton;
+	private MountDisplay mountDisplay;
 	private ProgressDisplay progressDisplay;
 	
 	/**
@@ -117,6 +119,7 @@ public class OverlayActivity extends Activity implements IActivity, IProvideClie
 		playButton = (Button)findViewById(R.id.ova_play_button);
 		openButton = (Button)findViewById(R.id.ova_open_button);
 		dismissButton = (Button)findViewById(R.id.ova_dismiss_button);
+		mountDisplay = (MountDisplay)findViewById(R.id.ova_mount_display);
 		progressDisplay = (ProgressDisplay)findViewById(R.id.ova_progress_display);
 	}
 
@@ -142,7 +145,7 @@ public class OverlayActivity extends Activity implements IActivity, IProvideClie
 	
 	@Override
 	public List<IProvideClientReceiver> getClientReceivers() {
-		return Arrays.<IProvideClientReceiver>asList(this, progressDisplay);
+		return Arrays.<IProvideClientReceiver>asList(this, mountDisplay, progressDisplay);
 	}
 
 	@Override

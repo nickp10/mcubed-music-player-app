@@ -75,6 +75,7 @@ public class ProgressDisplay extends LinearLayout implements View.OnClickListene
 	private IClientCallback getClientCallback() {
 		if (clientCallback == null) {
 			clientCallback = new ClientCallback() {
+				@Override
 				public void propertyInitStatusChanged(InitStatus initStatus) {
 					initProgress(initStatus);
 				}
@@ -93,8 +94,6 @@ public class ProgressDisplay extends LinearLayout implements View.OnClickListene
 		}
 		return clientCallback;
 	}
-	
-	
 
 	@Override
 	public void onClick(View v) {

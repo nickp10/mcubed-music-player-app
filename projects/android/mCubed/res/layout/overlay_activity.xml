@@ -26,6 +26,10 @@
 			android:text="Open mCubed" 
 			android:id="@+id/ova_open_button"/>
 	</LinearLayout>
+	<dev.paddock.adp.mCubed.controls.MountDisplay
+		android:layout_height="fill_parent"
+		android:layout_width="fill_parent"
+		android:id="@+id/ova_mount_display" />
 	<dev.paddock.adp.mCubed.controls.ProgressDisplay
 		android:layout_height="fill_parent"
 		android:layout_width="fill_parent"

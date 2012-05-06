@@ -12,6 +12,10 @@
 			android:layout_width="wrap_content"
 			android:text="@string/about_tmp_text" />
 	</LinearLayout>
+	<dev.paddock.adp.mCubed.controls.MountDisplay
+		android:layout_height="fill_parent"
+		android:layout_width="fill_parent"
+		android:id="@+id/aa_mount_display" />
 	<dev.paddock.adp.mCubed.controls.ProgressDisplay
 		android:layout_height="fill_parent"
 		android:layout_width="fill_parent"

@@ -12,6 +12,7 @@ import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.controls.MountDisplay;
 import dev.paddock.adp.mCubed.controls.NowPlayingView;
 import dev.paddock.adp.mCubed.controls.ProgressDisplay;
 import dev.paddock.adp.mCubed.model.MediaStatus;
@@ -24,6 +25,7 @@ public class NowPlayingActivity extends TabActivity implements IActivity, IProvi
 	private ClientReceiver clientReceiver;
 	private ClientCallback clientCallback;
 	private NowPlayingView nowPlayingView;
+	private MountDisplay mountDisplay;
 	private ProgressDisplay progressDisplay;
 	private TabHost tabHost;
 	
@@ -72,6 +74,7 @@ public class NowPlayingActivity extends TabActivity implements IActivity, IProvi
 	@Override
 	public void findViews() {
 		tabHost = (TabHost)findViewById(android.R.id.tabhost);
+		mountDisplay = (MountDisplay)findViewById(R.id.npa_mount_display);
 		progressDisplay = (ProgressDisplay)findViewById(R.id.npa_progress_display);
 	}
 
@@ -98,7 +101,7 @@ public class NowPlayingActivity extends TabActivity implements IActivity, IProvi
 	
 	@Override
 	public List<IProvideClientReceiver> getClientReceivers() {
-		return Arrays.<IProvideClientReceiver>asList(this, progressDisplay);
+		return Arrays.<IProvideClientReceiver>asList(this, mountDisplay, progressDisplay);
 	}
 
 	@Override

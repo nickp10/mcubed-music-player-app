@@ -106,7 +106,7 @@ public class ActivityUtils {
 	}
 	
 	public static <E extends Activity & IActivity> boolean onPrepareOptionsMenu(E activity, Menu menu) {
-		return App.isInitialized();
+		return App.isInitialized() && App.isMounted();
 	}
 	
 	public static <E extends Activity & IActivity> boolean onOptionsItemSelected(E activity, MenuItem item) {

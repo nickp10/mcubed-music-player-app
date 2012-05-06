@@ -125,6 +125,10 @@ public class App extends Application {
 		return initStatus == InitStatus.Initialized;
 	}
 	
+	public static boolean isMounted() {
+		return getMount().isMounted();
+	}
+	
 	public static boolean isServiceRunning() {
 		return isServiceRunning;
 	}
