@@ -62,14 +62,6 @@
     <property name="processing.libs.dir" value="processing-libs"/>
     <property name="processing.libs.absolute.dir" value="${processing.libs.dir}"/>
 
-    <!-- AndroidMockRuntime must be converted to .dex -->
-    <path id="out.dex.jar.input.ref">
-        <path refid="project.libraries.jars" />
-        <fileset dir="${processing.libs.absolute.dir}">
-            <include name="AndroidMockRuntime.jar"/>
-        </fileset>
-    </path>
-
     <!-- Import the actual build file.
 
          To customize existing targets, there are two options:
@@ -175,10 +167,12 @@
     <import file="${sdk.dir}/tools/ant/build.xml" />
 
     <target name="run-coverage">
-        <exec executable="cmd" failonerror="true">
-            <arg value="/c" />
-            <arg line="ant all clean emma debug install test" />
-        </exec>
+    	<antcall target="all" />
+    	<antcall target="clean" />
+    	<antcall target="emma" />
+    	<antcall target="debug" />
+    	<antcall target="installd" />
+    	<antcall target="test" />
         <exec executable="cmd">
             <arg value="/c" />
             <arg value="coverage\coverage.html" />

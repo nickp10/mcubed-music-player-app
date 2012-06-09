@@ -457,4 +457,23 @@ public class Utilities {
 		} catch (Exception e) { }
 		return false;
 	}
+	
+	/**
+	 * Format the time (in milliseconds) into a readable format.
+	 * @param millis The milliseconds to format.
+	 * @return The time in mm:ss format.
+	 */
+	public static String formatTime(long millis) {
+		StringBuilder builder = new StringBuilder();
+		long hours = millis / 3600000;
+		millis %= 3600000;
+		long minutes = millis / 60000;
+		millis %= 60000;
+		long seconds = millis / 1000;
+		if (hours > 0) {
+			builder.append(String.format("%02d:", hours));
+		}
+		builder.append(String.format("%02d:%02d", minutes, seconds));
+		return builder.toString();
+	}
 }

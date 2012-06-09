@@ -37,16 +37,16 @@ public class ProgressDisplay extends LinearLayout implements View.OnClickListene
 		progressBar = (ProgressBar)findViewById(R.id.pd_progress);
 		
 		// Initialize the views
-		initProgress(App.getInitStatus());
+		initProgress(App.getInitStatus(), App.isMounted());
 		
 		// Register listeners
 		setOnClickListener(this);
 	}
 	
-	private void initProgress(InitStatus initStatus) {
-		if (initStatus == InitStatus.Initializing) {
+	private void initProgress(InitStatus initStatus, boolean isMounted) {
+		if (initStatus == InitStatus.Initializing && isMounted) {
 			showProgress("Initializing...", 0);
-		} else if (initStatus == InitStatus.Initialized) {
+		} else if (initStatus == InitStatus.Initialized || !isMounted) {
 			hideProgress();
 		}
 	}
@@ -77,7 +77,12 @@ public class ProgressDisplay extends LinearLayout implements View.OnClickListene
 			clientCallback = new ClientCallback() {
 				@Override
 				public void propertyInitStatusChanged(InitStatus initStatus) {
-					initProgress(initStatus);
+					initProgress(initStatus, App.isMounted());
+				}
+				
+				@Override
+				public void propertyMountChanged(boolean isMounted) {
+					initProgress(App.getInitStatus(), isMounted);
 				}
 				
 				@Override
