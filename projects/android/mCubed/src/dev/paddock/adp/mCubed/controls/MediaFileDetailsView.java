@@ -12,7 +12,7 @@ import dev.paddock.adp.mCubed.model.MediaFile;
 import dev.paddock.adp.mCubed.utilities.App;
 
 public class MediaFileDetailsView extends LinearLayout {
-	private TextView artistTextView, albumTextView, titleTextView, genreTextView, trackTextView, yearTextView;
+	private TextView artistTextView, albumTextView, titleTextView, genreTextView, trackTextView, yearTextView, durationTextView;
 	private ImageView coverImageView;
 	private MediaFile mediaFile;
 	
@@ -39,6 +39,7 @@ public class MediaFileDetailsView extends LinearLayout {
 		genreTextView = (TextView)findViewById(R.id.mfdv_genre_textView);
 		trackTextView = (TextView)findViewById(R.id.mfdv_track_textView);
 		yearTextView = (TextView)findViewById(R.id.mfdv_year_textView);
+		durationTextView = (TextView)findViewById(R.id.mfdv_duration_textView);
 		
 		// Initialize the views
 		updateViews();
@@ -48,7 +49,7 @@ public class MediaFileDetailsView extends LinearLayout {
 		// Update the media file information display
 		Uri art = null;
 		if (mediaFile == null) {
-			for (TextView textView : new TextView[] { artistTextView, albumTextView, titleTextView, genreTextView, trackTextView, yearTextView }) {
+			for (TextView textView : new TextView[] { artistTextView, albumTextView, titleTextView, genreTextView, trackTextView, yearTextView, durationTextView }) {
 				textView.setText("Unknown");
 			}
 		} else {
@@ -59,6 +60,7 @@ public class MediaFileDetailsView extends LinearLayout {
 			genreTextView.setText(mediaFile.getGenre());
 			trackTextView.setText(Integer.toString(mediaFile.getTrack()));
 			yearTextView.setText(Integer.toString(mediaFile.getYear()));
+			durationTextView.setText(mediaFile.getDurationString());
 		}
 		
 		// Update the album art

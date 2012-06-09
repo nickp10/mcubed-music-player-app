@@ -399,6 +399,14 @@ public class MediaFile {
 	}
 	
 	/**
+	 * Retrieve the duration of the media file (in a readable mm:ss format).
+	 * @return The duration of the media file.
+	 */
+	public String getDurationString() {
+		return Utilities.formatTime(getDuration());
+	}
+	
+	/**
 	 * Retrieve the URI for the location to the media file.
 	 * @return The URI for the location to the media file.
 	 */
