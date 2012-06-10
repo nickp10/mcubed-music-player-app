@@ -337,7 +337,7 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	
 	@Override
 	public void itemAdded(BindingList<E> list, int location, E item) {
-		addItem(item);
+		addItem(location, item);
 		notifyDataSetChanged();
 	}
 
@@ -355,6 +355,10 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	}
 	
 	private final void addItem(E item) {
+		addItem(-1, item);
+	}
+	
+	private final void addItem(int index, E item) {
 		// Determine the item's key
 		String key = DEFAULT_KEY;
 		IGrouper<E> grouper = getGrouper();
@@ -371,10 +375,14 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 			list = new ArrayList<E>();
 			map.put(key, list);
 		} else {
-			list = new SortedList<E>(getSorter());
+			list = new SortedList<E>(sorter);
 			map.put(key, list);
 		}
-		list.add(item);
+		if (index < 0 || index > list.size()) {
+			list.add(item);
+		} else {
+			list.add(index, item);
+		}
 	}
 	
 	private final boolean removeItem(E item) {

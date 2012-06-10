@@ -14,7 +14,7 @@ import dev.paddock.adp.mCubed.model.MediaFile;
 import dev.paddock.adp.mCubed.utilities.App;
 
 public class MediaFileViewItem implements IViewItem<MediaFile> {
-	private TextView textView;
+	protected TextView textView;
 	
 	@Override
 	public void findViews(View rootView) {

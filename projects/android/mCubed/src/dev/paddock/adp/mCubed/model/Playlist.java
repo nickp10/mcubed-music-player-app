@@ -348,12 +348,20 @@ public class Playlist {
 		destinationList.addAll(files);
 	}
 	
+	public BindingList<MediaFile> getHistory() {
+		return playMode.getHistory();
+	}
+	
+	public BindingList<MediaFile> getQueue() {
+		return playMode.getQueue();
+	}
+	
 	public String getHistoryList() {
-		return generateList(playMode.getHistory());
+		return generateList(getHistory());
 	}
 	
 	public String getQueueList() {
-		return generateList(playMode.getQueue());
+		return generateList(getQueue());
 	}
 	
 	public void reset(String historyIDs, String queueIDs, long currentID) {

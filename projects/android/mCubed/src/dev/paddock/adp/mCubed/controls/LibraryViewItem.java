@@ -18,8 +18,8 @@ import dev.paddock.adp.mCubed.model.MediaGrouping;
 import dev.paddock.adp.mCubed.utilities.App;
 
 public class LibraryViewItem implements IViewItem<MediaGrouping> {
-	public TextView textView;
-	public ImageView coverView;
+	private TextView textView;
+	private ImageView coverView;
 	
 	@Override
 	public void findViews(View rootView) {

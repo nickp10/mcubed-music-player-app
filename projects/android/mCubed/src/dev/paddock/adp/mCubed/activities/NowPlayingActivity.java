@@ -14,16 +14,19 @@ import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.controls.MountDisplay;
 import dev.paddock.adp.mCubed.controls.NowPlayingView;
+import dev.paddock.adp.mCubed.controls.PlaylistView;
 import dev.paddock.adp.mCubed.controls.ProgressDisplay;
 import dev.paddock.adp.mCubed.model.MediaStatus;
 import dev.paddock.adp.mCubed.receivers.ClientReceiver;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
 import dev.paddock.adp.mCubed.services.ClientCallback;
 import dev.paddock.adp.mCubed.services.IClientCallback;
+import dev.paddock.adp.mCubed.utilities.App;
 
 public class NowPlayingActivity extends TabActivity implements IActivity, IProvideClientReceiver {
 	private ClientReceiver clientReceiver;
 	private ClientCallback clientCallback;
+	private PlaylistView historyView, queueView;
 	private NowPlayingView nowPlayingView;
 	private MountDisplay mountDisplay;
 	private ProgressDisplay progressDisplay;
@@ -81,9 +84,13 @@ public class NowPlayingActivity extends TabActivity implements IActivity, IProvi
 	@Override
 	public void setupViews() {
 		nowPlayingView = new NowPlayingView(this);
+		historyView = new PlaylistView(this);
+		queueView = new PlaylistView(this);
+		historyView.setPlaylist(App.getNowPlaying(), true);
+		queueView.setPlaylist(App.getNowPlaying(), false);
 		createTabSpec("Now Playing", nowPlayingView);
-		createTabSpec("History", new View(this));
-		createTabSpec("Queue", new View(this));
+		createTabSpec("History", historyView);
+		createTabSpec("Queue", queueView);
 	}
 
 	@Override

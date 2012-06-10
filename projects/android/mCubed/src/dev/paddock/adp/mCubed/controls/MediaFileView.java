@@ -38,7 +38,7 @@ public class MediaFileView extends LinearLayout {
 		inflater.inflate(R.layout.media_file_view, this, true);
 		
 		// Find and initialize the list view
-		listView = (ListView)findViewById(R.id.mfv_list_view);
+		listView = (ListView)findViewById(R.id.mfv_listView);
 		itemsAdapter.registerWithListView(listView);
 	}
 	

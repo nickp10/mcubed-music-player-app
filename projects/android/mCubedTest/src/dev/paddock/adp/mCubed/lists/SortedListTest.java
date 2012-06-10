@@ -3,10 +3,10 @@ package dev.paddock.adp.mCubed.lists;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import dev.paddock.adp.mCubed.TestUtils;
-
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import dev.paddock.adp.mCubed.TestUtils;
+import dev.paddock.adp.mCubed.utilities.Comparators;
 
 public class SortedListTest extends TestCase {
 	private static final Comparator<String> comparer = new Comparator<String>() {
@@ -35,6 +35,22 @@ public class SortedListTest extends TestCase {
 		
 		TestUtils.assertSequenceEquals(new String[] {
 			"Adam", "Billy", "Flutie", "Hank", "Helga", "Joe", "Manny", "Xavier"
+		}, sortedList);
+	}
+	
+	public void testAddItemsIteratorIsReverseSorted() {
+		SortedList<String> sortedList = new SortedList<String>(new Comparators.ReverseComparator<String>());
+		sortedList.add("Hank");
+		sortedList.add("Helga");
+		sortedList.add("Flutie");
+		sortedList.add("Adam");
+		sortedList.add("Manny");
+		sortedList.add("Xavier");
+		sortedList.add("Joe");
+		sortedList.add("Billy");
+		
+		TestUtils.assertSequenceEquals(new String[] {
+			"Billy", "Joe", "Xavier", "Manny", "Adam", "Flutie", "Helga", "Hank"
 		}, sortedList);
 	}
 	
