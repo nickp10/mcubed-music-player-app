@@ -1,37 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_height="250dp"
-	android:layout_width="150dp"
+	android:layout_height="450dp"
+	android:layout_width="300dp"
 	android:layout_gravity="center">
 	<LinearLayout
 		android:layout_height="fill_parent"
 		android:layout_width="fill_parent"
 		android:orientation="vertical"
-		android:padding="10dp"
-		android:background="#00FF00">
-		<Button
-			android:layout_width="fill_parent"
+		android:background="@drawable/oa_background">
+		<dev.paddock.adp.mCubed.controls.MediaFileDetailsView
 			android:layout_height="wrap_content"
-			android:text="Play" 
-			android:id="@+id/ova_play_button"/>
-		<Button
 			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:text="Dismiss" 
-			android:id="@+id/ova_dismiss_button"/>
-		<Button
+			android:id="@+id/oa_media_file_details_view" />
+		<dev.paddock.adp.mCubed.controls.PlayerControls
+			android:layout_height="0dp"
 			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:text="Open mCubed" 
-			android:id="@+id/ova_open_button"/>
+			android:layout_weight="1"
+			android:gravity="center_vertical"
+			android:id="@+id/oa_player_controls" />
 	</LinearLayout>
 	<dev.paddock.adp.mCubed.controls.MountDisplay
 		android:layout_height="fill_parent"
 		android:layout_width="fill_parent"
-		android:id="@+id/ova_mount_display" />
+		android:id="@+id/oa_mount_display" />
 	<dev.paddock.adp.mCubed.controls.ProgressDisplay
 		android:layout_height="fill_parent"
 		android:layout_width="fill_parent"
-		android:id="@+id/ova_progress_display" />
+		android:id="@+id/oa_progress_display" />
 </FrameLayout>

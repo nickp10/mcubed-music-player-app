@@ -16,16 +16,10 @@ import dev.paddock.adp.mCubed.controls.MountDisplay;
 import dev.paddock.adp.mCubed.controls.NowPlayingView;
 import dev.paddock.adp.mCubed.controls.PlaylistView;
 import dev.paddock.adp.mCubed.controls.ProgressDisplay;
-import dev.paddock.adp.mCubed.model.MediaStatus;
-import dev.paddock.adp.mCubed.receivers.ClientReceiver;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
-import dev.paddock.adp.mCubed.services.ClientCallback;
-import dev.paddock.adp.mCubed.services.IClientCallback;
 import dev.paddock.adp.mCubed.utilities.App;
 
-public class NowPlayingActivity extends TabActivity implements IActivity, IProvideClientReceiver {
-	private ClientReceiver clientReceiver;
-	private ClientCallback clientCallback;
+public class NowPlayingActivity extends TabActivity implements IActivity {
 	private PlaylistView historyView, queueView;
 	private NowPlayingView nowPlayingView;
 	private MountDisplay mountDisplay;
@@ -95,7 +89,6 @@ public class NowPlayingActivity extends TabActivity implements IActivity, IProvi
 
 	@Override
 	public void updateViews() {
-		nowPlayingView.updateViews();
 	}
 
 	@Override
@@ -108,30 +101,7 @@ public class NowPlayingActivity extends TabActivity implements IActivity, IProvi
 	
 	@Override
 	public List<IProvideClientReceiver> getClientReceivers() {
-		return Arrays.<IProvideClientReceiver>asList(this, mountDisplay, progressDisplay);
-	}
-
-	@Override
-	public ClientReceiver getClientReceiver() {
-		if (clientReceiver == null) {
-			clientReceiver = new ClientReceiver(getClientCallback(), false);
-		}
-		return clientReceiver;
-	}
-	
-	private IClientCallback getClientCallback() {
-		if (clientCallback == null) {
-			clientCallback = new ClientCallback() {
-				public void propertyPlaybackIDChanged(long playbackID) {
-					updateViews();
-				}
-				
-				public void propertyPlaybackStatusChanged(MediaStatus playbackStatus) {
-					updateViews();
-				}
-			};
-		}
-		return clientCallback;
+		return Arrays.<IProvideClientReceiver>asList(mountDisplay, progressDisplay, nowPlayingView, nowPlayingView.getPlayerControls());
 	}
 	
 	private void createTabSpec(String display, final View contentView) {

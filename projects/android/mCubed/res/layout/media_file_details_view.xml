@@ -4,11 +4,11 @@
 	android:layout_width="fill_parent"
 	android:orientation="vertical">
 	<ImageView
-		android:layout_height="200dp"
-		android:layout_width="200dp"
+		android:layout_height="175dp"
+		android:layout_width="175dp"
 		android:layout_gravity="center_horizontal"
-		android:paddingTop="20dp"
-		android:paddingBottom="20dp"
+		android:paddingTop="10dp"
+		android:paddingBottom="10dp"
 		android:contentDescription="@string/cover_art_content"
 		android:id="@+id/mfdv_cover_image" />
 	<LinearLayout
