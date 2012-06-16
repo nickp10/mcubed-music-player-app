@@ -6,7 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.model.MediaStatus;
 import dev.paddock.adp.mCubed.receivers.ClientReceiver;
@@ -21,7 +23,9 @@ public class PlayerControls extends LinearLayout implements IProvideClientReceiv
 	private ClientReceiver clientReceiver;
 	private ClientCallback clientCallback;
 	private ImageButton actionButton, nextButton, prevButton;
-	private ProgressBar seekBar;
+	private TextView seekText, durationText;
+	private SeekBar seekBar;
+	private boolean autoUpdateSeek = true;
 	
 	/**
 	 * Click listener for the play/pause action button.
@@ -72,6 +76,34 @@ public class PlayerControls extends LinearLayout implements IProvideClientReceiv
 		}
 	};
 	
+	/**
+	 * Listener for keeping track of the user seeking.
+	 */
+	private OnSeekBarChangeListener seekBarChangeListener = new OnSeekBarChangeListener() {
+		private int lastUserSeek = Integer.MIN_VALUE;
+		
+		@Override
+		public void onStopTrackingTouch(SeekBar seekBar) {
+			if (lastUserSeek >= 0) {
+				App.getPlayer().setSeek(lastUserSeek);
+			}
+			autoUpdateSeek = true;
+		}
+		
+		@Override
+		public void onStartTrackingTouch(SeekBar seekBar) {
+			autoUpdateSeek = false;
+			lastUserSeek = Integer.MIN_VALUE;
+		}
+		
+		@Override
+		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+			if (fromUser) {
+				lastUserSeek = progress;
+			}
+		}
+	};
+	
 	public PlayerControls(Context context) {
 		super(context);
 		initView(context);
@@ -91,12 +123,15 @@ public class PlayerControls extends LinearLayout implements IProvideClientReceiv
 		actionButton = (ImageButton)findViewById(R.id.pc_action_button);
 		prevButton = (ImageButton)findViewById(R.id.pc_prev_button);
 		nextButton = (ImageButton)findViewById(R.id.pc_next_button);
-		seekBar = (ProgressBar)findViewById(R.id.pc_seek_bar);
+		seekBar = (SeekBar)findViewById(R.id.pc_seek_bar);
+		seekText = (TextView)findViewById(R.id.pc_seek_text);
+		durationText = (TextView)findViewById(R.id.pc_duration_text);
 		
 		// Register listeners
 		actionButton.setOnClickListener(actionClickListener);
 		prevButton.setOnClickListener(prevClickListener);
 		nextButton.setOnClickListener(nextClickListener);
+		seekBar.setOnSeekBarChangeListener(seekBarChangeListener);
 		
 		// Initialize the views
 		updateViews();
@@ -110,9 +145,17 @@ public class PlayerControls extends LinearLayout implements IProvideClientReceiv
 			actionButton.setImageResource(R.drawable.ic_media_play);
 		}
 		
+		// Update the seek text
+		int seek = App.getPlayer().getSeek();
+		int duration = App.getPlayer().getDuration();
+		seekText.setText(Utilities.formatTime(seek));
+		durationText.setText(Utilities.formatTime(duration));
+		
 		// Update the seek progress
-		seekBar.setMax(App.getPlayer().getDuration());
-		seekBar.setProgress(App.getPlayer().getSeek());
+		seekBar.setMax(duration);
+		if (autoUpdateSeek) {
+			seekBar.setProgress(seek);
+		}
 	}
 	
 	@Override
