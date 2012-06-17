@@ -1,31 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_height="450dp"
-	android:layout_width="300dp"
-	android:layout_gravity="center">
-	<LinearLayout
+	android:layout_height="wrap_content"
+	android:layout_width="fill_parent"
+	android:layout_marginLeft="20dp"
+	android:layout_marginRight="20dp"
+	android:layout_gravity="center_vertical">
+	<dev.paddock.adp.mCubed.controls.NowPlayingView
 		android:layout_height="fill_parent"
 		android:layout_width="fill_parent"
-		android:orientation="vertical"
-		android:background="@drawable/oa_background">
-		<dev.paddock.adp.mCubed.controls.MediaFileDetailsView
-			android:layout_height="wrap_content"
-			android:layout_width="fill_parent"
-			android:id="@+id/oa_media_file_details_view" />
-		<dev.paddock.adp.mCubed.controls.PlayerControls
-			android:layout_height="0dp"
-			android:layout_width="fill_parent"
-			android:layout_weight="1"
-			android:gravity="center_vertical"
-			android:id="@+id/oa_player_controls" />
-	</LinearLayout>
+		android:background="@drawable/oa_background"
+		android:id="@+id/oa_now_playing_view" />
+	<ImageView
+	    android:layout_height="36dp"
+	    android:layout_width="36dp"
+	    android:layout_marginTop="5dp"
+	    android:layout_marginRight="5dp"
+	    android:layout_gravity="right"
+	    android:contentDescription="@string/button_close_content"
+	    android:src="@android:drawable/ic_menu_close_clear_cancel"
+	    android:id="@+id/oa_close_button" />
 	<dev.paddock.adp.mCubed.controls.MountDisplay
 		android:layout_height="fill_parent"
 		android:layout_width="fill_parent"
+		android:layout_gravity="center_vertical"
 		android:id="@+id/oa_mount_display" />
 	<dev.paddock.adp.mCubed.controls.ProgressDisplay
 		android:layout_height="fill_parent"
 		android:layout_width="fill_parent"
+		android:layout_gravity="center_vertical"
 		android:id="@+id/oa_progress_display" />
 </FrameLayout>

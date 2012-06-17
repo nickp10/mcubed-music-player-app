@@ -101,7 +101,7 @@ public class NowPlayingActivity extends TabActivity implements IActivity {
 	
 	@Override
 	public List<IProvideClientReceiver> getClientReceivers() {
-		return Arrays.<IProvideClientReceiver>asList(mountDisplay, progressDisplay, nowPlayingView, nowPlayingView.getPlayerControls());
+		return Arrays.<IProvideClientReceiver>asList(mountDisplay, progressDisplay, nowPlayingView, nowPlayingView.getPlayerControls(), historyView.getPlayerControls(), queueView.getPlayerControls());
 	}
 	
 	private void createTabSpec(String display, final View contentView) {

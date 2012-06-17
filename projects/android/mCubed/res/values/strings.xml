@@ -6,6 +6,7 @@
 	<string name="app_widget_4x1">mCubed (4x1)</string>
 	<string name="about_tmp_text">About</string>
 	<string name="button_action_content">Play/Pause</string>
+	<string name="button_close_content">Close</string>
 	<string name="button_next_content">Next</string>
 	<string name="button_prev_content">Previous</string>
 	<string name="cover_art_content">Cover Artwork</string>

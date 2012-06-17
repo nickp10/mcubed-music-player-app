@@ -5,6 +5,7 @@
 	android:layout_width="fill_parent"
 	android:layout_marginLeft="10dp"
 	android:layout_marginRight="10dp"
+	android:layout_gravity="center_vertical"
 	android:background="@drawable/w41_background">
 	<LinearLayout
 		android:layout_height="fill_parent"
@@ -23,9 +24,9 @@
 		<LinearLayout
 			android:layout_height="wrap_content"
 			android:layout_width="fill_parent"
-			android:layout_gravity="center_vertical"
 			android:layout_marginLeft="10dp"
 			android:layout_marginRight="10dp"
+			android:layout_gravity="center_vertical"
 			android:orientation="vertical">
 			<FrameLayout
 				android:layout_height="wrap_content"
@@ -89,7 +90,7 @@
 		android:layout_width="fill_parent"
 		android:layout_marginLeft="10dp"
 		android:layout_marginRight="10dp"
-		android:layout_gravity="center"
+		android:layout_gravity="center_vertical"
 		android:gravity="center"
 		android:orientation="vertical"
 		android:id="@+id/w41_init_layout">
