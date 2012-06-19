@@ -3,7 +3,6 @@ package dev.paddock.adp.mCubed.controls;
 import java.util.Comparator;
 
 import android.content.Context;
-
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.lists.BindingListAdapter;
 import dev.paddock.adp.mCubed.lists.IViewItem;
@@ -31,6 +30,5 @@ public class MediaFileListViewAdapter extends BindingListAdapter<MediaFile> {
 				return MediaFile.compare(leftFile, rightFile, MediaFileValue.Title);
 			}
 		});
-		setGrouper(MediaFileValue.Artist);
 	}
 }

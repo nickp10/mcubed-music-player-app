@@ -2,10 +2,32 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="fill_parent"
-	android:layout_width="fill_parent">
+	android:layout_width="fill_parent"
+	android:orientation="vertical">
+	<LinearLayout 
+	    android:layout_height="wrap_content"
+	    android:layout_width="fill_parent"
+	    android:layout_marginLeft="10dp"
+	    android:layout_marginRight="10dp"
+	    android:layout_marginTop="5dp"
+	    android:gravity="center_vertical">
+	    <TextView 
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_marginRight="5dp"
+	        android:layout_gravity="center_vertical"
+	        android:text="@string/mflv_group_label" />
+	    <Spinner
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:layout_gravity="center_vertical"
+			android:prompt="@string/mflv_group_prompt"
+			android:id="@+id/mflv_group_spinner" />
+	</LinearLayout>
 	<ListView
-	    android:layout_height="fill_parent"
+	    android:layout_height="0dp"
 		android:layout_width="fill_parent"
+		android:layout_weight="1"
 		android:fastScrollEnabled="true"
-		android:id="@+id/mfv_listView" />
+		android:id="@+id/mflv_list_view" />
 </LinearLayout>

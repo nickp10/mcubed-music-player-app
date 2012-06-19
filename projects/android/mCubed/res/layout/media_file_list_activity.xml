@@ -3,15 +3,10 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="fill_parent"
 	android:layout_width="fill_parent">
-	<LinearLayout
+	<dev.paddock.adp.mCubed.controls.MediaFileListView
 		android:layout_height="fill_parent"
 		android:layout_width="fill_parent"
-		android:orientation="vertical">
-		<dev.paddock.adp.mCubed.controls.MediaFileListView
-			android:layout_height="fill_parent"
-			android:layout_width="fill_parent"
-			android:id="@+id/mfla_media_file_view" />
-	</LinearLayout>
+		android:id="@+id/mfla_media_file_view" />
 	<dev.paddock.adp.mCubed.controls.MountDisplay
 		android:layout_height="fill_parent"
 		android:layout_width="fill_parent"
