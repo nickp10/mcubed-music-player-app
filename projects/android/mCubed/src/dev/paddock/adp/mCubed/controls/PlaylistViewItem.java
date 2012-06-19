@@ -4,7 +4,7 @@ import android.view.ContextMenu;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.model.MediaFile;
 
-public class PlaylistViewItem extends MediaFileViewItem {
+public class PlaylistViewItem extends MediaFileListViewItem {
 	@Override
 	public void updateViews(MediaFile item) {
 		textView.setText(String.format("%s - %s", item.getArtist(), item.getTitle()));

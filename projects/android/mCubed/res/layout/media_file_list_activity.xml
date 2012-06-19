@@ -7,7 +7,7 @@
 		android:layout_height="fill_parent"
 		android:layout_width="fill_parent"
 		android:orientation="vertical">
-		<dev.paddock.adp.mCubed.controls.MediaFileView
+		<dev.paddock.adp.mCubed.controls.MediaFileListView
 			android:layout_height="fill_parent"
 			android:layout_width="fill_parent"
 			android:id="@+id/mfla_media_file_view" />

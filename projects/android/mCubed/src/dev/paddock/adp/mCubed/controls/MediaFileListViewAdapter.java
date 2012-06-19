@@ -11,18 +11,18 @@ import dev.paddock.adp.mCubed.lists.IViewItemFactory;
 import dev.paddock.adp.mCubed.model.MediaFile;
 import dev.paddock.adp.mCubed.model.MediaFileValue;
 
-public class MediaFileViewAdapter extends BindingListAdapter<MediaFile> {
-	public MediaFileViewAdapter(Context context) {
+public class MediaFileListViewAdapter extends BindingListAdapter<MediaFile> {
+	public MediaFileListViewAdapter(Context context) {
 		super(context);
 	}
 	
 	@Override
 	protected void onBeforeInitialize() {
-		setItemViewResource(R.layout.media_file_view_item);
+		setItemViewResource(R.layout.media_file_list_view_item);
 		setItemViewItemFactory(new IViewItemFactory<MediaFile>() {
 			@Override
 			public IViewItem<MediaFile> createViewItem() {
-				return new MediaFileViewItem();
+				return new MediaFileListViewItem();
 			}
 		});
 		setSorter(new Comparator<MediaFile>() {

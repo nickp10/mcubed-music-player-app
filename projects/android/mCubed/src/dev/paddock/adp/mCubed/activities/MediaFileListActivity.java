@@ -9,7 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
-import dev.paddock.adp.mCubed.controls.MediaFileView;
+import dev.paddock.adp.mCubed.controls.MediaFileListView;
 import dev.paddock.adp.mCubed.controls.MountDisplay;
 import dev.paddock.adp.mCubed.controls.ProgressDisplay;
 import dev.paddock.adp.mCubed.model.IMediaFileProvider;
@@ -17,7 +17,7 @@ import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class MediaFileListActivity extends Activity implements IActivity {
-	private MediaFileView mediaFileView;
+	private MediaFileListView mediaFileView;
 	private MountDisplay mountDisplay;
 	private ProgressDisplay progressDisplay;
 	
@@ -65,7 +65,7 @@ public class MediaFileListActivity extends Activity implements IActivity {
 
 	@Override
 	public void findViews() {
-		mediaFileView = (MediaFileView)findViewById(R.id.mfla_media_file_view);
+		mediaFileView = (MediaFileListView)findViewById(R.id.mfla_media_file_view);
 		mountDisplay = (MountDisplay)findViewById(R.id.mfla_mount_display);
 		progressDisplay = (ProgressDisplay)findViewById(R.id.mfla_progress_display);
 	}

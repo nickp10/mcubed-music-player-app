@@ -13,7 +13,7 @@ import dev.paddock.adp.mCubed.model.ListAction;
 import dev.paddock.adp.mCubed.model.MediaFile;
 import dev.paddock.adp.mCubed.utilities.App;
 
-public class MediaFileViewItem implements IViewItem<MediaFile> {
+public class MediaFileListViewItem implements IViewItem<MediaFile> {
 	protected TextView textView;
 	
 	@Override

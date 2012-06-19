@@ -14,28 +14,28 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-public class MediaFileView extends LinearLayout {
+public class MediaFileListView extends LinearLayout {
 	private ListView listView;
 	private IMediaFileProvider mediaFileProvider;
 	private BindingListAdapter<MediaFile> itemsAdapter;
 	
-	public MediaFileView(Context context) {
+	public MediaFileListView(Context context) {
 		super(context);
 		initView(context);
 	}
 	
-	public MediaFileView(Context context, AttributeSet attrs) {
+	public MediaFileListView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		initView(context);
 	}
 	
 	private void initView(Context context) {
 		// Initialize the list for the list view
-		itemsAdapter = new MediaFileViewAdapter(context);
+		itemsAdapter = new MediaFileListViewAdapter(context);
 		
 		// Inflate the layout
 		LayoutInflater inflater = App.getSystemService(LayoutInflater.class, context, Context.LAYOUT_INFLATER_SERVICE);
-		inflater.inflate(R.layout.media_file_view, this, true);
+		inflater.inflate(R.layout.media_file_list_view, this, true);
 		
 		// Find and initialize the list view
 		listView = (ListView)findViewById(R.id.mfv_listView);
