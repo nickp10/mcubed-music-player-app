@@ -2,9 +2,21 @@
 <resources>
 	<string name="app_name">mCubed</string>
 	<string name="app_version">1.00</string>
+	<string name="app_name_version">mCubed 1.00</string>
 	<string name="app_widget_1x1">mCubed (1x1)</string>
 	<string name="app_widget_4x1">mCubed (4x1)</string>
-	<string name="about_tmp_text">About</string>
+	<string name="about_developer_label">Developer:</string>
+	<string name="about_developer_text">Nick Paddock</string>
+	<string name="about_website_label">Website:</string>
+	<string name="about_website_text">http://mcubed.dyndns.info/</string>
+	<string name="about_changelog_label">Change Log:</string>
+	<string name="about_changelog_text"><![CDATA[
+		\t1.00\t- Initial Release\n
+		\t\t\t\t- 1x1 and 4x1 Widgets\n
+		\t\t\t\t- Dynamic Playlists\n
+		\t\t\t\t- Extensive Settings\n
+		\t\t\t\t- \'Persisted Shuffle\', \'Perpetual Shuffle\', and \'Sequential\' Play Modes
+	]]></string>
 	<string name="button_action_content">Play/Pause</string>
 	<string name="button_close_content">Close</string>
 	<string name="button_next_content">Next</string>

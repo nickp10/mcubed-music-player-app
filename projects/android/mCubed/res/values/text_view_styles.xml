@@ -1,4 +1,16 @@
 <resources>
+    <style name="AboutLabel" parent="@android:style/TextAppearance">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginRight">5dp</item>
+		<item name="android:textStyle">bold</item>
+    </style>
+    <style name="AboutText" parent="@android:style/TextAppearance">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_marginTop">10dp</item>
+    </style>
 	<style name="MediaFileDetailLabel" parent="@android:style/TextAppearance">
 	    <item name="android:layout_height">wrap_content</item>
 	    <item name="android:layout_width">wrap_content</item>
