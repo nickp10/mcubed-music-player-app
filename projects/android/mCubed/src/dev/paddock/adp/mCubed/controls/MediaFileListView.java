@@ -37,8 +37,13 @@ public class MediaFileListView extends LinearLayout {
 	private final OnItemSelectedListener groupBySelectedListener = new OnItemSelectedListener() {
 		@Override
 		public void onItemSelected(AdapterView<?> adapter, View view, int position, long id) {
-			MediaFileValue value = (MediaFileValue)adapter.getItemAtPosition(position);
-			itemsAdapter.setGrouper(value);
+			Utilities.pushContext(getContext());
+			try {
+				MediaFileValue value = (MediaFileValue)adapter.getItemAtPosition(position);
+				itemsAdapter.setGrouper(value);
+			} finally {
+				Utilities.popContext();
+			}
 		}
 
 		@Override

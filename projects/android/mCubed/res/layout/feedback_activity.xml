@@ -11,6 +11,11 @@
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:text="@string/feedback_tmp_text" />
+		<Button
+		    android:layout_height="wrap_content"
+		    android:layout_width="wrap_content"
+		    android:text="@string/feedback_tmp_text"
+		    android:id="@+id/fa_submit_button" />
 	</LinearLayout>
 	<dev.paddock.adp.mCubed.controls.MountDisplay
 		android:layout_height="fill_parent"

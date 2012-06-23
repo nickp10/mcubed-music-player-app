@@ -7,15 +7,45 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.Toast;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.controls.MountDisplay;
 import dev.paddock.adp.mCubed.controls.ProgressDisplay;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
+import dev.paddock.adp.mCubed.utilities.Log;
+import dev.paddock.adp.mCubed.utilities.Utilities;
+import dev.paddock.adp.mCubed.utilities.WebService;
 
 public class FeedbackActivity extends Activity implements IActivity {
 	private MountDisplay mountDisplay;
 	private ProgressDisplay progressDisplay;
+	private Button submitButton;
+	
+	/**
+	 * Listener for handling when the feedback form should be submitted.
+	 */
+	private final OnClickListener submitFeedbackListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			Utilities.dispatchToBackgroundThread(FeedbackActivity.this, new Runnable() {
+				@Override
+				public void run() {
+					final String result = WebService.submitFeedback("test@test.com", "Hello");
+					Log.clearLogFile();
+					Utilities.dispatchToUIThread(Utilities.getContext(), new Runnable() {
+						@Override
+						public void run() {
+							Toast.makeText(Utilities.getContext(), "Hello " + result, Toast.LENGTH_LONG).show();	
+						}
+					});
+				}
+			});
+		}
+	};
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -63,6 +93,7 @@ public class FeedbackActivity extends Activity implements IActivity {
 	public void findViews() {
 		mountDisplay = (MountDisplay)findViewById(R.id.fa_mount_display);
 		progressDisplay = (ProgressDisplay)findViewById(R.id.fa_progress_display);
+		submitButton = (Button)findViewById(R.id.fa_submit_button);
 	}
 
 	@Override
@@ -75,6 +106,7 @@ public class FeedbackActivity extends Activity implements IActivity {
 
 	@Override
 	public void registerListeners() {
+		submitButton.setOnClickListener(submitFeedbackListener);
 	}
 	
 	@Override

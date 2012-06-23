@@ -85,7 +85,12 @@ public class PlayerControls extends LinearLayout implements IProvideClientReceiv
 		@Override
 		public void onStopTrackingTouch(SeekBar seekBar) {
 			if (lastUserSeek >= 0) {
-				App.getPlayer().setSeek(lastUserSeek);
+				Utilities.pushContext(getContext());
+				try {
+					App.getPlayer().setSeek(lastUserSeek);
+				} finally {
+					Utilities.popContext();
+				}
 			}
 			autoUpdateSeek = true;
 		}

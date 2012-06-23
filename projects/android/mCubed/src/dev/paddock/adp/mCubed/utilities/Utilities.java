@@ -18,6 +18,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import dev.paddock.adp.mCubed.Schema;
@@ -228,6 +230,33 @@ public class Utilities {
 	
 	public static void popTask() {
 		popFromStack(taskMap);
+	}
+	
+	public static void dispatchToUIThread(final Context context, final Runnable action) {
+		if (action != null) {
+			new Handler(Looper.getMainLooper()).post(new Runnable() {
+				@Override
+				public void run() {
+					Utilities.pushContext(context);
+					try {
+						action.run();
+					} finally {
+						Utilities.popContext();
+					}
+				}
+			});
+		}
+	}
+	
+	public static void dispatchToBackgroundThread(final Context context, final Runnable action) {
+		if (action != null) {
+			new AsyncTask(context) {
+				@Override
+				protected void run() {
+					action.run();
+				}
+			}.execute();
+		}
 	}
 	
 	public static void query(Uri uri, String[] projection, ICursor cursor) {

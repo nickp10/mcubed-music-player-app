@@ -16,8 +16,8 @@ public class Log {
 	public static final int V = 5; // VERBOSE
 	public static final int W = 2; // WARN
 	public static final int SUPPRESS = 0; // SUPPRESS
-	public static final int DEFAULT_FILE_LEVEL = W;
-	private static int fileLevel = DEFAULT_FILE_LEVEL; // MINIMUM LEVEL THAT IS LOGGED TO A FILE
+	public static final int DEFAULT_FILE_LEVEL = W; // MINIMUM LEVEL THAT IS LOGGED TO A FILE
+	private static int fileLevel = DEFAULT_FILE_LEVEL;
 	
 	public static void setFileLoggingEnabled(boolean isFileLoggingEnabled) {
 		if (isFileLoggingEnabled) {
@@ -214,5 +214,9 @@ public class Log {
 	
 	public static String readLogFile() {
 		return Utilities.loadFile(Schema.FILE_LOGS);
+	}
+	
+	public static boolean clearLogFile() {
+		return Utilities.deleteFile(Schema.FILE_LOGS);
 	}
 }
