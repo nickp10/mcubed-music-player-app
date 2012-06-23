@@ -6,6 +6,7 @@ import com.google.android.testing.mocking.UsesMocks;
 
 import dev.paddock.adp.mCubed.MediaFileUtils;
 import dev.paddock.adp.mCubed.MediaGroupingUtils;
+import dev.paddock.adp.mCubed.utilities.Utilities;
 import static dev.paddock.adp.mCubed.TestUtils.assertSequenceEmpty;
 import static dev.paddock.adp.mCubed.TestUtils.assertSequenceEquals;
 
@@ -20,6 +21,7 @@ public class PlaylistTest extends AndroidTestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		Utilities.pushContext(getContext());
 		MediaFileUtils.verifyArrange();
 	}
 	
@@ -27,6 +29,7 @@ public class PlaylistTest extends AndroidTestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		MediaFileUtils.verifyMocks();
+		Utilities.popContext();
 	}
 	
 	public void testAddComposite() {
