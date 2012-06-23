@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">mCubed</string>
-	<string name="app_version">1.00</string>
 	<string name="app_name_version">mCubed 1.00</string>
+	<string name="app_version">1.00</string>
+	<string name="app_web_service">http://192.168.1.121:8080/mCubedServices/</string>
 	<string name="app_widget_1x1">mCubed (1x1)</string>
 	<string name="app_widget_4x1">mCubed (4x1)</string>
 	<string name="about_developer_label">Developer:</string>
@@ -24,6 +25,8 @@
 	<string name="cover_art_content">Cover Artwork</string>
 	<string name="dp_prompt">Select a Unit</string>
 	<string name="feedback_tmp_text">Feedback</string>
+	<string name="feedback_submit_failure">Unable to submit feedback. Make sure you are connected to the Internet.</string>
+	<string name="feedback_submit_success">Feedback submitted successfully. Thank you.</string>
 	<string name="help_tmp_text">Help</string>
 	<string name="mfdv_artist_label">Artist</string>
 	<string name="mfdv_album_label">Album</string>

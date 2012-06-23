@@ -24,6 +24,7 @@ public class Log {
 			fileLevel = DEFAULT_FILE_LEVEL;
 		} else {
 			fileLevel = SUPPRESS;
+			clearLogFile();
 		}
 	}
 	

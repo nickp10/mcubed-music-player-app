@@ -32,6 +32,7 @@ import dev.paddock.adp.mCubed.model.WhereClause;
 public class Utilities {
 	private static final Map<Long, Stack<Context>> contextMap = new HashMap<Long, Stack<Context>>();
 	private static final Map<Long, Stack<AsyncTask>> taskMap = new HashMap<Long, Stack<AsyncTask>>();
+	private static Handler handler;
 	
 	/**
 	 * Prevents an instance of Utilities
@@ -232,9 +233,16 @@ public class Utilities {
 		popFromStack(taskMap);
 	}
 	
+	public static Handler getHandler() {
+		if (handler == null) {
+			handler = new Handler(Looper.getMainLooper());
+		}
+		return handler;
+	}
+	
 	public static void dispatchToUIThread(final Context context, final Runnable action) {
 		if (action != null) {
-			new Handler(Looper.getMainLooper()).post(new Runnable() {
+			getHandler().post(new Runnable() {
 				@Override
 				public void run() {
 					Utilities.pushContext(context);

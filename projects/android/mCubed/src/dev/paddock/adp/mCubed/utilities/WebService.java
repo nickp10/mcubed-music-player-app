@@ -11,6 +11,7 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
+import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 
 public class WebService {
@@ -25,7 +26,7 @@ public class WebService {
 	private static String sendHTTPPost(String method, List<? extends NameValuePair> params) {
 		HttpClient httpclient = new DefaultHttpClient();
 		try {
-			HttpPost request = new HttpPost(String.format("%s%s", Schema.WEB_SERVICE_URL, method));
+			HttpPost request = new HttpPost(String.format("%s%s", Utilities.getResourceString(R.string.app_web_service), method));
 			request.setEntity(new UrlEncodedFormEntity(params));
 			return httpclient.execute(request, new BasicResponseHandler());
 		} catch (Exception e) {

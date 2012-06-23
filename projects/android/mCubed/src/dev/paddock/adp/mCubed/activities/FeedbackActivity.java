@@ -15,6 +15,7 @@ import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.controls.MountDisplay;
 import dev.paddock.adp.mCubed.controls.ProgressDisplay;
+import dev.paddock.adp.mCubed.model.Holder;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
 import dev.paddock.adp.mCubed.utilities.Log;
 import dev.paddock.adp.mCubed.utilities.Utilities;
@@ -34,12 +35,22 @@ public class FeedbackActivity extends Activity implements IActivity {
 			Utilities.dispatchToBackgroundThread(FeedbackActivity.this, new Runnable() {
 				@Override
 				public void run() {
-					final String result = WebService.submitFeedback("test@test.com", "Hello");
-					Log.clearLogFile();
+					final Holder<Integer> resource = new Holder<Integer>();
+					String result = WebService.submitFeedback("test@test.com", "Hello");
+					
+					// Determine whether or not the submission succeeded
+					if (Boolean.parseBoolean(result)) {
+						Log.clearLogFile();
+						resource.setValue(R.string.feedback_submit_success);
+					} else {
+						resource.setValue(R.string.feedback_submit_failure);
+					}
+					
+					// Show the user the result
 					Utilities.dispatchToUIThread(Utilities.getContext(), new Runnable() {
 						@Override
 						public void run() {
-							Toast.makeText(Utilities.getContext(), "Hello " + result, Toast.LENGTH_LONG).show();	
+							Toast.makeText(Utilities.getContext(), Utilities.getResourceString(resource.getValue()), Toast.LENGTH_LONG).show();
 						}
 					});
 				}

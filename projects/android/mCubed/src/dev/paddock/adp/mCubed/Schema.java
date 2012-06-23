@@ -116,7 +116,6 @@ public class Schema {
 	public static final int NOTIF_PLAYING_MEDIA = 1;
 	
 	/** WEB SERVICE SCHEMA **/
-	public static final String WEB_SERVICE_URL = "http://192.168.1.121:8080/mCubedServices/";
 	public static final String WS_METHOD_SUBMIT_FEEDBACK = "Feedback";
 	public static final String WS_SUBMIT_FEEDBACK_EMAIL = "Email";
 	public static final String WS_SUBMIT_FEEDBACK_MESSAGE = "Message";
