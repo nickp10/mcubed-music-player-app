@@ -12,11 +12,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -28,6 +30,7 @@ import dev.paddock.adp.mCubed.model.Holder;
 import dev.paddock.adp.mCubed.model.PublishProgress;
 import dev.paddock.adp.mCubed.model.SortClause;
 import dev.paddock.adp.mCubed.model.WhereClause;
+import dev.paddock.adp.mCubed.receivers.MediaKeyReceiver;
 
 public class Utilities {
 	private static final Map<Long, Stack<Context>> contextMap = new HashMap<Long, Stack<Context>>();
@@ -304,6 +307,13 @@ public class Utilities {
 					queryCursor.close();
 				}
 			}
+		}
+	}
+	
+	public static void registerToMediaKeys(Context context) {
+		AudioManager manager = App.getSystemService(AudioManager.class, context, Context.AUDIO_SERVICE);
+		if (manager != null) {
+			manager.registerMediaButtonEventReceiver(new ComponentName(context, MediaKeyReceiver.class));
 		}
 	}
 	

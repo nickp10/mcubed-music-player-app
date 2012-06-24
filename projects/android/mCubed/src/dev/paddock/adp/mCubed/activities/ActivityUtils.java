@@ -92,6 +92,17 @@ public class ActivityUtils {
 		}
 	}
 	
+	public static <E extends Activity & IActivity> void onResume(E activity) {
+		// Start the resume process
+		Utilities.pushContext(activity);
+		try {
+			// Register the media key receiver for media keys
+			Utilities.registerToMediaKeys(activity);
+		} finally {
+			Utilities.popContext();
+		}
+	}
+	
 	public static <E extends Activity & IActivity> boolean onCreateOptionsMenu(E activity, Menu menu) {
 		List<Integer> menuOptions = activity.getMenuOptions();
 		if (menuOptions != null) {

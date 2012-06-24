@@ -1,5 +1,9 @@
 package dev.paddock.adp.mCubed.activities;
 
+import android.os.Bundle;
+import android.preference.ListPreference;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.preferences.NotificationVisibility;
 import dev.paddock.adp.mCubed.preferences.PlayModeEnum;
@@ -9,10 +13,6 @@ import dev.paddock.adp.mCubed.preferences.PreviousAction;
 import dev.paddock.adp.mCubed.preferences.RepeatStatus;
 import dev.paddock.adp.mCubed.utilities.PreferenceManager;
 import dev.paddock.adp.mCubed.utilities.Utilities;
-import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
 
 public class PreferenceActivity extends android.preference.PreferenceActivity {	
 	@Override
@@ -67,6 +67,12 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
 		} finally {
 			Utilities.popContext();
 		}
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		Utilities.registerToMediaKeys(this);
 	}
 	
 	private <T extends Enum<T> & PreferenceEnum.IPreference> void setListPreferences(int preferenceResource, T[] enumValues) {

@@ -2,6 +2,6 @@
     <factorypathentry kind="PLUGIN" id="org.eclipse.jst.ws.annotations.core" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="WKSPJAR" id="/mCubedTest/processing-libs/AndroidMockGenerator.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="WKSPJAR" id="/mCubedTest/processing-libs/android_framework_mocks.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="ANDROID_RUNTIME_7" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="ANDROID_RUNTIME_8" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="MCUBED_BIN" enabled="true" runInBatchMode="false"/>
 </factorypath>

@@ -11,15 +11,14 @@ import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.preferences.NotificationVisibility;
 import dev.paddock.adp.mCubed.preferences.PlayModeEnum;
 import dev.paddock.adp.mCubed.preferences.PlaybackAction;
+import dev.paddock.adp.mCubed.preferences.PreferenceEnum.IPreference;
 import dev.paddock.adp.mCubed.preferences.PreviousAction;
 import dev.paddock.adp.mCubed.preferences.RepeatStatus;
-import dev.paddock.adp.mCubed.preferences.PreferenceEnum.IPreference;
 
 public class PreferenceManager {
 	private static final Map<Integer, Object> defaultValues = new HashMap<Integer, Object>();
 	
 	static {
-		defaultValues.put(R.string.pref_bluetooth_allow_controls, false);
 		defaultValues.put(R.string.pref_bluetooth_connected, PlaybackAction.DoNothing.name());
 		defaultValues.put(R.string.pref_bluetooth_disconnected, PlaybackAction.DoNothing.name());
 		defaultValues.put(R.string.pref_clear_queue_with_play_mode, false);

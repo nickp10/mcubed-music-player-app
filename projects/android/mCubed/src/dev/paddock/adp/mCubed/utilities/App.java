@@ -6,7 +6,6 @@ import java.util.List;
 import android.app.Application;
 import android.content.Context;
 import android.os.AsyncTask.Status;
-
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.model.AsyncTask;

@@ -1,15 +1,5 @@
 package dev.paddock.adp.mCubed.receivers;
 
-import dev.paddock.adp.mCubed.R;
-import dev.paddock.adp.mCubed.Schema;
-import dev.paddock.adp.mCubed.model.DelayedTask;
-import dev.paddock.adp.mCubed.model.MediaStatus;
-import dev.paddock.adp.mCubed.model.NotificationArgs;
-import dev.paddock.adp.mCubed.services.PlaybackServer;
-import dev.paddock.adp.mCubed.utilities.App;
-import dev.paddock.adp.mCubed.utilities.PreferenceManager;
-import dev.paddock.adp.mCubed.utilities.PropertyManager;
-import dev.paddock.adp.mCubed.utilities.Utilities;
 import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -17,7 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.view.KeyEvent;
+import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.model.DelayedTask;
+import dev.paddock.adp.mCubed.model.NotificationArgs;
+import dev.paddock.adp.mCubed.services.PlaybackServer;
+import dev.paddock.adp.mCubed.utilities.PropertyManager;
+import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class HeadsetReceiver extends BroadcastReceiver implements IReceiver {
 	private static final HeadsetReceiver instance = new HeadsetReceiver();
@@ -70,13 +65,22 @@ public class HeadsetReceiver extends BroadcastReceiver implements IReceiver {
 		PlaybackServer.propertyChanged(0, Schema.PROP_BLUETOOTH, this.isBluetoothConnected);
 	}
 	
+	private boolean isBluetoothAudio(BluetoothDevice device) {
+		if (device != null) {
+			BluetoothClass bluetoothClass = device.getBluetoothClass();
+			if (bluetoothClass != null) {
+				return bluetoothClass.hasService(BluetoothClass.Service.AUDIO);
+			}
+		}
+		return false;
+	}
+	
 	@Override
 	public IntentFilter getIntentFilter() {
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
 		intentFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
 		intentFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-		intentFilter.addAction(Intent.ACTION_MEDIA_BUTTON);
 		intentFilter.setPriority(Integer.MAX_VALUE);
 		return intentFilter;
 	}
@@ -102,44 +106,9 @@ public class HeadsetReceiver extends BroadcastReceiver implements IReceiver {
 				if (isBluetoothAudio(device)) {
 					setBluetoothConnected(false);
 				}
-			} else if (Intent.ACTION_MEDIA_BUTTON.equals(action) && PreferenceManager.getSettingBoolean(R.string.pref_bluetooth_allow_controls)) {
-				KeyEvent keyEvent = (KeyEvent)intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
-				if (keyEvent != null && keyEvent.getAction() == KeyEvent.ACTION_UP) {
-					int key = keyEvent.getKeyCode();
-					boolean handled = true;
-					if (key == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE || key == KeyEvent.KEYCODE_HEADSETHOOK) {
-						MediaStatus status = App.getPlayer().getStatus();
-						if (status == MediaStatus.Play) {
-							App.getPlayer().pause();
-						} else {
-							App.getPlayer().play();
-						}
-					} else if (key == KeyEvent.KEYCODE_MEDIA_NEXT) {
-						App.movePlaybackNext();
-					} else if (key == KeyEvent.KEYCODE_MEDIA_PREVIOUS) {
-						App.movePlaybackPrev();
-					} else if (key == KeyEvent.KEYCODE_MEDIA_STOP) {
-						App.getPlayer().stop();
-					} else {
-						handled = false;
-					}
-					if (handled) {
-						abortBroadcast();
-					}
-				}
 			}
 		} finally {
 			Utilities.popContext();
 		}
-	}
-	
-	private boolean isBluetoothAudio(BluetoothDevice device) {
-		if (device != null) {
-			BluetoothClass bluetoothClass = device.getBluetoothClass();
-			if (bluetoothClass != null) {
-				return bluetoothClass.hasService(BluetoothClass.Service.AUDIO);
-			}
-		}
-		return false;
 	}
 }

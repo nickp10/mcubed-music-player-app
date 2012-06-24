@@ -115,10 +115,13 @@ public abstract class PlaybackProvider extends AppWidgetProvider {
 				} else {
 					PlaybackClient.play();
 				}
+				Utilities.registerToMediaKeys(context);
 			} else if (Schema.WI_PREV_CLICK.equals(action)) {
 				PlaybackClient.movePlaybackPrev();
+				Utilities.registerToMediaKeys(context);
 			} else if (Schema.WI_NEXT_CLICK.equals(action)) {
 				PlaybackClient.movePlaybackNext();
+				Utilities.registerToMediaKeys(context);
 			} else if (Schema.WI_OPEN_APP_CLICK.equals(action)) {
 				ActivityUtils.startMainActivity();
 			}

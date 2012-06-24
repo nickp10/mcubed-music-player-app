@@ -50,7 +50,6 @@
 	<string name="pref_headphones_disconnected">pref_headphones_disconnected</string>
 	<string name="pref_bluetooth_connected">pref_bluetooth_connected</string>
 	<string name="pref_bluetooth_disconnected">pref_bluetooth_disconnected</string>
-	<string name="pref_bluetooth_allow_controls">pref_bluetooth_allow_controls</string>
 	<string name="pref_volume_speaker">pref_volume_speaker</string>
 	<string name="pref_volume_headphones">pref_volume_headphones</string>
 	<string name="pref_volume_bluetooth">pref_volume_bluetooth</string>

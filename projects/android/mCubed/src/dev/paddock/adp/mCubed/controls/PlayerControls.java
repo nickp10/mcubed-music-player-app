@@ -120,6 +120,14 @@ public class PlayerControls extends LinearLayout implements IProvideClientReceiv
 	}
 	
 	private void initView(Context context) {
+		// Ensure the seek events are being published
+		Utilities.pushContext(context);
+		try {
+			PlaybackClient.setSeekListener(true);
+		} finally {
+			Utilities.popContext();
+		}
+		
 		// Inflate the layout
 		LayoutInflater inflater = App.getSystemService(LayoutInflater.class, context, Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.player_controls, this, true);

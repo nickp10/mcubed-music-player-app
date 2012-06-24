@@ -5,6 +5,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.os.IBinder;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.activities.LibraryActivity;
@@ -20,16 +30,6 @@ import dev.paddock.adp.mCubed.utilities.App;
 import dev.paddock.adp.mCubed.utilities.Log;
 import dev.paddock.adp.mCubed.utilities.PreferenceManager;
 import dev.paddock.adp.mCubed.utilities.Utilities;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.os.IBinder;
 
 public class PlaybackService extends Service {
 	private Runnable initCallback;
@@ -69,6 +69,9 @@ public class PlaybackService extends Service {
 			Log.i("PlaybackService started");
 			App.setIsServiceRunning(true);
 			startForeground(Schema.NOTIF_PLAYING_MEDIA, new Notification());
+			
+			// Register the media key receiver for media keys
+			Utilities.registerToMediaKeys(this);
 			
 			// Register the various receivers
 			receivers.clear();

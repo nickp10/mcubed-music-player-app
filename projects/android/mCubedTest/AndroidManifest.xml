@@ -3,7 +3,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="dev.paddock.adp.mCubed.tests"
           android:versionCode="1"
-          android:versionName="1.0">
+          android:versionName="@string/app_version">
+    <uses-sdk android:targetSdkVersion="8" android:minSdkVersion="8" />
     <!-- We add an application tag here just so that we can indicate that
          this package needs to link against the android.test library,
          which is needed when building test cases. -->
@@ -17,6 +18,5 @@
     -->
     <instrumentation android:name="android.test.InstrumentationTestRunner"
                      android:targetPackage="dev.paddock.adp.mCubed"
-                     android:label="Tests for dev.paddock.adp.mCubed"/>
-    <uses-sdk android:targetSdkVersion="7" android:minSdkVersion="7"></uses-sdk>
+                     android:label="Tests for dev.paddock.adp.mCubed" />
 </manifest>

@@ -71,6 +71,12 @@ public class FeedbackActivity extends Activity implements IActivity {
 	}
 	
 	@Override
+	protected void onResume() {
+		super.onResume();
+		ActivityUtils.onResume(this);
+	}
+	
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		return super.onCreateOptionsMenu(menu) &&
 				ActivityUtils.onCreateOptionsMenu(this, menu);

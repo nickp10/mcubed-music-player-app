@@ -46,9 +46,6 @@
 		<ListPreference android:title="Headset Disconnected"
 			android:summary="Determines the action that will occur when headsets/bluetooth devices are unpaired or disconnected."
 			android:key="@string/pref_bluetooth_disconnected" />
-		<CheckBoxPreference android:title="Allow Headset Controls"
-			android:summary="Determines whether or not a headset/bluetooth device that is paired and connected may operate the playback controls."
-			android:key="@string/pref_bluetooth_allow_controls" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="Volume Settings">
 		<dev.paddock.adp.mCubed.preferences.SeekBarPreference android:title="Speaker Volume"
