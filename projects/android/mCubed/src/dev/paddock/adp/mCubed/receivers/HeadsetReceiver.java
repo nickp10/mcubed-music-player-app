@@ -45,16 +45,14 @@ public class HeadsetReceiver extends BroadcastReceiver implements IReceiver {
 		return isBluetoothConnected;
 	}
 	private void setBluetoothConnected(final boolean isBluetoothConnected) {
-		if (this.isBluetoothConnected != isBluetoothConnected) {
-			if (isBluetoothConnected) {
-				new DelayedTask(Utilities.getContext(), new Runnable() {
-					public void run() {
-						doSetBluetoothConnected(isBluetoothConnected);
-					}
-				}, 7000);
-			} else {
-				doSetBluetoothConnected(isBluetoothConnected);
-			}
+		if (isBluetoothConnected) {
+			new DelayedTask(Utilities.getContext(), new Runnable() {
+				public void run() {
+					doSetBluetoothConnected(isBluetoothConnected);
+				}
+			}, 7000);
+		} else {
+			doSetBluetoothConnected(isBluetoothConnected);
 		}
 	}
 	private void doSetBluetoothConnected(boolean isBluetoothConnected) {

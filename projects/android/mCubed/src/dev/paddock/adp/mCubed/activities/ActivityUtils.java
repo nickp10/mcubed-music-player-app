@@ -26,7 +26,10 @@ public class ActivityUtils {
 		Utilities.pushContext(activity);
 		try {
 			// Set the content view and retrieve the views
-			activity.setContentView(activity.getLayoutID());
+			int layoutID = activity.getLayoutID();
+			if (layoutID != 0) {
+				activity.setContentView(layoutID);
+			}
 			activity.findViews();
 			
 			// Register receiver and listeners

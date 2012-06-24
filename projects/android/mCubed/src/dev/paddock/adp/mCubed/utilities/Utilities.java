@@ -317,6 +317,13 @@ public class Utilities {
 		}
 	}
 	
+	public static void unregisterFromMediaKeys(Context context) {
+		AudioManager manager = App.getSystemService(AudioManager.class, context, Context.AUDIO_SERVICE);
+		if (manager != null) {
+			manager.unregisterMediaButtonEventReceiver(new ComponentName(context, MediaKeyReceiver.class));
+		}
+	}
+	
 	public static boolean appendToFile(String filename, String contents) {
 		return writeToFile(filename, contents, Context.MODE_APPEND);
 	}

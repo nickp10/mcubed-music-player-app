@@ -132,6 +132,9 @@ public class PlaybackService extends Service {
 				}
 			}
 			
+			// Unregister the media key receiver for media keys
+			Utilities.unregisterFromMediaKeys(this);
+			
 			// Stop the service
 			App.setIsServiceRunning(false);
 			Log.i("PlaybackService stopped");
