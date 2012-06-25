@@ -50,7 +50,11 @@ public class PlaybackServer {
 	}
 	
 	public static void propertyChanged(int intentID, String propertyName, Serializable propertyValue) {
-		Intent intent = createIntent(Schema.MS_PROPERTY_CHANGED, intentID);
+		propertyChanged(intentID, propertyName, propertyValue, Schema.I_MCUBED);
+	}
+	
+	public static void propertyChanged(int intentID, String propertyName, Serializable propertyValue, String intentAction) {
+		Intent intent = createIntent(Schema.MS_PROPERTY_CHANGED, intentID, intentAction);
 		intent.putExtra(Schema.I_PARAM_PROP_NAME, propertyName);
 		intent.putExtra(Schema.I_PARAM_PROP_VALUE, propertyValue);
 		sendIntent(intent);
@@ -98,12 +102,6 @@ public class PlaybackServer {
 						// Stop the service
 						case Schema.MC_STOP_SERVICE:
 							callback.stopService(intentID);
-							break;
-							
-						// The seek listener value was set
-						case Schema.MC_SET_SEEK_LISTENER:
-							boolean sslIsSeekListener = extras.getBoolean(Schema.I_PARAM_SEEK_LISTENER);
-							callback.setSeekListener(intentID, sslIsSeekListener);
 							break;
 							
 						// The playback seek was set

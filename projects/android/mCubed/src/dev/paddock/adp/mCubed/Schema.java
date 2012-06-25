@@ -1,5 +1,8 @@
 package dev.paddock.adp.mCubed;
 
+import java.util.Arrays;
+import java.util.List;
+
 import android.content.Intent;
 
 public class Schema {
@@ -14,11 +17,12 @@ public class Schema {
 	/** SERVICE INTENT SCHEMA **/
 	public static final String I_MCUBED = PREFIX + "I_MCUBED";
 	public static final String I_MCUBED_PROGRESS = I_MCUBED + "_PROGRESS";
+	public static final String I_MCUBED_SEEK = I_MCUBED + "_SEEK";
+	public static final List<String> I_MCUBED_INTENTS = Arrays.asList(I_MCUBED, I_MCUBED_PROGRESS, I_MCUBED_SEEK);
 	public static final String I_METHOD = "method";
 	public static final String I_PARAM_INTENT_ID = "id";
 	public static final String I_PARAM_PB_SEEK = "pbseek";
 	public static final String I_PARAM_PB_STATUS = "pbstatus";
-	public static final String I_PARAM_SEEK_LISTENER = "seeklistener";
 	public static final String I_PARAM_PROP_NAME = "propname";
 	public static final String I_PARAM_PROP_VALUE = "propvalue";
 	public static final String I_PARAM_PROGRESS_ID = "progressid";
@@ -32,11 +36,10 @@ public class Schema {
 	/** CLIENT METHOD SCHEMA **/
 	public static final int MC_START_SERVICE = 1;
 	public static final int MC_STOP_SERVICE = 2;
-	public static final int MC_SET_SEEK_LISTENER = 3;
-	public static final int MC_SET_PLAYBACK_SEEK = 4;
-	public static final int MC_SET_PLAYBACK_STATUS = 5;
-	public static final int MC_MOVE_PLAYBACK_NEXT = 6;
-	public static final int MC_MOVE_PLAYBACK_PREV = 7;
+	public static final int MC_SET_PLAYBACK_SEEK = 3;
+	public static final int MC_SET_PLAYBACK_STATUS = 4;
+	public static final int MC_MOVE_PLAYBACK_NEXT = 5;
+	public static final int MC_MOVE_PLAYBACK_PREV = 6;
 	
 	/** SERVER METHOD SCHEMA **/
 	public static final int MS_PROPERTY_CHANGED = 10;
@@ -149,7 +152,7 @@ public class Schema {
 	public static boolean ismCubedIntent(Intent intent) {
 		if (intent != null) {
 			String action = intent.getAction();
-			return action != null && (I_MCUBED.equals(action) || I_MCUBED_PROGRESS.equals(action));
+			return action != null && I_MCUBED_INTENTS.contains(action);
 		}
 		return false;
 	}

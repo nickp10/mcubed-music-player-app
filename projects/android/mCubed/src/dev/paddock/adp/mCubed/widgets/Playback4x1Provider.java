@@ -1,6 +1,5 @@
 package dev.paddock.adp.mCubed.widgets;
 
-import android.content.Context;
 import android.net.Uri;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -11,40 +10,12 @@ import dev.paddock.adp.mCubed.model.MediaFile;
 import dev.paddock.adp.mCubed.model.MediaStatus;
 import dev.paddock.adp.mCubed.services.ClientCallback;
 import dev.paddock.adp.mCubed.services.IClientCallback;
-import dev.paddock.adp.mCubed.services.PlaybackClient;
 import dev.paddock.adp.mCubed.utilities.App;
-import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class Playback4x1Provider extends PlaybackProvider {
 	@Override
 	protected int getLayoutID() {
 		return R.layout.playback4x1_widget;
-	}
-	
-	@Override
-	public void onEnabled(Context context) {
-		Utilities.pushContext(context);
-		try {
-			super.onEnabled(context);
-			if (App.isInitialized()) {
-				PlaybackClient.setSeekListener(true);
-			}
-		} finally {
-			Utilities.popContext();
-		}
-	}
-	
-	@Override
-	public void onDisabled(Context context) {
-		Utilities.pushContext(context);
-		try {
-			super.onDisabled(context);
-			if (App.isInitialized()) {
-				PlaybackClient.setSeekListener(false);
-			}
-		} finally {
-			Utilities.popContext();
-		}
 	}
 	
 	@Override
@@ -100,9 +71,6 @@ public class Playback4x1Provider extends PlaybackProvider {
 			@Override
 			public void propertyInitStatusChanged(InitStatus initStatus) {
 				invalidate(Schema.WI_INV_INIT_CHANGED);
-				if (initStatus == InitStatus.Initialized) {
-					PlaybackClient.setSeekListener(true);
-				}
 			}
 			
 			@Override

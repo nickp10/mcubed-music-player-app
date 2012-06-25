@@ -53,12 +53,6 @@ public class PlaybackClient {
 		sendIntent(intent);
 	}
 	
-	public static void setSeekListener(boolean isSeekListener) {
-		Intent intent = createIntent(Schema.MC_SET_SEEK_LISTENER);
-		intent.putExtra(Schema.I_PARAM_SEEK_LISTENER, isSeekListener);
-		sendIntent(intent);
-	}
-	
 	public static void setPlaybackSeek(int playbackSeek) {
 		Intent intent = createIntent(Schema.MC_SET_PLAYBACK_SEEK);
 		intent.putExtra(Schema.I_PARAM_PB_SEEK, playbackSeek);

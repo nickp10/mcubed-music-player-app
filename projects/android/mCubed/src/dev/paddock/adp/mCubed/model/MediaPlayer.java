@@ -4,7 +4,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.net.Uri;
-
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.preferences.RepeatStatus;
@@ -50,7 +49,7 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 		}
 	};
 	private final TimerTask seekTimer = new TimerTask(seekTask, 500L);
-	private int seek, seekListenerCount;
+	private int seek;
 	
 	public static MediaPlayer getInstance() {
 		return instance;
@@ -219,21 +218,6 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 		}
 	}
 	
-	public void registerSeekListener() {
-		seekListenerCount++;
-	}
-	
-	public void unregisterSeekListener() {
-		seekListenerCount--;
-		if (seekListenerCount < 0) {
-			seekListenerCount = 0;
-		}
-	}
-	
-	public void unregisterAllSeekListeners() {
-		seekListenerCount = 0;
-	}
-	
 	/**
 	 * Returns the current duration of the loaded song in milliseconds.
 	 * @return The current duration of the loaded song in milliseconds.
@@ -273,9 +257,7 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 				
 				// Send property changed
 				PropertyManager.notifyPropertyChanged(this, "Seek", args);
-				if (seekListenerCount > 0) {
-					PlaybackServer.propertyChanged(0, Schema.PROP_PB_SEEK, seek);
-				}
+				PlaybackServer.propertyChanged(0, Schema.PROP_PB_SEEK, seek, Schema.I_MCUBED_SEEK);
 			}
 		} else if (!isSetSeekLocked()) {
 			open();

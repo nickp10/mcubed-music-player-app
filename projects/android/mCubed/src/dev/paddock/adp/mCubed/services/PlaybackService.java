@@ -222,15 +222,6 @@ public class PlaybackService extends Service {
 				}
 				
 				@Override
-				public void setSeekListener(int intentID, boolean isSeekListener) {
-					if (isSeekListener) {
-						App.getPlayer().registerSeekListener();
-					} else {
-						App.getPlayer().unregisterSeekListener();
-					}
-				}
-				
-				@Override
 				public void setPlaybackStatus(int intentID, MediaStatus playbackStatus) {
 					App.getPlayer().setStatus(playbackStatus);
 				}

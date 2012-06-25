@@ -403,7 +403,6 @@ public class App extends Application {
 						saveAppStateXML();
 						
 						// Destroy the player
-						getPlayer().unregisterAllSeekListeners();
 						getPlayer().close();
 						
 						// Clear the media file cache

@@ -38,6 +38,7 @@
 			<intent-filter>
 				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
 				<action android:name="dev.paddock.adp.mCubed.Schema.I_MCUBED" />
+				<action android:name="dev.paddock.adp.mCubed.Schema.I_MCUBED_SEEK" />
 			</intent-filter>
 			<meta-data android:name="android.appwidget.provider" android:resource="@xml/playback4x1_info" />
 		</receiver>

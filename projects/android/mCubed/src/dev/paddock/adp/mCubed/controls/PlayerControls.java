@@ -10,6 +10,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import dev.paddock.adp.mCubed.R;
+import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.model.MediaStatus;
 import dev.paddock.adp.mCubed.receivers.ClientReceiver;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
@@ -120,14 +121,6 @@ public class PlayerControls extends LinearLayout implements IProvideClientReceiv
 	}
 	
 	private void initView(Context context) {
-		// Ensure the seek events are being published
-		Utilities.pushContext(context);
-		try {
-			PlaybackClient.setSeekListener(true);
-		} finally {
-			Utilities.popContext();
-		}
-		
 		// Inflate the layout
 		LayoutInflater inflater = App.getSystemService(LayoutInflater.class, context, Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.player_controls, this, true);
@@ -175,6 +168,7 @@ public class PlayerControls extends LinearLayout implements IProvideClientReceiv
 	public ClientReceiver getClientReceiver() {
 		if (clientReceiver == null) {
 			clientReceiver = new ClientReceiver(getClientCallback(), false);
+			clientReceiver.addAction(Schema.I_MCUBED_SEEK);
 		}
 		return clientReceiver;
 	}
