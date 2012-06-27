@@ -10,6 +10,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
@@ -23,11 +26,14 @@ public class WebService {
 		return sendHTTPPost(Schema.WS_METHOD_SUBMIT_FEEDBACK, params);
 	}
 	
-	private static String sendHTTPPost(String method, List<? extends NameValuePair> params) {
-		HttpClient httpclient = new DefaultHttpClient();
+	private static String sendHTTPPost(String method, List<? extends NameValuePair> parameters) {
+		HttpParams params = new BasicHttpParams();
+		HttpConnectionParams.setConnectionTimeout(params, Schema.WS_TIMEOUT_MILLIS);
+		HttpConnectionParams.setSoTimeout(params, Schema.WS_TIMEOUT_MILLIS);
+		HttpClient httpclient = new DefaultHttpClient(params);
 		try {
 			HttpPost request = new HttpPost(String.format("%s%s", Utilities.getResourceString(R.string.app_web_service), method));
-			request.setEntity(new UrlEncodedFormEntity(params));
+			request.setEntity(new UrlEncodedFormEntity(parameters));
 			return httpclient.execute(request, new BasicResponseHandler());
 		} catch (Exception e) {
 			Log.e(e);

@@ -24,7 +24,15 @@
 	<string name="button_prev_content">Previous</string>
 	<string name="cover_art_content">Cover Artwork</string>
 	<string name="dp_prompt">Select a Unit</string>
-	<string name="feedback_tmp_text">Feedback</string>
+	<string name="feedback_main_title">Submit Feedback</string>
+	<string name="feedback_email_label">Email:</string>
+	<string name="feedback_email_notes">
+	    Note: The email field is optional. If you would like a follow-up response to
+	    your feedback, then you may specify an email address. If your feedback does
+	    not incite a response, then your email address will simply be ignored.</string>
+	<string name="feedback_message_label">Message:</string>
+	<string name="feedback_submit_button_perform">Submit</string>
+	<string name="feedback_submit_button_progressing">Submitting&#8230;</string>
 	<string name="feedback_submit_failure">Unable to submit feedback. Make sure you are connected to the Internet.</string>
 	<string name="feedback_submit_success">Feedback submitted successfully. Thank you.</string>
 	<string name="help_tmp_text">Help</string>

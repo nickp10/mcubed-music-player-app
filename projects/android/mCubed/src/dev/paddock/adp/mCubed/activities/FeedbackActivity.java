@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
@@ -25,6 +26,7 @@ public class FeedbackActivity extends Activity implements IActivity {
 	private MountDisplay mountDisplay;
 	private ProgressDisplay progressDisplay;
 	private Button submitButton;
+	private EditText emailText, messageText;
 	
 	/**
 	 * Listener for handling when the feedback form should be submitted.
@@ -32,11 +34,13 @@ public class FeedbackActivity extends Activity implements IActivity {
 	private final OnClickListener submitFeedbackListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
+			submitButton.setEnabled(false);
+			submitButton.setText(R.string.feedback_submit_button_progressing);
 			Utilities.dispatchToBackgroundThread(FeedbackActivity.this, new Runnable() {
 				@Override
 				public void run() {
 					final Holder<Integer> resource = new Holder<Integer>();
-					String result = WebService.submitFeedback("test@test.com", "Hello");
+					String result = WebService.submitFeedback(emailText.getText().toString(), messageText.getText().toString());
 					
 					// Determine whether or not the submission succeeded
 					if (Boolean.parseBoolean(result)) {
@@ -51,6 +55,8 @@ public class FeedbackActivity extends Activity implements IActivity {
 						@Override
 						public void run() {
 							Toast.makeText(Utilities.getContext(), Utilities.getResourceString(resource.getValue()), Toast.LENGTH_LONG).show();
+							submitButton.setText(R.string.feedback_submit_button_perform);
+							submitButton.setEnabled(true);
 						}
 					});
 				}
@@ -111,6 +117,8 @@ public class FeedbackActivity extends Activity implements IActivity {
 		mountDisplay = (MountDisplay)findViewById(R.id.fa_mount_display);
 		progressDisplay = (ProgressDisplay)findViewById(R.id.fa_progress_display);
 		submitButton = (Button)findViewById(R.id.fa_submit_button);
+		emailText = (EditText)findViewById(R.id.fa_email_text);
+		messageText = (EditText)findViewById(R.id.fa_message_text);
 	}
 
 	@Override
