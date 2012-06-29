@@ -14,6 +14,8 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
+import android.os.Build;
+
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 
@@ -23,6 +25,8 @@ public class WebService {
 		params.add(new BasicNameValuePair(Schema.WS_SUBMIT_FEEDBACK_EMAIL, email));
 		params.add(new BasicNameValuePair(Schema.WS_SUBMIT_FEEDBACK_MESSAGE, message));
 		params.add(new BasicNameValuePair(Schema.WS_SUBMIT_FEEDBACK_LOGS, Log.readLogFile()));
+		params.add(new BasicNameValuePair(Schema.WS_SUBMIT_FEEDBACK_ANDROID_VERSION, Integer.toString(Build.VERSION.SDK_INT)));
+		params.add(new BasicNameValuePair(Schema.WS_SUBMIT_FEEDBACK_MCUBED_VERSION, Integer.toString(Utilities.getVersionCode())));
 		return sendHTTPPost(Schema.WS_METHOD_SUBMIT_FEEDBACK, params);
 	}
 	

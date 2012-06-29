@@ -390,7 +390,6 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 					Log.i(error);
 					internalState = getMediaPlayerState(true, true, false);
 					close(false);
-					Log.i(error);
 				} else {
 					Log.e(error);
 				}

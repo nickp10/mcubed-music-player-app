@@ -13,6 +13,7 @@ public class Schema {
 	public static final String PACKAGE = Schema.class.getPackage().getName();
 	public static final String PREFIX = Schema.class.getName() + ".";
 	public static final String TAG = "mCubed";
+	public static final int[] UPGRADE_VERSIONS = new int[] { 1 };
 	
 	/** SERVICE INTENT SCHEMA **/
 	public static final String I_MCUBED = PREFIX + "I_MCUBED";
@@ -124,6 +125,8 @@ public class Schema {
 	public static final String WS_SUBMIT_FEEDBACK_EMAIL = "Email";
 	public static final String WS_SUBMIT_FEEDBACK_MESSAGE = "Message";
 	public static final String WS_SUBMIT_FEEDBACK_LOGS = "Logs";
+	public static final String WS_SUBMIT_FEEDBACK_ANDROID_VERSION = "AndroidVersion";
+	public static final String WS_SUBMIT_FEEDBACK_MCUBED_VERSION = "mCubedVersion";
 	
 	/**
 	 * Prevents an instance of the schema

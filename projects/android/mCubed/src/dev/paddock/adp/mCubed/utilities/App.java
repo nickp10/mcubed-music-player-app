@@ -233,6 +233,7 @@ public class App extends Application {
 	private static void saveAppStateXML() {
 		// Create the root
 		XMLDocument rootNode = XMLDocument.newDocument("AppState");
+		rootNode.setAttribute("CurrentVersion", Integer.toString(Utilities.getVersionCode()));
 		
 		// Create the now playing node
 		Playlist nowPlaying = getNowPlaying();
@@ -254,6 +255,11 @@ public class App extends Application {
 		Utilities.saveFile(Schema.FILE_APP_STATE, rootNode.toXML(false));
 	}
 	
+	private static void upgradeApp(int currentVersion) {
+		// TODO Upgrade the application based on the current version and the latest version.
+		// Only implement this if it is needed for a user to upgrade from one version to the next.
+	}
+	
 	private static XMLDocument loadAppStateXML() {
 		String contents = Utilities.loadFile(Schema.FILE_APP_STATE);
 		return XMLDocument.read(contents);
@@ -264,6 +270,13 @@ public class App extends Application {
 		Progress progress = ProgressManager.startProgress(Schema.PROG_APP_LOADXML, "Restoring application state...");
 		progress.setSubIDs(Schema.PROG_PLAYLIST_RESET, Schema.PROG_PLAYLIST_VALIDATE);
 		try {
+			// Ensure the user is upgraded to the latest version
+			int currentVersion = Utilities.parseInt(rootNode.getAttribute("CurrentVersion"));
+			int latestVersion = Schema.UPGRADE_VERSIONS[Schema.UPGRADE_VERSIONS.length - 1];
+			if (currentVersion < latestVersion) {
+				upgradeApp(currentVersion);
+			}
+			
 			// Load the now playing playlist
 			Playlist nowPlaying = getNowPlaying();
 			String historyIDs = rootNode.getNodePathValue("NowPlaying/History");

@@ -17,6 +17,9 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -151,6 +154,24 @@ public class Utilities {
 			return context.getString(resource);
 		}
 		return null;
+	}
+	
+	public static int getVersionCode() {
+		Context context = getContext();
+		if (context != null) {
+			PackageManager manager = context.getPackageManager();
+			if (manager != null) {
+				try {
+					PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
+					if (info != null) {
+						return info.versionCode;
+					}
+				} catch (NameNotFoundException e) {
+					Log.e(e);
+				}
+			}
+		}
+		return 0;
 	}
 	
 	private static <T> Stack<T> getStack(Map<Long, Stack<T>> map, boolean create) {
