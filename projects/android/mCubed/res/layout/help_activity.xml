@@ -3,15 +3,10 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="fill_parent"
 	android:layout_width="fill_parent">
-	<LinearLayout
-		android:layout_height="fill_parent"
+	<ExpandableListView 
+		android:layout_height="wrap_content"
 		android:layout_width="fill_parent"
-		android:orientation="vertical">
-		<TextView 
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:text="@string/help_tmp_text" />
-	</LinearLayout>
+		android:id="@+id/ha_content_view" />
 	<dev.paddock.adp.mCubed.controls.MountDisplay
 		android:layout_height="fill_parent"
 		android:layout_width="fill_parent"

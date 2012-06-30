@@ -7,15 +7,19 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ExpandableListView;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.controls.MountDisplay;
 import dev.paddock.adp.mCubed.controls.ProgressDisplay;
+import dev.paddock.adp.mCubed.lists.ExpandableListAdapter;
+import dev.paddock.adp.mCubed.model.Entry;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
 
 public class HelpActivity extends Activity implements IActivity {
 	private MountDisplay mountDisplay;
 	private ProgressDisplay progressDisplay;
+	private ExpandableListView contentView;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -69,10 +73,32 @@ public class HelpActivity extends Activity implements IActivity {
 	public void findViews() {
 		mountDisplay = (MountDisplay)findViewById(R.id.ha_mount_display);
 		progressDisplay = (ProgressDisplay)findViewById(R.id.ha_progress_display);
+		contentView = (ExpandableListView)findViewById(R.id.ha_content_view);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void setupViews() {
+		contentView.setAdapter(new ExpandableListAdapter<String>(this, R.layout.help_content_group_view, R.layout.help_content_child_view, Arrays.<java.util.Map.Entry<String, String>>asList(
+			new Entry<String, String>("Test", "Hi"),
+			new Entry<String, String>("Hello", "This will be a very long entry that is going to wrap across multiple lines when all is said and done. How will the Droid handle this lengthy help message? Even more lines are needed to see this wrap even more."),
+			new Entry<String, String>("Goodbye", "This will be a very long entry that is going to wrap across multiple lines when all is said and done. How will the Droid handle this lengthy help message? Even more lines are needed to see this wrap even more."),
+			new Entry<String, String>("Test", "Hi"),
+			new Entry<String, String>("Hello", "This will be a very long entry that is going to wrap across multiple lines when all is said and done. How will the Droid handle this lengthy help message? Even more lines are needed to see this wrap even more."),
+			new Entry<String, String>("Goodbye", "This will be a very long entry that is going to wrap across multiple lines when all is said and done. How will the Droid handle this lengthy help message? Even more lines are needed to see this wrap even more."),
+			new Entry<String, String>("Test", "Hi"),
+			new Entry<String, String>("Hello", "This will be a very long entry that is going to wrap across multiple lines when all is said and done. How will the Droid handle this lengthy help message? Even more lines are needed to see this wrap even more."),
+			new Entry<String, String>("Goodbye", "This will be a very long entry that is going to wrap across multiple lines when all is said and done. How will the Droid handle this lengthy help message? Even more lines are needed to see this wrap even more."),
+			new Entry<String, String>("Test", "Hi"),
+			new Entry<String, String>("Hello", "This will be a very long entry that is going to wrap across multiple lines when all is said and done. How will the Droid handle this lengthy help message? Even more lines are needed to see this wrap even more."),
+			new Entry<String, String>("Goodbye", "This will be a very long entry that is going to wrap across multiple lines when all is said and done. How will the Droid handle this lengthy help message? Even more lines are needed to see this wrap even more."),
+			new Entry<String, String>("Test", "Hi"),
+			new Entry<String, String>("Hello", "This will be a very long entry that is going to wrap across multiple lines when all is said and done. How will the Droid handle this lengthy help message? Even more lines are needed to see this wrap even more."),
+			new Entry<String, String>("Goodbye", "This will be a very long entry that is going to wrap across multiple lines when all is said and done. How will the Droid handle this lengthy help message? Even more lines are needed to see this wrap even more."),
+			new Entry<String, String>("Test", "Hi"),
+			new Entry<String, String>("Hello", "This will be a very long entry that is going to wrap across multiple lines when all is said and done. How will the Droid handle this lengthy help message? Even more lines are needed to see this wrap even more."),
+			new Entry<String, String>("Goodbye", "This will be a very long entry that is going to wrap across multiple lines when all is said and done. How will the Droid handle this lengthy help message? Even more lines are needed to see this wrap even more.")
+		)));
 	}
 
 	@Override
