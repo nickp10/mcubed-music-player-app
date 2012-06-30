@@ -41,9 +41,10 @@ public class FeedbackActivity extends Activity implements IActivity {
 				public void run() {
 					final Holder<Integer> resource = new Holder<Integer>();
 					String result = WebService.submitFeedback(emailText.getText().toString(), messageText.getText().toString());
+					final boolean success = Boolean.parseBoolean(result);
 					
 					// Determine whether or not the submission succeeded
-					if (Boolean.parseBoolean(result)) {
+					if (success) {
 						Log.clearLogFile();
 						resource.setValue(R.string.feedback_submit_success);
 					} else {
@@ -57,6 +58,9 @@ public class FeedbackActivity extends Activity implements IActivity {
 							Toast.makeText(Utilities.getContext(), Utilities.getResourceString(resource.getValue()), Toast.LENGTH_LONG).show();
 							submitButton.setText(R.string.feedback_submit_button_perform);
 							submitButton.setEnabled(true);
+							if (success) {
+								FeedbackActivity.this.finish();
+							}
 						}
 					});
 				}
