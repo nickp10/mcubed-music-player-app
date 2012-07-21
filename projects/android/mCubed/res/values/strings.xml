@@ -16,7 +16,7 @@
 		\t\t\t\t- 1x1 and 4x1 Widgets\n
 		\t\t\t\t- Dynamic Playlists\n
 		\t\t\t\t- Extensive Settings\n
-		\t\t\t\t- \'Persisted Shuffle\', \'Perpetual Shuffle\', and \'Sequential\' Play Modes
+		\t\t\t\t- \"Persisted Shuffle\", \"Perpetual Shuffle\", and \"Sequential\" Play Modes
 	]]></string>
 	<string name="button_action_content">Play/Pause</string>
 	<string name="button_close_content">Close</string>
