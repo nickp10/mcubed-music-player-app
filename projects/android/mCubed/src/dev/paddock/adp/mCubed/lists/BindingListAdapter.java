@@ -880,14 +880,14 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 			Object item = getItem(info.position);
 			if (item != null && item instanceof BindingListHeader) {
 				IViewItemFactory<String> factory = getHeaderViewItemFactory();
-				IViewItem<String> viewItem = getViewItem(view, factory);
+				IViewItem<String> viewItem = getViewItem(info.targetView, factory);
 				String header = ((BindingListHeader)item).header;
 				if (viewItem != null) {
 					viewItem.onCreateContextMenu(menu, header);
 				}
 			} else {
 				IViewItemFactory<E> factory = getItemViewItemFactory();
-				IViewItem<E> viewItem = getViewItem(view, factory);
+				IViewItem<E> viewItem = getViewItem(info.targetView, factory);
 				if (viewItem != null) {
 					viewItem.onCreateContextMenu(menu, (E)item);
 				}
@@ -913,14 +913,14 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 			Object item = getItem(info.position);
 			if (item != null && item instanceof BindingListHeader) {
 				IViewItemFactory<String> factory = getHeaderViewItemFactory();
-				IViewItem<String> viewItem = getViewItem(null, factory);
+				IViewItem<String> viewItem = getViewItem(info.targetView, factory);
 				String header = ((BindingListHeader)item).header;
 				if (viewItem != null) {
 					handled = viewItem.onContextItemClick(menuItem.getItemId(), header);
 				}
 			} else {
 				IViewItemFactory<E> factory = getItemViewItemFactory();
-				IViewItem<E> viewItem = getViewItem(null, factory);
+				IViewItem<E> viewItem = getViewItem(info.targetView, factory);
 				if (viewItem != null) {
 					handled = viewItem.onContextItemClick(menuItem.getItemId(), (E)item);
 				}
