@@ -8,4 +8,4 @@ To create a new release:
   7. Commit all changes.
   8. Export mCubed as Android Application.
   9. Use existing keystore with password (mCubed3Key).
-  10. Save as mCubed.apk and uplodate to Google Play.
+  10. Save as mCubed.apk and upload to Google Play.
