@@ -74,7 +74,12 @@ public enum MediaGroup {
 			if (this == MediaGroup.All) {
 				groupings.add(new MediaGrouping(MediaGroup.this, 0, null));
 			} else {
-				Utilities.query(getQueryUri(), getQueryProjection(), new ICursor() {
+				Uri queryUri = getQueryUri();
+				WhereClause where = null;
+				if (queryUri == Media.EXTERNAL_CONTENT_URI) {
+					where = WhereClause.create(Media.IS_MUSIC + " > 0");
+				}
+				Utilities.query(queryUri, getQueryProjection(), where, null, new ICursor() {
 					@Override
 					public boolean run(Cursor cursor) {
 						// Create the grouping
@@ -146,7 +151,11 @@ public enum MediaGroup {
 				// NOTE: we'll ignore the where/sort clauses since this will only return one song
 				Utilities.query(Media.EXTERNAL_CONTENT_URI, id, MediaFile.DATA_PROJECTION, cursor);
 			} else if (this == MediaGroup.All) {
-				Utilities.query(Media.EXTERNAL_CONTENT_URI, MediaFile.DATA_PROJECTION, where, sort, cursor);
+				WhereClause musicWhere = WhereClause.create(Media.IS_MUSIC + " > 0");
+				if (where != null) {
+					musicWhere = musicWhere.and(where);
+				}
+				Utilities.query(Media.EXTERNAL_CONTENT_URI, MediaFile.DATA_PROJECTION, musicWhere, sort, cursor);
 			}
 			return mediaFiles;
 		} finally {
