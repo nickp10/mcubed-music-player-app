@@ -177,7 +177,7 @@
 		<antcall target="test" />
 		<exec executable="cmd">
 			<arg value="/c" />
-			<arg value="coverage\coverage.html" />
+			<arg value="bin\coverage.html" />
 		</exec>
 	</target>
 
