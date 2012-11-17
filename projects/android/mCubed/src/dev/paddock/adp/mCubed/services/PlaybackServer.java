@@ -1,6 +1,7 @@
 package dev.paddock.adp.mCubed.services;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.model.MediaStatus;
@@ -86,7 +87,7 @@ public class PlaybackServer {
 				// All mCubed intents have a method call and a request ID
 				final int method = extras.getInt(Schema.I_METHOD);
 				final int intentID = extras.getInt(Schema.I_PARAM_INTENT_ID);
-				Log.i(String.format("Handle server intent [Method=%d, IntentID=%d]", method, intentID));
+				Log.i(String.format(Locale.US, "Handle server intent [Method=%d, IntentID=%d]", method, intentID));
 				
 				// Create the runnable
 				Runnable runnable = new Runnable() {

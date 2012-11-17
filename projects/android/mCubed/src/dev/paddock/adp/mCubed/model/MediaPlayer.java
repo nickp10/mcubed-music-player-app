@@ -1,5 +1,7 @@
 package dev.paddock.adp.mCubed.model;
 
+import java.util.Locale;
+
 import android.media.AudioManager;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
@@ -385,7 +387,7 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 		Utilities.pushContext(App.getAppContext());
 		try {
 			if (this.player == player) {
-				String error = String.format("MediaPlayer error [What=%d, Extra=%d]", what, extra);
+				String error = String.format(Locale.US, "MediaPlayer error [What=%d, Extra=%d]", what, extra);
 				if (what == android.media.MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
 					Log.i(error);
 					internalState = getMediaPlayerState(true, true, false);

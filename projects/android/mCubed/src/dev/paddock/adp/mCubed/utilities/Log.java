@@ -3,13 +3,14 @@ package dev.paddock.adp.mCubed.utilities;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 import dev.paddock.adp.mCubed.Schema;
 
 public class Log {
 	private static final String TAG = Schema.TAG;
 	private static final String NL = System.getProperty("line.separator");
-	private static final DateFormat FORMAT = new SimpleDateFormat("M/d/yyyy h:mm:ss a");
+	private static final DateFormat FORMAT = new SimpleDateFormat("M/d/yyyy h:mm:ss a", Locale.US);
 	public static final int D = 4; // DEBUG
 	public static final int E = 1; // ERROR
 	public static final int I = 3; // INFO

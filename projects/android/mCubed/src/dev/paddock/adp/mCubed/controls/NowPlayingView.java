@@ -14,7 +14,6 @@ import dev.paddock.adp.mCubed.utilities.App;
 public class NowPlayingView extends LinearLayout implements IProvideClientReceiver {
 	private ClientReceiver clientReceiver;
 	private ClientCallback clientCallback;
-	private PlayerControls playerControls;
 	private MediaFileDetailsView mediaFileView;
 	
 	public NowPlayingView(Context context) {
@@ -34,7 +33,6 @@ public class NowPlayingView extends LinearLayout implements IProvideClientReceiv
 		
 		// Find the views
 		mediaFileView = (MediaFileDetailsView)findViewById(R.id.npv_media_file_details_view);
-		playerControls = (PlayerControls)findViewById(R.id.npv_player_controls);
 		
 		// Update the views
 		updateViews();
@@ -42,10 +40,6 @@ public class NowPlayingView extends LinearLayout implements IProvideClientReceiv
 	
 	private void updateViews() {
 		mediaFileView.setMediaFile(App.getPlayingMedia());
-	}
-	
-	public PlayerControls getPlayerControls() {
-		return playerControls;
 	}
 
 	@Override

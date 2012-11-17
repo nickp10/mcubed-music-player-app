@@ -13,12 +13,14 @@ import android.widget.ImageView;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.controls.MountDisplay;
 import dev.paddock.adp.mCubed.controls.NowPlayingView;
+import dev.paddock.adp.mCubed.controls.PlayerControls;
 import dev.paddock.adp.mCubed.controls.ProgressDisplay;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
 
 public class OverlayActivity extends Activity implements IActivity {
 	private ImageView closeButton;
 	private NowPlayingView nowPlayingView;
+	private PlayerControls playerControls;
 	private MountDisplay mountDisplay;
 	private ProgressDisplay progressDisplay;
 	
@@ -98,6 +100,7 @@ public class OverlayActivity extends Activity implements IActivity {
 	public void findViews() {
 		closeButton = (ImageView)findViewById(R.id.oa_close_button);
 		nowPlayingView = (NowPlayingView)findViewById(R.id.oa_now_playing_view);
+		playerControls = (PlayerControls)findViewById(R.id.oa_player_controls);
 		mountDisplay = (MountDisplay)findViewById(R.id.oa_mount_display);
 		progressDisplay = (ProgressDisplay)findViewById(R.id.oa_progress_display);
 	}
@@ -121,6 +124,6 @@ public class OverlayActivity extends Activity implements IActivity {
 	
 	@Override
 	public List<IProvideClientReceiver> getClientReceivers() {
-		return Arrays.<IProvideClientReceiver>asList(nowPlayingView, nowPlayingView.getPlayerControls(), mountDisplay, progressDisplay);
+		return Arrays.<IProvideClientReceiver>asList(nowPlayingView, playerControls, mountDisplay, progressDisplay);
 	}
 }

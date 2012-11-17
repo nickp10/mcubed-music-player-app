@@ -1,9 +1,7 @@
 package dev.paddock.adp.mCubed.activities;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import android.app.Activity;
+import android.util.SparseArray;
 import android.view.Menu;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
@@ -14,7 +12,7 @@ import dev.paddock.adp.mCubed.utilities.App;
 import dev.paddock.adp.mCubed.utilities.Delegate.Action;
 
 public class ActivityMenu {
-	private static final Map<Integer, ActivityMenuItem> menuItems = new HashMap<Integer, ActivityMenuItem>();
+	private static final SparseArray<ActivityMenuItem> menuItems = new SparseArray<ActivityMenuItem>();
 	
 	static {
 		createMenuItem(Schema.MN_LIBRARY, "Library", R.drawable.menu_library, new Action<Activity>() {
@@ -67,10 +65,7 @@ public class ActivityMenu {
 	}
 	
 	private static ActivityMenuItem getMenuItem(int itemID) {
-		if (menuItems.containsKey(itemID)) {
-			return menuItems.get(itemID);
-		}
-		return null;
+		return menuItems.get(itemID);
 	}
 	
 	public static void addMenuItem(Menu menu, int itemID, int order) {

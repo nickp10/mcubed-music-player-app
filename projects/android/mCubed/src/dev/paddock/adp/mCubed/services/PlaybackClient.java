@@ -1,6 +1,7 @@
 package dev.paddock.adp.mCubed.services;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.model.MediaStatus;
@@ -119,14 +120,14 @@ public class PlaybackClient {
 						case Schema.MS_PROPERTY_CHANGED:
 							String propertyName = extras.getString(Schema.I_PARAM_PROP_NAME);
 							Serializable propertyValue = extras.getSerializable(Schema.I_PARAM_PROP_VALUE);
-							Log.i(String.format("Handle property changed [Property=%s, Value=%s, IntentID=%d]", propertyName, propertyValue, intentID));
+							Log.i(String.format(Locale.US, "Handle property changed [Property=%s, Value=%s, IntentID=%d]", propertyName, propertyValue, intentID));
 							callback.propertyChanged(intentID, propertyName, propertyValue);
 							break;
 							
 						// A preference has changed
 						case Schema.MS_PREFERENCE_CHANGED:
 							String preferenceName = extras.getString(Schema.I_PARAM_PREF_NAME);
-							Log.i(String.format("Handle preference changed [Preference=%s, IntentID=%d]", preferenceName, intentID));
+							Log.i(String.format(Locale.US, "Handle preference changed [Preference=%s, IntentID=%d]", preferenceName, intentID));
 							callback.preferenceChanged(intentID, preferenceName);
 							break;
 							
@@ -136,7 +137,7 @@ public class PlaybackClient {
 							String progressTitle = extras.getString(Schema.I_PARAM_PROGRESS_TITLE);
 							byte progressValue = extras.getByte(Schema.I_PARAM_PROGRESS_VALUE);
 							boolean progressBlocking = extras.getBoolean(Schema.I_PARAM_PROGRESS_BLOCKING);
-							Log.i(String.format("Handle progress changed [Title=%s, Value=%d, IntentID=%d]", progressTitle, progressValue, intentID));
+							Log.i(String.format(Locale.US, "Handle progress changed [Title=%s, Value=%d, IntentID=%d]", progressTitle, progressValue, intentID));
 							callback.progressChanged(intentID, progressID, progressTitle, progressValue, progressBlocking);
 							break;
 							

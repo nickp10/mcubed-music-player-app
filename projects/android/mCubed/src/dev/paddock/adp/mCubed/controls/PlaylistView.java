@@ -14,7 +14,6 @@ import dev.paddock.adp.mCubed.utilities.Comparators;
 
 public class PlaylistView extends LinearLayout {
 	private BindingListAdapter<MediaFile> itemsAdapter;
-	private PlayerControls playerControls;
 	private ListView listView;
 	private Playlist playlist;
 	
@@ -39,13 +38,6 @@ public class PlaylistView extends LinearLayout {
 		// Find and initialize the list view
 		listView = (ListView)findViewById(R.id.pv_listView);
 		itemsAdapter.registerWithListView(listView);
-		
-		// Find additional views
-		playerControls = (PlayerControls)findViewById(R.id.pv_player_controls);
-	}
-	
-	public PlayerControls getPlayerControls() {
-		return playerControls;
 	}
 	
 	public Playlist getPlaylist() {

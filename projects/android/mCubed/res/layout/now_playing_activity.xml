@@ -16,9 +16,15 @@
 				android:layout_width="fill_parent"
 				android:id="@android:id/tabs" />
 			<FrameLayout
-				android:layout_height="fill_parent"
+				android:layout_height="0dp"
 				android:layout_width="fill_parent"
+				android:layout_weight="1"
 				android:id="@android:id/tabcontent" />
+			<dev.paddock.adp.mCubed.controls.PlayerControls
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:layout_marginBottom="5dp"
+				android:id="@+id/npa_player_controls" />
 		</LinearLayout>
 		<dev.paddock.adp.mCubed.controls.MountDisplay
 			android:layout_height="fill_parent"

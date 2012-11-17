@@ -2,19 +2,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="fill_parent"
 	android:layout_width="fill_parent">
-	<LinearLayout
+	<dev.paddock.adp.mCubed.controls.MediaFileDetailsView
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent"
-		android:orientation="vertical">
-		<dev.paddock.adp.mCubed.controls.MediaFileDetailsView
-			android:layout_height="wrap_content"
-			android:layout_width="fill_parent"
-			android:layout_marginBottom="10dp"
-			android:id="@+id/npv_media_file_details_view" />
-		<dev.paddock.adp.mCubed.controls.PlayerControls
-			android:layout_height="wrap_content"
-			android:layout_width="fill_parent"
-			android:layout_marginBottom="5dp"
-			android:id="@+id/npv_player_controls" />
-	</LinearLayout>
+		android:id="@+id/npv_media_file_details_view" />
 </ScrollView>

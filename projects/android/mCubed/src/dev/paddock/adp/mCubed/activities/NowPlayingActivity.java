@@ -14,6 +14,7 @@ import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.controls.MountDisplay;
 import dev.paddock.adp.mCubed.controls.NowPlayingView;
+import dev.paddock.adp.mCubed.controls.PlayerControls;
 import dev.paddock.adp.mCubed.controls.PlaylistView;
 import dev.paddock.adp.mCubed.controls.ProgressDisplay;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
@@ -22,6 +23,7 @@ import dev.paddock.adp.mCubed.utilities.App;
 public class NowPlayingActivity extends TabActivity implements IActivity {
 	private PlaylistView historyView, queueView;
 	private NowPlayingView nowPlayingView;
+	private PlayerControls playerControls;
 	private MountDisplay mountDisplay;
 	private ProgressDisplay progressDisplay;
 	private TabHost tabHost;
@@ -77,6 +79,7 @@ public class NowPlayingActivity extends TabActivity implements IActivity {
 	@Override
 	public void findViews() {
 		tabHost = (TabHost)findViewById(android.R.id.tabhost);
+		playerControls = (PlayerControls)findViewById(R.id.npa_player_controls);
 		mountDisplay = (MountDisplay)findViewById(R.id.npa_mount_display);
 		progressDisplay = (ProgressDisplay)findViewById(R.id.npa_progress_display);
 	}
@@ -107,7 +110,7 @@ public class NowPlayingActivity extends TabActivity implements IActivity {
 	
 	@Override
 	public List<IProvideClientReceiver> getClientReceivers() {
-		return Arrays.<IProvideClientReceiver>asList(mountDisplay, progressDisplay, nowPlayingView, nowPlayingView.getPlayerControls(), historyView.getPlayerControls(), queueView.getPlayerControls());
+		return Arrays.<IProvideClientReceiver>asList(mountDisplay, progressDisplay, nowPlayingView, playerControls);
 	}
 	
 	private void createTabSpec(String display, final View contentView) {

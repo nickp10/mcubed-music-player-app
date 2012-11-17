@@ -1,12 +1,9 @@
 package dev.paddock.adp.mCubed.utilities;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.util.SparseArray;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.preferences.NotificationVisibility;
 import dev.paddock.adp.mCubed.preferences.PlayModeEnum;
@@ -16,7 +13,7 @@ import dev.paddock.adp.mCubed.preferences.PreviousAction;
 import dev.paddock.adp.mCubed.preferences.RepeatStatus;
 
 public class PreferenceManager {
-	private static final Map<Integer, Object> defaultValues = new HashMap<Integer, Object>();
+	private static final SparseArray<Object> defaultValues = new SparseArray<Object>();
 	
 	static {
 		defaultValues.put(R.string.pref_bluetooth_connected, PlaybackAction.DoNothing.name());
@@ -39,10 +36,6 @@ public class PreferenceManager {
 		defaultValues.put(R.string.pref_defaults_loaded, false);
 	}
 	
-	public static Map<Integer, Object> getDefaultValues() {
-		return Collections.unmodifiableMap(defaultValues);
-	}
-	
 	public static void setupDefaults() {
 		if (!getSettingBoolean(R.string.pref_defaults_loaded)) {
 			// Get the settings to modify
@@ -52,10 +45,10 @@ public class PreferenceManager {
 				Editor editor = preferences.edit();
 				
 				// Set each of the default values in the editor
-				for (Map.Entry<Integer, Object> defaultEntry : defaultValues.entrySet()) {
+				for (int i = 0; i < defaultValues.size(); i++) {
 					// Setup the default key/value
-					String defaultKey = Utilities.getResourceString(defaultEntry.getKey());
-					Object defaultValue = defaultEntry.getValue();
+					String defaultKey = Utilities.getResourceString(defaultValues.keyAt(i));
+					Object defaultValue = defaultValues.valueAt(i);
 					
 					// Switch over each type the setting value can be
 					if (defaultValue instanceof String) {
@@ -85,11 +78,7 @@ public class PreferenceManager {
 	}
 	
 	public static Object getDefaultValue(int setting) {
-		Object defaultValue = null;
-		if (defaultValues.containsKey(setting)) {
-			defaultValue = defaultValues.get(setting);
-		}
-		return defaultValue;
+		return defaultValues.get(setting);
 	}
 	
 	@SuppressWarnings("unchecked")
