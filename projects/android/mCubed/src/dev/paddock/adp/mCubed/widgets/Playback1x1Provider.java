@@ -28,7 +28,7 @@ public class Playback1x1Provider extends PlaybackProvider {
 				views.setImageViewResource(R.id.w11_play_button, App.isInitialized() && App.getPlayer().isPlaying() ? R.drawable.widget_pause : R.drawable.widget_play);
 				
 				// Update the visibilities
-				if (App.getInitStatus() == InitStatus.Initializing) {
+				if (App.isScanRequired() || App.getInitStatus() == InitStatus.Initializing) {
 					views.setViewVisibility(R.id.w11_init_layout, View.VISIBLE);
 					views.setViewVisibility(R.id.w11_info_layout, View.GONE);
 				} else {
@@ -50,6 +50,11 @@ public class Playback1x1Provider extends PlaybackProvider {
 			@Override
 			public void propertyPlaybackStatusChanged(MediaStatus playbackStatus) {
 				invalidate(Schema.WI_INV_STATUS_CHANGED);
+			}
+			
+			@Override
+			public void propertyScanRequiredChanged(boolean isScanRequired) {
+				invalidate(Schema.WI_INV_SCAN_REQUIRED_CHANGED);
 			}
 		};
 	}

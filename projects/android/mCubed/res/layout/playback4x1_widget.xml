@@ -98,7 +98,8 @@
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:layout_marginBottom="10dp"
-			android:text="@string/prog_initializing" />
+			android:text="@string/prog_scanning"
+			android:id="@+id/w41_init_text" />
 		<ProgressBar
 			style="@android:style/Widget.ProgressBar.Horizontal"
 			android:layout_height="wrap_content"

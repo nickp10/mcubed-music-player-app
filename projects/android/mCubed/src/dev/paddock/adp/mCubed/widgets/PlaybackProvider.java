@@ -12,9 +12,6 @@ import android.content.Intent;
 import android.widget.RemoteViews;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.activities.ActivityUtils;
-import dev.paddock.adp.mCubed.model.InitStatus;
-import dev.paddock.adp.mCubed.model.MediaStatus;
-import dev.paddock.adp.mCubed.services.ClientCallback;
 import dev.paddock.adp.mCubed.services.IClientCallback;
 import dev.paddock.adp.mCubed.services.PlaybackClient;
 import dev.paddock.adp.mCubed.utilities.App;
@@ -153,17 +150,5 @@ public abstract class PlaybackProvider extends AppWidgetProvider {
 		return clientCallbacks.get(getClass());
 	}
 	
-	protected IClientCallback generateClientCallback() {
-		return new ClientCallback() {
-			@Override
-			public void propertyInitStatusChanged(InitStatus initStatus) {
-				invalidate(Schema.WI_INV_INIT_CHANGED);
-			}
-
-			@Override
-			public void propertyPlaybackStatusChanged(MediaStatus playbackStatus) {
-				invalidate(Schema.WI_INV_STATUS_CHANGED);
-			}
-		};
-	}
+	protected abstract IClientCallback generateClientCallback();
 }

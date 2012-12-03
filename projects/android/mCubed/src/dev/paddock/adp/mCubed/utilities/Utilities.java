@@ -378,37 +378,49 @@ public class Utilities {
 	public static String loadFile(String filename) {
 		if (!isNullOrEmpty(filename)) {
 			FileInputStream stream = null;
-			InputStreamReader streamReader = null;
-			BufferedReader reader = null;
 			try {
 				stream = getContext().openFileInput(filename);
-				streamReader = new InputStreamReader(stream);
-				reader = new BufferedReader(streamReader);
-				StringBuilder builder = new StringBuilder();
-				String line = null;
-				while ((line = reader.readLine()) != null) {
-					builder.append(line);
-					builder.append("\n");
-				}
-				return builder.toString();
+				return loadStream(stream);
 			} catch (FileNotFoundException e) {
 				// Ignore this exception since it's the only way to check if the file exists
-			} catch (Exception e) {
-				Log.e(e);
 			} finally {
 				try {
-					if (reader != null) {
-						reader.close();
-					}
-					if (streamReader != null) {
-						streamReader.close();
-					}
 					if (stream != null) {
 						stream.close();
 					}
-				} catch (IOException e1) {
-					Log.e(e1);
+				} catch (IOException e) {
+					Log.e(e);
 				}
+			}
+		}
+		return null;
+	}
+	
+	public static String loadStream(InputStream stream) {
+		InputStreamReader streamReader = null;
+		BufferedReader reader = null;
+		try {
+			streamReader = new InputStreamReader(stream);
+			reader = new BufferedReader(streamReader);
+			StringBuilder builder = new StringBuilder();
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				builder.append(line);
+				builder.append("\n");
+			}
+			return builder.toString();
+		} catch (IOException e) {
+			Log.e(e);
+		} finally {
+			try {
+				if (reader != null) {
+					reader.close();
+				}
+				if (streamReader != null) {
+					streamReader.close();
+				}
+			} catch (IOException e) {
+				Log.e(e);
 			}
 		}
 		return null;
@@ -428,7 +440,7 @@ public class Utilities {
 		}
 		
 		// Check if the file straight up exists
-		File file = new File(uri.toString());
+		File file = new File(uri.getPath());
 		if (file.exists()) {
 			return true;
 		}

@@ -125,7 +125,11 @@ public class App extends Application {
 	}
 	
 	public static boolean isMounted() {
-		return getMount().isMounted();
+		return MountReceiver.isMounted();
+	}
+	
+	public static boolean isScanRequired() {
+		return MountReceiver.isScanRequired();
 	}
 	
 	public static boolean isServiceRunning() {
@@ -146,10 +150,6 @@ public class App extends Application {
 	
 	public static HeadsetReceiver getHeadset() {
 		return HeadsetReceiver.getInstance();
-	}
-	
-	public static MountReceiver getMount() {
-		return MountReceiver.getInstance();
 	}
 	
 	public static OutputReceiver getOutput() {
@@ -346,13 +346,13 @@ public class App extends Application {
 	}
 	
 	public static synchronized void initialize() {
-		if (initStatus == InitStatus.Deinitialized && getMount().isMounted() && (initTask == null || initTask.getStatus() == Status.FINISHED)) {
+		if (initStatus == InitStatus.Deinitialized && isMounted() && !isScanRequired() && (initTask == null || initTask.getStatus() == Status.FINISHED)) {
 			initTask = new AsyncTask(Utilities.getContext()) {
 				@Override
 				public void run() {
 					// Begin initialization
 					Log.i("Application initialization started");
-					Progress progress = ProgressManager.startProgress(Schema.PROG_APP_INIT, "Initializing...", true);
+					Progress progress = ProgressManager.startProgress(Schema.PROG_APP_INIT, Utilities.getResourceString(R.string.prog_initializing), true);
 					try {
 						// Send the initializing property changed
 						initStatus = InitStatus.Initializing;
@@ -463,13 +463,13 @@ public class App extends Application {
 	 * This method is called when the SD card has finished scanning.
 	 */
 	public static synchronized void initScanned() {
-		if (initStatus == InitStatus.Initialized && getMount().isMounted() && (initScannedTask == null || initScannedTask.getStatus() == Status.FINISHED)) {
+		if (initScannedTask == null || initScannedTask.getStatus() == Status.FINISHED) {
 			initScannedTask = new AsyncTask(Utilities.getContext()) {
 				@Override
 				protected void run() {
 					// Begin re-initialization
 					Log.i("Application scanned-finished initialization started");
-					Progress progress = ProgressManager.startProgress(Schema.PROG_APP_INIT, "Initializing...", true);
+					Progress progress = ProgressManager.startProgress(Schema.PROG_APP_INIT, Utilities.getResourceString(R.string.prog_initializing), true);
 					try {
 						// Send the initializing property changed
 						initStatus = InitStatus.Initializing;
@@ -516,5 +516,14 @@ public class App extends Application {
 		
 		// Clear the media file cache (since files may be removed/added/modified while the SD card isn't mounted)
 		MediaFile.clearCache();
+	}
+	
+	/**
+	 * Deinitializes the portion of the application that was affected by the SD card being unmounted previously.
+	 * The app must already have gone through the initialize phase, must not have been deinitialized, and
+	 * the SD card must be mounted. If any of those cases are not true, then this method will not be called.
+	 * This method is called when the SD card has begun scanning.
+	 */
+	public static synchronized void deinitScanned() {
 	}
 }

@@ -11,6 +11,7 @@ import dev.paddock.adp.mCubed.model.MediaStatus;
 import dev.paddock.adp.mCubed.services.ClientCallback;
 import dev.paddock.adp.mCubed.services.IClientCallback;
 import dev.paddock.adp.mCubed.utilities.App;
+import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class Playback4x1Provider extends PlaybackProvider {
 	@Override
@@ -54,10 +55,13 @@ public class Playback4x1Provider extends PlaybackProvider {
 				}
 				
 				// Update the visibilities
-				if (App.getInitStatus() == InitStatus.Initializing) {
+				if (App.isScanRequired() || App.getInitStatus() == InitStatus.Initializing) {
+					String text = Utilities.getResourceString(App.isScanRequired() ? R.string.prog_scanning : R.string.prog_initializing);
+					views.setTextViewText(R.id.w41_init_text, text);
 					views.setViewVisibility(R.id.w41_init_layout, View.VISIBLE);
 					views.setViewVisibility(R.id.w41_info_layout, View.GONE);
 				} else {
+					views.setTextViewText(R.id.w41_init_text, Utilities.getResourceString(R.string.prog_scanning));
 					views.setViewVisibility(R.id.w41_init_layout, View.GONE);
 					views.setViewVisibility(R.id.w41_info_layout, View.VISIBLE);
 				}
@@ -86,6 +90,11 @@ public class Playback4x1Provider extends PlaybackProvider {
 			@Override
 			public void propertyPlaybackSeekChanged(int playbackSeek) {
 				invalidate(Schema.WI_INV_SEEK_CHANGED);
+			}
+			
+			@Override
+			public void propertyScanRequiredChanged(boolean isScanRequired) {
+				invalidate(Schema.WI_INV_SCAN_REQUIRED_CHANGED);
 			}
 		};
 	}

@@ -19,6 +19,8 @@ import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.activities.LibraryActivity;
 import dev.paddock.adp.mCubed.activities.OverlayActivity;
+import dev.paddock.adp.mCubed.listeners.IListener;
+import dev.paddock.adp.mCubed.listeners.MountListener;
 import dev.paddock.adp.mCubed.model.MediaFile;
 import dev.paddock.adp.mCubed.model.MediaStatus;
 import dev.paddock.adp.mCubed.model.OutputMode;
@@ -38,6 +40,7 @@ public class PlaybackService extends Service {
 	private OnSharedPreferenceChangeListener preferenceListener;
 	private final Queue<Intent> queuedIntents = new LinkedList<Intent>();
 	private static final List<BroadcastReceiver> receivers = new ArrayList<BroadcastReceiver>();
+	private static final List<IListener> listeners = new ArrayList<IListener>();
 	
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -49,7 +52,7 @@ public class PlaybackService extends Service {
 		Utilities.pushContext(this);
 		try {
 			super.onStart(intent, startId);
-			if (App.getMount().isMounted()) {
+			if (App.isMounted()) {
 				if (App.isInitialized()) {
 					PlaybackServer.handleIntent(intent, getServerCallback(), false);
 				} else {
@@ -76,7 +79,6 @@ public class PlaybackService extends Service {
 			// Register the various receivers
 			receivers.clear();
 			receivers.add(App.getHeadset());
-			receivers.add(App.getMount());
 			receivers.add(App.getPhoneState());
 			receivers.add(getClientReceiver());
 			for (BroadcastReceiver receiver : receivers) {
@@ -87,6 +89,15 @@ public class PlaybackService extends Service {
 						registerReceiver(receiver, filter);
 					}
 				}
+			}
+			
+			// Create the various listeners
+			listeners.clear();
+			listeners.add(new MountListener());
+			
+			// Register the various listeners
+			for (IListener listener : listeners) {
+				listener.register();
 			}
 			
 			// Register the property changed listener
@@ -119,6 +130,11 @@ public class PlaybackService extends Service {
 			// Unregister the property changed listener
 			if (preferenceListener != null) {
 				PreferenceManager.unregisterPreferenceChangeListener(preferenceListener);
+			}
+			
+			// Unregister the various listeners
+			for (IListener listener : listeners) {
+				listener.unregister();
 			}
 			
 			// Unregister the various receiver

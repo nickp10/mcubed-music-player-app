@@ -24,8 +24,10 @@ public abstract class ClientCallback implements IClientCallback {
 			propertyBlueoothChanged((Boolean)propertyValue);
 		} else if (Schema.PROP_HEADPHONE.equals(propertyName)) { 
 			propertyHeadphoneChanged((Boolean)propertyValue);
-		} else if (Schema.PROP_MOUNT.equals(propertyName)) {
-			propertyMountChanged((Boolean)propertyValue);
+		} else if (Schema.PROP_MOUNTED.equals(propertyName)) {
+			propertyMountedChanged((Boolean)propertyValue);
+		} else if (Schema.PROP_SCAN_REQUIRED.equals(propertyName)) {
+			propertyScanRequiredChanged((Boolean)propertyValue);
 		} else if (Schema.PROP_OUTPUT_MODE.equals(propertyName)) {
 			propertyOutputModeChanged((OutputMode)propertyValue);
 		} else if (Schema.PROP_PHONE_CALL_ACTIVE.equals(propertyName)) {
@@ -46,7 +48,8 @@ public abstract class ClientCallback implements IClientCallback {
 	public void prePropertyChanged(String propertyName, Serializable propertyValue) { }
 	public void propertyBlueoothChanged(boolean isBluetoothConnected) { }
 	public void propertyHeadphoneChanged(boolean isHeadphoneConnected) { }
-	public void propertyMountChanged(boolean isMounted) { }
+	public void propertyMountedChanged(boolean isMounted) { }
+	public void propertyScanRequiredChanged(boolean isScanRequired) { }
 	public void propertyOutputModeChanged(OutputMode outputMode) { }
 	public void propertyPhoneCallActiveChanged(boolean isPhoneCallActive) { }
 	public void propertyPlaybackIDChanged(long playbackID) { }

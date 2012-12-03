@@ -64,4 +64,5 @@
 	<string name="pref_resume_automatically">pref_resume_automatically</string>
 	<string name="pref_defaults_loaded">pref_defaults_loaded</string>
 	<string name="prog_initializing">Initializing&#8230;</string>
+	<string name="prog_scanning">Scanning&#8230;</string>
 </resources>

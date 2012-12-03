@@ -1,12 +1,13 @@
 package dev.paddock.adp.mCubed.model;
 
 import android.os.Handler;
+import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class TimerTask {
 	private Runnable task;
 	private long repeatMillis;
 	private boolean isStarted;
-	private final Handler handler = new Handler();
+	private final Handler handler = Utilities.getHandler();
 	private final Runnable handlerTask = new Runnable() {
 		@Override
 		public void run() {

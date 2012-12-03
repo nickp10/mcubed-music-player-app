@@ -50,7 +50,8 @@ public class Schema {
 	/** PROPERTY NAME SCHEMA **/
 	public static final String PROP_BLUETOOTH = "p_bluetooth";
 	public static final String PROP_HEADPHONE = "p_headphone";
-	public static final String PROP_MOUNT = "p_mount";
+	public static final String PROP_MOUNTED = "p_mounted";
+	public static final String PROP_SCAN_REQUIRED = "p_scan_required";
 	public static final String PROP_OUTPUT_MODE = "p_output_mode";
 	public static final String PROP_PHONE_CALL_ACTIVE = "p_phone_call_active";
 	public static final String PROP_PB_ID = "p_pb_id";
@@ -111,10 +112,12 @@ public class Schema {
 	public static final int WI_INV_INIT_CHANGED = 4;
 	public static final int WI_INV_STATUS_CHANGED = 8;
 	public static final int WI_INV_SEEK_CHANGED = 16;
+	public static final int WI_INV_SCAN_REQUIRED_CHANGED = 32;
 	
 	/** FILE STORAGE SCHEMA **/
 	public static final String FILE_APP_STATE = "mCubedAppState.xml";
 	public static final String FILE_LOGS = "mCubedLogs.txt";
+	public static final String FILE_MOUNTS = "mCubedMounts.txt";
 	
 	/** NOTIFICATIONS SCHEMA **/
 	public static final int NOTIF_PLAYING_MEDIA = 1;

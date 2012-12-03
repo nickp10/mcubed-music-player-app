@@ -29,9 +29,19 @@
 		<service android:name=".services.PlaybackService" android:enabled="true" />
 		
 		<receiver android:name=".receivers.MediaKeyReceiver">
-		    <intent-filter>
-		        <action android:name="android.intent.action.MEDIA_BUTTON" />
-		    </intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.MEDIA_BUTTON" />
+			</intent-filter>
+		</receiver>
+
+		<receiver android:name=".receivers.MountReceiver">
+			<intent-filter>
+				<action android:name="android.intent.action.MEDIA_MOUNTED" />
+				<action android:name="android.intent.action.MEDIA_UNMOUNTED" />
+				<action android:name="android.intent.action.MEDIA_SCANNER_STARTED" />
+				<action android:name="android.intent.action.MEDIA_SCANNER_FINISHED" />
+				<data android:scheme="file" />
+			</intent-filter>
 		</receiver>
 
 		<receiver android:name=".widgets.Playback4x1Provider" android:label="@string/app_widget_4x1">

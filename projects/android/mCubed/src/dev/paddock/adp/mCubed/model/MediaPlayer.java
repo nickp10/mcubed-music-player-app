@@ -289,7 +289,7 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 			
 			// Send property changing
 			NotificationArgs args = new NotificationArgs(this, "MediaFile", this.mediaFile, mediaFile);
-			PropertyManager.notifyPropertyChanging(this, "MediaFile", args);
+			PropertyManager.notifyPropertyChanging(args);
 			this.mediaFile = mediaFile;
 			long id = 0L;
 			
@@ -301,7 +301,7 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 			}
 			
 			// Send property changed
-			PropertyManager.notifyPropertyChanged(this, "MediaFile", args);
+			PropertyManager.notifyPropertyChanged(args);
 			PlaybackServer.propertyChanged(0, Schema.PROP_PB_ID, id);
 		} else if (mediaFile != null) {
 			setSeek(0);

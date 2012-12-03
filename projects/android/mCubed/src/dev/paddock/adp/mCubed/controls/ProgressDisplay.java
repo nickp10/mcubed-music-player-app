@@ -15,8 +15,10 @@ import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
 import dev.paddock.adp.mCubed.services.ClientCallback;
 import dev.paddock.adp.mCubed.services.IClientCallback;
 import dev.paddock.adp.mCubed.utilities.App;
+import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class ProgressDisplay extends LinearLayout implements View.OnClickListener, IProvideClientReceiver {
+	private static final int INDETERMINATE_VALUE = Integer.MIN_VALUE;
 	private TextView titleView;
 	private ProgressBar progressBar;
 	private ClientReceiver clientReceiver;
@@ -37,27 +39,31 @@ public class ProgressDisplay extends LinearLayout implements View.OnClickListene
 		progressBar = (ProgressBar)findViewById(R.id.pd_progress);
 		
 		// Initialize the views
-		initProgress(App.getInitStatus(), App.isMounted());
+		initProgress(App.getInitStatus(), App.isMounted(), App.isScanRequired());
 		
 		// Register listeners
 		setOnClickListener(this);
 	}
 	
-	private void initProgress(InitStatus initStatus, boolean isMounted) {
-		if (initStatus == InitStatus.Initializing && isMounted) {
-			showProgress("Initializing...", 0);
+	private void initProgress(InitStatus initStatus, boolean isMounted, boolean isScanRequired) {
+		if (isScanRequired) {
+			showProgress(Utilities.getResourceString(R.string.prog_scanning), INDETERMINATE_VALUE);
+		} else if (initStatus == InitStatus.Initializing && isMounted) {
+			showProgress(Utilities.getResourceString(R.string.prog_initializing), INDETERMINATE_VALUE);
 		} else if (initStatus == InitStatus.Initialized || !isMounted) {
 			hideProgress();
 		}
 	}
 	
 	private void showProgress(String title, int progress) {
+		progressBar.setIndeterminate(progress == INDETERMINATE_VALUE);
 		progressBar.setProgress(progress);
 		titleView.setText(title);
 		setVisibility(View.VISIBLE);
 	}
 	
 	private void hideProgress() {
+		progressBar.setIndeterminate(false);
 		progressBar.setProgress(0);
 		titleView.setText("");
 		setVisibility(View.GONE);
@@ -77,12 +83,17 @@ public class ProgressDisplay extends LinearLayout implements View.OnClickListene
 			clientCallback = new ClientCallback() {
 				@Override
 				public void propertyInitStatusChanged(InitStatus initStatus) {
-					initProgress(initStatus, App.isMounted());
+					initProgress(initStatus, App.isMounted(), App.isScanRequired());
 				}
 				
 				@Override
-				public void propertyMountChanged(boolean isMounted) {
-					initProgress(App.getInitStatus(), isMounted);
+				public void propertyMountedChanged(boolean isMounted) {
+					initProgress(App.getInitStatus(), isMounted, App.isScanRequired());
+				}
+				
+				@Override
+				public void propertyScanRequiredChanged(boolean isScanRequired) {
+					initProgress(App.getInitStatus(), App.isMounted(), isScanRequired);
 				}
 				
 				@Override

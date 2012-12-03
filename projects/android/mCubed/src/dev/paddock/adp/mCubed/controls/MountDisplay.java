@@ -65,7 +65,7 @@ public class MountDisplay extends LinearLayout implements View.OnClickListener, 
 		if (clientCallback == null) {
 			clientCallback = new ClientCallback() {
 				@Override
-				public void propertyMountChanged(boolean isMounted) {
+				public void propertyMountedChanged(boolean isMounted) {
 					initMountDisplay(isMounted);
 				}
 			};

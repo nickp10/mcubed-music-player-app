@@ -9,8 +9,6 @@ import java.util.TreeMap;
 
 import android.content.Context;
 import android.database.DataSetObserver;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -48,12 +46,12 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	private BindingList<E> list;
 	private boolean isNotifyOnChange = true, isDataSetChangedPosted, isDataSetInvalidatedPosted;
 	private int headerDropDownViewResource, headerViewResource, itemDropDownViewResource, itemViewResource;
-	private Handler handler;
 	private LayoutInflater inflater;
 	private IViewItemFactory<String> headerViewItemFactory;
 	private IViewItemFactory<E> itemViewItemFactory;
 	private IGrouper<E> grouper;
 	private Comparator<E> sorter;
+	private Context context;
 	
 	private static class BindingListView {
 		private AbsListView listView;
@@ -89,6 +87,7 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	}
 	
 	public BindingListAdapter(Context context, BindingList<E> list) {
+		setContext(context);
 		setHeaderDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
 		setItemDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		setHeaderViewResource(android.R.layout.simple_list_item_1);
@@ -292,7 +291,7 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	private final void postDataSetChanged() {
 		synchronized(DATA_SET_CHANGED_LOCK) {
 			if (!isDataSetChangedPosted) {
-				getHandler().post(new Runnable() {
+				Utilities.dispatchToUIThread(getContext(), new Runnable() {
 					@Override
 					public void run() {
 						doNotifyDataSetChanged();
@@ -306,7 +305,7 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	private final void postDataSetInvalidated() {
 		synchronized(DATA_SET_INVALIDATED_LOCK) {
 			if (!isDataSetInvalidatedPosted) {
-				getHandler().post(new Runnable() {
+				Utilities.dispatchToUIThread(getContext(), new Runnable() {
 					@Override
 					public void run() {
 						doNotifyDataSetInvalidated();
@@ -405,6 +404,14 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 		return itemRemoved;
 	}
 	
+	public final Context getContext() {
+		return context;
+	}
+	
+	public final void setContext(Context context) {
+		this.context = context;
+	}
+	
 	public final Comparator<E> getSorter() {
 		return sorter;
 	}
@@ -435,14 +442,7 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 				addItem(item);
 			}
 		}
-		notifyDataSetChanged();
-	}
-	
-	public final Handler getHandler() {
-		if (handler == null) {
-			handler = new Handler(Looper.getMainLooper());
-		}
-		return handler;
+		notifyDataSetInvalidated();
 	}
 	
 	public final LayoutInflater getInflater() {

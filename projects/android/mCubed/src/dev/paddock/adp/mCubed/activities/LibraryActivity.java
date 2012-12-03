@@ -15,16 +15,10 @@ import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.controls.LibraryView;
 import dev.paddock.adp.mCubed.controls.MountDisplay;
 import dev.paddock.adp.mCubed.controls.ProgressDisplay;
-import dev.paddock.adp.mCubed.model.MediaStatus;
-import dev.paddock.adp.mCubed.receivers.ClientReceiver;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
-import dev.paddock.adp.mCubed.services.ClientCallback;
-import dev.paddock.adp.mCubed.services.IClientCallback;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
-public class LibraryActivity extends TabActivity implements IActivity, IProvideClientReceiver {
-	private ClientReceiver clientReceiver;
-	private IClientCallback clientCallback;
+public class LibraryActivity extends TabActivity implements IActivity {
 	private TabHost tabHost;
 	private MountDisplay mountDisplay;
 	private ProgressDisplay progressDisplay;
@@ -107,38 +101,7 @@ public class LibraryActivity extends TabActivity implements IActivity, IProvideC
 	
 	@Override
 	public List<IProvideClientReceiver> getClientReceivers() {
-		return Arrays.<IProvideClientReceiver>asList(this, mountDisplay, progressDisplay);
-	}
-	
-	@Override
-	public ClientReceiver getClientReceiver() {
-		if (clientReceiver == null) {
-			clientReceiver = new ClientReceiver(getClientCallback(), false);
-		}
-		return clientReceiver;
-	}
-	
-	private IClientCallback getClientCallback() {
-		if (clientCallback == null) {
-			clientCallback = new ClientCallback() {
-				public void propertyMountChanged(boolean isMounted) {
-					updateViews();
-				}
-				
-				public void propertyBlueoothChanged(boolean isBluetoothConnected) {
-					updateViews();
-				}
-				
-				public void propertyHeadphoneChanged(boolean isHeadphoneConnected) {
-					updateViews();
-				}
-				
-				public void propertyPlaybackStatusChanged(MediaStatus playbackStatus) {
-					updateViews();
-				}
-			};
-		}
-		return clientCallback;
+		return Arrays.<IProvideClientReceiver>asList(mountDisplay, progressDisplay);
 	}
 	
 	private void createTabSpec(String display) {

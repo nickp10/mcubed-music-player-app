@@ -329,7 +329,6 @@ public class Playlist {
 						if (file != null) {
 							files.add(file);
 						}
-					} catch (Exception e) {
 					} finally {
 						current++;
 						progress.setValue((double)current / (double)idArray.length);

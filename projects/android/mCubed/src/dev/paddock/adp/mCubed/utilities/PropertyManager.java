@@ -72,6 +72,13 @@ public class PropertyManager {
 		}
 	}
 	
+	public static void notifyPropertyChanged(NotificationArgs args) {
+		// Make sure we have args
+		if (args != null) {
+			notifyPropertyChanged(args.getInstance(), args.getProperty(), args);
+		}
+	}
+	
 	public static void notifyPropertyChanged(Object instance, String property, NotificationArgs args) {
 		// Make sure we have args
 		if (args != null) {
@@ -84,6 +91,13 @@ public class PropertyManager {
 					listener.propertyChanged(instance, args);
 				}
 			}
+		}
+	}
+	
+	public static void notifyPropertyChanging(NotificationArgs args) {
+		// Make sure we have args
+		if (args != null) {
+			notifyPropertyChanging(args.getInstance(), args.getProperty(), args);
 		}
 	}
 	
