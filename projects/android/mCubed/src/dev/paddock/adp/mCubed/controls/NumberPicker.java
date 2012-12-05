@@ -1,5 +1,6 @@
 package dev.paddock.adp.mCubed.controls;
 
+import dev.paddock.adp.mCubed.utilities.Utilities;
 import android.content.Context;
 import android.os.Handler;
 import android.text.Editable;
@@ -21,8 +22,8 @@ import android.widget.LinearLayout;
 public class NumberPicker extends LinearLayout {
 	private static final long REPEAT_DELAY = 50;
 	private static final int ELEMENT_HEIGHT = LayoutParams.WRAP_CONTENT;
-	private static final int ELEMENT_WIDTH = 100;
-	private final Handler repeatUpdateHandler = new Handler();
+	private static final int ELEMENT_WIDTH = 150;
+	private final Handler repeatUpdateHandler = Utilities.getHandler();
 	private final ValueUpdater incrementUpdater = new ValueUpdater(1);
 	private final ValueUpdater decrementUpdater = new ValueUpdater(-1);
 	private OnValueChangedListener onValueChangedListener;

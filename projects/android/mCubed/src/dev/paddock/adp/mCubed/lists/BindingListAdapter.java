@@ -442,7 +442,7 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 				addItem(item);
 			}
 		}
-		notifyDataSetInvalidated();
+		notifyDataSetChanged();
 	}
 	
 	public final LayoutInflater getInflater() {
