@@ -45,6 +45,11 @@ public class BindingListTest extends TestCase {
 			public void itemsCleared(BindingList<Integer> list) {
 				fail("Shouldn't be called");
 			}
+			
+			@Override
+			public void transactionCompleted(BindingList<Integer> list, boolean hasChanges) {
+				fail("Shouldn't be called");
+			}
 		});
 		
 		// Assert setup
@@ -108,6 +113,11 @@ public class BindingListTest extends TestCase {
 			public void itemsCleared(BindingList<Integer> list) {
 				fail("Shouldn't be called");
 			}
+			
+			@Override
+			public void transactionCompleted(BindingList<Integer> list, boolean hasChanges) {
+				fail("Shouldn't be called");
+			}
 		});
 		
 		// Assert setup
@@ -149,6 +159,11 @@ public class BindingListTest extends TestCase {
 
 			@Override
 			public void itemsCleared(BindingList<Integer> list) {
+				fail("Shouldn't be called");
+			}
+			
+			@Override
+			public void transactionCompleted(BindingList<Integer> list, boolean hasChanges) {
 				fail("Shouldn't be called");
 			}
 		});
@@ -219,6 +234,11 @@ public class BindingListTest extends TestCase {
 			public void itemsCleared(BindingList<Integer> list) {
 				executed.setValue(true);
 			}
+			
+			@Override
+			public void transactionCompleted(BindingList<Integer> list, boolean hasChanges) {
+				fail("Shouldn't be called");
+			}
 		});
 		
 		assertEquals(3, list.size());
@@ -250,6 +270,11 @@ public class BindingListTest extends TestCase {
 
 			@Override
 			public void itemsCleared(BindingList<Integer> list) {
+				fail("Shouldn't be called");
+			}
+			
+			@Override
+			public void transactionCompleted(BindingList<Integer> list, boolean hasChanges) {
 				fail("Shouldn't be called");
 			}
 		};
@@ -313,6 +338,11 @@ public class BindingListTest extends TestCase {
 
 			@Override
 			public void itemsCleared(BindingList<Integer> list) {
+				fail("Shouldn't be called");
+			}
+			
+			@Override
+			public void transactionCompleted(BindingList<Integer> list, boolean hasChanges) {
 				fail("Shouldn't be called");
 			}
 		});

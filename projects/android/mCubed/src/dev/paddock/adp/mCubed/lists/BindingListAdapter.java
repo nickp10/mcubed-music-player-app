@@ -337,12 +337,14 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	@Override
 	public void itemAdded(BindingList<E> list, int location, E item) {
 		addItem(location, item);
-		notifyDataSetChanged();
+		if (!list.isInTransaction()) {
+			notifyDataSetChanged();
+		}
 	}
 
 	@Override
 	public void itemRemoved(BindingList<E> list, int location, E item) {
-		if (removeItem(item)) {
+		if (removeItem(item) && !list.isInTransaction()) {
 			notifyDataSetChanged();
 		}
 	}
@@ -350,7 +352,16 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	@Override
 	public void itemsCleared(BindingList<E> list) {
 		map.clear();
-		notifyDataSetChanged();
+		if (!list.isInTransaction()) {
+			notifyDataSetChanged();
+		}
+	}
+	
+	@Override
+	public void transactionCompleted(BindingList<E> list, boolean hasChanges) {
+		if (hasChanges) {
+			notifyDataSetChanged();
+		}
 	}
 	
 	private final void addItem(E item) {

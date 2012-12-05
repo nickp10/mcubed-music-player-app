@@ -9,11 +9,14 @@ import java.util.ListIterator;
 public class BindingList<E> implements List<E> {
 	private List<E> items;
 	private final List<BindingListObserver<E>> observers = new ArrayList<BindingListObserver<E>>();
+	private int isInTransaction;
+	private boolean hasChanges;
 	
 	public static interface BindingListObserver<E> {
 		void itemAdded(BindingList<E> list, int location, E item);
 		void itemRemoved(BindingList<E> list, int location, E item);
 		void itemsCleared(BindingList<E> list);
+		void transactionCompleted(BindingList<E> list, boolean hasChanges);
 	}
 	
 	public static <E> BindingList<E> fromList(List<E> items) {
@@ -43,21 +46,46 @@ public class BindingList<E> implements List<E> {
 	}
 	
 	private void notifyItemAdded(int location, E item) {
+		hasChanges = hasChanges || isInTransaction();
 		for (BindingListObserver<E> observer : observers) {
 			observer.itemAdded(this, location, item);
 		}
 	}
 	
 	private void notifyItemRemoved(int location, E item) {
+		hasChanges = hasChanges || isInTransaction();
 		for (BindingListObserver<E> observer : observers) {
 			observer.itemRemoved(this, location, item);
 		}
 	}
 	
 	private void notifyItemsCleared() {
+		hasChanges = hasChanges || isInTransaction();
 		for (BindingListObserver<E> observer : observers) {
 			observer.itemsCleared(this);
 		}
+	}
+	
+	private void notifyTransactionCompleted(boolean hasChanges) {
+		for (BindingListObserver<E> observer : observers) {
+			observer.transactionCompleted(this, hasChanges);
+		}
+	}
+	
+	public void beginTransaction() {
+		isInTransaction = Math.max(isInTransaction + 1, 1);
+	}
+	
+	public void endTransaction() {
+		isInTransaction = Math.max(isInTransaction - 1, 0);
+		if (!isInTransaction()) {
+			notifyTransactionCompleted(hasChanges);
+			hasChanges = false;
+		}
+	}
+	
+	public boolean isInTransaction() {
+		return isInTransaction > 0;
 	}
 
 	@Override

@@ -55,8 +55,10 @@ public enum MediaGroup {
 	
 	public void refresh() {
 		if (groupings != null) {
+			groupings.beginTransaction();
 			groupings.clear();
 			fillInGroupings();
+			groupings.endTransaction();
 		}
 	}
 	
