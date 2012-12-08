@@ -3,10 +3,9 @@ package dev.paddock.adp.mCubed.lists;
 import java.util.ArrayList;
 
 import junit.framework.TestCase;
-
-import dev.paddock.adp.mCubed.lists.BindingList;
 import dev.paddock.adp.mCubed.lists.BindingList.BindingListObserver;
-import dev.paddock.adp.mCubed.model.Holder;
+import dev.paddock.adp.mCubed.model.holders.HolderBoolean;
+import dev.paddock.adp.mCubed.model.holders.HolderInt;
 
 public class BindingListTest extends TestCase {
 	public void testAddItem() {
@@ -27,13 +26,13 @@ public class BindingListTest extends TestCase {
 		// Setup
 		ArrayList<Integer> startItems = new ArrayList<Integer>();
 		BindingList<Integer> list = new BindingList<Integer>(startItems);
-		final Holder<Integer> locHolder = new Holder<Integer>(-1);
-		final Holder<Integer> valHolder = new Holder<Integer>(-1);
+		final HolderInt locHolder = new HolderInt(-1);
+		final HolderInt valHolder = new HolderInt(-1);
 		list.addObserver(new BindingListObserver<Integer>() {
 			@Override
 			public void itemAdded(BindingList<Integer> list, int location, Integer item) {
-				locHolder.setValue(location);
-				valHolder.setValue(item);
+				locHolder.value = location;
+				valHolder.value = item;
 			}
 
 			@Override
@@ -53,23 +52,23 @@ public class BindingListTest extends TestCase {
 		});
 		
 		// Assert setup
-		assertEquals(-1, (int)locHolder.getValue());
-		assertEquals(-1, (int)valHolder.getValue());
+		assertEquals(-1, locHolder.value);
+		assertEquals(-1, valHolder.value);
 		
 		// Add an item and assert
 		list.add(3);
-		assertEquals(0, (int)locHolder.getValue());
-		assertEquals(3, (int)valHolder.getValue());
+		assertEquals(0, locHolder.value);
+		assertEquals(3, valHolder.value);
 		
 		// Add an item and assert
 		list.add(6);
-		assertEquals(1, (int)locHolder.getValue());
-		assertEquals(6, (int)valHolder.getValue());
+		assertEquals(1, locHolder.value);
+		assertEquals(6, valHolder.value);
 		
 		// Add an item and assert
 		list.add(0, 2);
-		assertEquals(0, (int)locHolder.getValue());
-		assertEquals(2, (int)valHolder.getValue());
+		assertEquals(0, locHolder.value);
+		assertEquals(2, valHolder.value);
 	}
 	
 	public void testRemoveItem() {
@@ -95,8 +94,8 @@ public class BindingListTest extends TestCase {
 		startItems.add(6);
 		startItems.add(0, 2);
 		BindingList<Integer> list = new BindingList<Integer>(startItems);
-		final Holder<Integer> locHolder = new Holder<Integer>(-1);
-		final Holder<Integer> valHolder = new Holder<Integer>(-1);
+		final HolderInt locHolder = new HolderInt(-1);
+		final HolderInt valHolder = new HolderInt(-1);
 		list.addObserver(new BindingListObserver<Integer>() {
 			@Override
 			public void itemAdded(BindingList<Integer> list, int location, Integer item) {
@@ -105,8 +104,8 @@ public class BindingListTest extends TestCase {
 
 			@Override
 			public void itemRemoved(BindingList<Integer> list, int location, Integer item) {
-				locHolder.setValue(location);
-				valHolder.setValue(item);
+				locHolder.value = location;
+				valHolder.value = item;
 			}
 
 			@Override
@@ -121,18 +120,18 @@ public class BindingListTest extends TestCase {
 		});
 		
 		// Assert setup
-		assertEquals(-1, (int)locHolder.getValue());
-		assertEquals(-1, (int)valHolder.getValue());
+		assertEquals(-1, locHolder.value);
+		assertEquals(-1, valHolder.value);
 		
 		// Remove item and assert
 		list.remove(2);
-		assertEquals(2, (int)locHolder.getValue());
-		assertEquals(6, (int)valHolder.getValue());
+		assertEquals(2, locHolder.value);
+		assertEquals(6, valHolder.value);
 		
 		// Remove item and assert
 		list.remove((Integer)3);
-		assertEquals(1, (int)locHolder.getValue());
-		assertEquals(3, (int)valHolder.getValue());
+		assertEquals(1, locHolder.value);
+		assertEquals(3, valHolder.value);
 	}
 	
 	public void testRemoveAllOccurrencesWithObserver() {
@@ -218,7 +217,7 @@ public class BindingListTest extends TestCase {
 		startItems.add(6);
 		startItems.add(0, 2);
 		BindingList<Integer> list = new BindingList<Integer>(startItems);
-		final Holder<Boolean> executed = new Holder<Boolean>(false);
+		final HolderBoolean executed = new HolderBoolean(false);
 		list.addObserver(new BindingListObserver<Integer>() {
 			@Override
 			public void itemAdded(BindingList<Integer> list, int location, Integer item) {
@@ -232,7 +231,7 @@ public class BindingListTest extends TestCase {
 
 			@Override
 			public void itemsCleared(BindingList<Integer> list) {
-				executed.setValue(true);
+				executed.value = true;
 			}
 			
 			@Override
@@ -242,12 +241,12 @@ public class BindingListTest extends TestCase {
 		});
 		
 		assertEquals(3, list.size());
-		assertFalse(executed.getValue());
+		assertFalse(executed.value);
 		
 		list.clear();
 		
 		assertEquals(0, list.size());
-		assertTrue(executed.getValue());
+		assertTrue(executed.value);
 	}
 	
 	public void testRemoveObserver() {
@@ -256,11 +255,11 @@ public class BindingListTest extends TestCase {
 		startItems.add(3);
 		startItems.add(6);
 		BindingList<Integer> list = new BindingList<Integer>(startItems);
-		final Holder<Boolean> executed = new Holder<Boolean>(false);
+		final HolderBoolean executed = new HolderBoolean(false);
 		BindingListObserver<Integer> observer = new BindingListObserver<Integer>() {
 			@Override
 			public void itemAdded(BindingList<Integer> list, int location, Integer item) {
-				executed.setValue(true);
+				executed.value = true;
 			}
 
 			@Override
@@ -280,18 +279,18 @@ public class BindingListTest extends TestCase {
 		};
 		list.addObserver(observer);
 		
-		assertFalse(executed.getValue());
+		assertFalse(executed.value);
 		
 		list.add(9);
 		
-		assertTrue(executed.getValue());
-		executed.setValue(false);
-		assertFalse(executed.getValue());
+		assertTrue(executed.value);
+		executed.value = false;
+		assertFalse(executed.value);
 		
 		list.removeObserver(observer);
 		
 		list.add(12);
-		assertFalse(executed.getValue());
+		assertFalse(executed.value);
 	}
 	
 	public void testSetItem() {
@@ -319,21 +318,21 @@ public class BindingListTest extends TestCase {
 		startItems.add(6);
 		startItems.add(9);
 		BindingList<Integer> list = new BindingList<Integer>(startItems);
-		final Holder<Integer> addLocHolder = new Holder<Integer>(-1);
-		final Holder<Integer> addValHolder = new Holder<Integer>(-1);
-		final Holder<Integer> remLocHolder = new Holder<Integer>(-1);
-		final Holder<Integer> remValHolder = new Holder<Integer>(-1);
+		final HolderInt addLocHolder = new HolderInt(-1);
+		final HolderInt addValHolder = new HolderInt(-1);
+		final HolderInt remLocHolder = new HolderInt(-1);
+		final HolderInt remValHolder = new HolderInt(-1);
 		list.addObserver(new BindingListObserver<Integer>() {
 			@Override
 			public void itemAdded(BindingList<Integer> list, int location, Integer item) {
-				addLocHolder.setValue(location);
-				addValHolder.setValue(item);
+				addLocHolder.value = location;
+				addValHolder.value = item;
 			}
 
 			@Override
 			public void itemRemoved(BindingList<Integer> list, int location, Integer item) {
-				remLocHolder.setValue(location);
-				remValHolder.setValue(item);
+				remLocHolder.value = location;
+				remValHolder.value = item;
 			}
 
 			@Override
@@ -347,20 +346,20 @@ public class BindingListTest extends TestCase {
 			}
 		});
 		
-		assertEquals(-1, (int)addLocHolder.getValue());
-		assertEquals(-1, (int)addValHolder.getValue());
-		assertEquals(-1, (int)remLocHolder.getValue());
-		assertEquals(-1, (int)remValHolder.getValue());
+		assertEquals(-1, addLocHolder.value);
+		assertEquals(-1, addValHolder.value);
+		assertEquals(-1, remLocHolder.value);
+		assertEquals(-1, remValHolder.value);
 		assertEquals(3, list.size());
 		assertEquals(9, (int)list.get(2));
 		assertTrue(list.contains(9));
 		
 		list.set(2, 12);
 		
-		assertEquals(2, (int)addLocHolder.getValue());
-		assertEquals(12, (int)addValHolder.getValue());
-		assertEquals(2, (int)remLocHolder.getValue());
-		assertEquals(9, (int)remValHolder.getValue());
+		assertEquals(2, addLocHolder.value);
+		assertEquals(12, addValHolder.value);
+		assertEquals(2, remLocHolder.value);
+		assertEquals(9, remValHolder.value);
 		assertEquals(3, list.size());
 		assertEquals(12, (int)list.get(2));
 		assertFalse(list.contains(9));

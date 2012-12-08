@@ -3,13 +3,14 @@ package dev.paddock.adp.mCubed.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.MediaStore;
+import dev.paddock.adp.mCubed.model.holders.HolderBoolean;
 import dev.paddock.adp.mCubed.utilities.ICursor;
 import dev.paddock.adp.mCubed.utilities.Log;
 import dev.paddock.adp.mCubed.utilities.PropertyManager;
 import dev.paddock.adp.mCubed.utilities.Utilities;
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.MediaStore;
 
 public class MediaFile {
 	public static final String[] DATA_PROJECTION = new String[] {
@@ -172,15 +173,15 @@ public class MediaFile {
 	 */
 	private boolean loadData(long id) {
 		if (!isDataLoaded) {
-			final Holder<Boolean> exists = new Holder<Boolean>(false);
+			final HolderBoolean exists = new HolderBoolean();
 			Utilities.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id, DATA_PROJECTION, new ICursor() {
 				@Override
 				public boolean run(Cursor cursor) {
-					exists.setValue(loadData(cursor));
+					exists.value = loadData(cursor);
 					return false;
 				}
 			});
-			return exists.getValue();
+			return exists.value;
 		}
 		return true;
 	}
@@ -232,7 +233,7 @@ public class MediaFile {
 	 */
 	private void loadGenre() {
 		if (!isGenreLoaded) {
-			final Holder<Boolean> found = new Holder<Boolean>(false);
+			final HolderBoolean found = new HolderBoolean();
 			String[] genreProjection = new String[] { MediaStore.Audio.Genres._ID, MediaStore.Audio.Genres.NAME };
 			Utilities.query(MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI, genreProjection, new ICursor() {
 				@Override
@@ -244,12 +245,12 @@ public class MediaFile {
 					Utilities.query(uri, projection, where, null, new ICursor() {
 						@Override
 						public boolean run(Cursor cursor) {
-							found.setValue(true);
+							found.value = true;
 							loadGenre(genreCursor);
 							return true;
 						}
 					});
-					return found.getValue();
+					return found.value;
 				}
 			});
 		}

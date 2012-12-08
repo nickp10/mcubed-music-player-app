@@ -3,12 +3,6 @@ package dev.paddock.adp.mCubed.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import dev.paddock.adp.mCubed.Schema;
-import dev.paddock.adp.mCubed.lists.BindingList;
-import dev.paddock.adp.mCubed.utilities.ICursor;
-import dev.paddock.adp.mCubed.utilities.ProgressManager;
-import dev.paddock.adp.mCubed.utilities.Utilities;
-
 import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
@@ -18,6 +12,12 @@ import android.provider.MediaStore.Audio.Artists;
 import android.provider.MediaStore.Audio.Genres;
 import android.provider.MediaStore.Audio.Media;
 import android.provider.MediaStore.Audio.Playlists;
+import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.lists.BindingList;
+import dev.paddock.adp.mCubed.model.holders.Holder;
+import dev.paddock.adp.mCubed.utilities.ICursor;
+import dev.paddock.adp.mCubed.utilities.ProgressManager;
+import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public enum MediaGroup {
 	Artist(Artists.EXTERNAL_CONTENT_URI, Artists.ARTIST, Media.ARTIST_ID),
@@ -110,11 +110,11 @@ public enum MediaGroup {
 				@Override
 				public boolean run(Cursor cursor) {
 					String name = Utilities.getCursorStringValue(cursor, nameColumn);
-					grouping.setValue(new MediaGrouping(MediaGroup.this, id, name));
+					grouping.value = new MediaGrouping(MediaGroup.this, id, name);
 					return false;
 				}
 			});
-			return grouping.getValue();
+			return grouping.value;
 		}
 	}
 	

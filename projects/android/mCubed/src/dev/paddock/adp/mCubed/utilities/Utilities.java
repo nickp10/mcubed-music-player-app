@@ -29,10 +29,13 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.model.AsyncTask;
-import dev.paddock.adp.mCubed.model.Holder;
 import dev.paddock.adp.mCubed.model.PublishProgress;
 import dev.paddock.adp.mCubed.model.SortClause;
 import dev.paddock.adp.mCubed.model.WhereClause;
+import dev.paddock.adp.mCubed.model.holders.Holder;
+import dev.paddock.adp.mCubed.model.holders.HolderDouble;
+import dev.paddock.adp.mCubed.model.holders.HolderInt;
+import dev.paddock.adp.mCubed.model.holders.HolderLong;
 import dev.paddock.adp.mCubed.receivers.MediaKeyReceiver;
 
 public class Utilities {
@@ -479,7 +482,7 @@ public class Utilities {
 			PowerManager manager = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
 			if (manager != null) {
 				if (holder != null) {
-					holder.setValue(manager);
+					holder.value = manager;
 				}
 				return manager.isScreenOn();
 			}
@@ -490,7 +493,7 @@ public class Utilities {
 	public static void turnScreenOn(int ms) {
 		Holder<PowerManager> holder = new Holder<PowerManager>();
 		if (!isScreenOn(holder)) {
-			PowerManager manager = holder.getValue();
+			PowerManager manager = holder.value;
 			if (manager != null) {
 				WakeLock lock = manager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, Schema.TAG);
 				if (lock != null) {
@@ -501,45 +504,42 @@ public class Utilities {
 	}
 	
 	public static int parseInt(String str) {
-		Holder<Integer> value = new Holder<Integer>(0);
+		HolderInt value = new HolderInt();
 		tryParseInt(str, value);
-		return value.getValue();
+		return value.value;
 	}
 	
-	public static boolean tryParseInt(String str, Holder<Integer> holder) {
+	public static boolean tryParseInt(String str, HolderInt holder) {
 		try {
-			int value = Integer.parseInt(str);
-			holder.setValue(value);
+			holder.value = Integer.parseInt(str);
 			return true;
 		} catch (Exception e) { }
 		return false;
 	}
 	
 	public static long parseLong(String str) {
-		Holder<Long> value = new Holder<Long>(0L);
+		HolderLong value = new HolderLong();
 		tryParseLong(str, value);
-		return value.getValue();
+		return value.value;
 	}
 	
-	public static boolean tryParseLong(String str, Holder<Long> holder) {
+	public static boolean tryParseLong(String str, HolderLong holder) {
 		try {
-			long value = Long.parseLong(str);
-			holder.setValue(value);
+			holder.value = Long.parseLong(str);
 			return true;
 		} catch (Exception e) { }
 		return false;
 	}
 	
 	public static double parseDouble(String str) {
-		Holder<Double> value = new Holder<Double>(0d);
+		HolderDouble value = new HolderDouble();
 		tryParseDouble(str, value);
-		return value.getValue();
+		return value.value;
 	}
 	
-	public static boolean tryParseDouble(String str, Holder<Double> holder) {
+	public static boolean tryParseDouble(String str, HolderDouble holder) {
 		try {
-			double value = Double.parseDouble(str);
-			holder.setValue(value);
+			holder.value = Double.parseDouble(str);
 			return true;
 		} catch (Exception e) { }
 		return false;

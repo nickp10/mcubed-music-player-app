@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Stack;
 
-import dev.paddock.adp.mCubed.model.Holder;
+import dev.paddock.adp.mCubed.model.holders.Holder;
+import dev.paddock.adp.mCubed.model.holders.HolderInt;
 
 public class SortedList<E> implements List<E> {
 	private static enum AVLTreeHeight {
@@ -365,16 +366,15 @@ public class SortedList<E> implements List<E> {
 	 * @return The index position of the item in the list.
 	 */
 	private int indexOf(Object item, final boolean first) {
-		final Holder<Integer> index = new Holder<Integer>(-1);
-		final Holder<Integer> count = new Holder<Integer>(-1);
+		final HolderInt index = new HolderInt(-1);
+		final HolderInt count = new HolderInt(-1);
 		final Object findItem = item;
 		traverseInOrder(new NodeAction<E>() {
 			@Override
 			public boolean act(Node<E> parentNode, Node<E> currentNode, E item) {
-				int pos = count.getValue() + 1;
-				count.setValue(pos);
+				count.value++;
 				if (item.equals(findItem))  {
-					index.setValue(pos);
+					index.value = count.value;
 					if (first) {
 						return true;
 					}
@@ -382,7 +382,7 @@ public class SortedList<E> implements List<E> {
 				return false;
 			}
 		});
-		return index.getValue();
+		return index.value;
 	}
 	
 	/**
@@ -403,21 +403,20 @@ public class SortedList<E> implements List<E> {
 	 */
 	private Node<E> getNode(int location) {
 		final Holder<Node<E>> itemHolder = new Holder<Node<E>>();
-		final Holder<Integer> index = new Holder<Integer>(0);
+		final HolderInt index = new HolderInt();
 		final int findLocation = location;
 		traverseInOrder(new NodeAction<E>() {
 			@Override
 			public boolean act(Node<E> parentNode, Node<E> currentNode, E item) {
-				int pos = index.getValue();
-				if (pos == findLocation) {
-					itemHolder.setValue(currentNode);
+				if (index.value == findLocation) {
+					itemHolder.value = currentNode;
 					return true;
 				}
-				index.setValue(pos + 1);
+				index.value++;
 				return false;
 			}
 		});
-		return itemHolder.getValue();
+		return itemHolder.value;
 	}
 	
 	/**
@@ -461,19 +460,18 @@ public class SortedList<E> implements List<E> {
 	@Override
 	public List<E> subList(final int start, final int end) {
 		final List<E> list = new ArrayList<E>();
-		final Holder<Integer> index = new Holder<Integer>(0);
+		final HolderInt index = new HolderInt();
 		if (start <= end) {
 			traverseInOrder(new NodeAction<E>() {
 				@Override
 				public boolean act(Node<E> parentNode, Node<E> currentNode, E item) {
-					int pos = index.getValue();
-					if (pos >= start) {
+					if (index.value >= start) {
 						list.add(item);
 					}
-					if (pos >= end - 1) {
+					if (index.value >= end - 1) {
 						return true;
 					}
-					index.setValue(pos + 1);
+					index.value++;
 					return false;
 				}
 			});
@@ -516,13 +514,12 @@ public class SortedList<E> implements List<E> {
 	@Override
 	public Object[] toArray() {
 		final Object[] items = new Object[size()];
-		final Holder<Integer> index = new Holder<Integer>(0);
+		final HolderInt index = new HolderInt();
 		traverseInOrder(new NodeAction<E>() {
 			@Override
 			public boolean act(Node<E> parentNode, Node<E> currentNode, E item) {
-				int pos = index.getValue();
-				items[pos] = item;
-				index.setValue(pos + 1);
+				items[index.value] = item;
+				index.value++;
 				return false;
 			}
 		});
@@ -544,18 +541,17 @@ public class SortedList<E> implements List<E> {
             Class<?> ct = array.getClass().getComponentType();
             array = (T[]) Array.newInstance(ct, size);
         }
-        final Holder<Integer> index = new Holder<Integer>(0);
+        final HolderInt index = new HolderInt();
         final T[] items = array;
 		traverseInOrder(new NodeAction<E>() {
 			@Override
 			public boolean act(Node<E> parentNode, Node<E> currentNode, E item) {
-				int pos = index.getValue();
-				items[pos] = (T)item;
-				index.setValue(pos + 1);
+				items[index.value] = (T)item;
+				index.value++;
 				return false;
 			}
 		});
-        for (int pos = index.getValue(); pos < array.length; pos++) {
+        for (int pos = index.value; pos < array.length; pos++) {
         	array[pos] = null;
         }
         return array;

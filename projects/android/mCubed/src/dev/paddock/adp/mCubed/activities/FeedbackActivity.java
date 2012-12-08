@@ -16,7 +16,7 @@ import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.controls.MountDisplay;
 import dev.paddock.adp.mCubed.controls.ProgressDisplay;
-import dev.paddock.adp.mCubed.model.Holder;
+import dev.paddock.adp.mCubed.model.holders.HolderInt;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
 import dev.paddock.adp.mCubed.utilities.Log;
 import dev.paddock.adp.mCubed.utilities.Utilities;
@@ -39,23 +39,23 @@ public class FeedbackActivity extends Activity implements IActivity {
 			Utilities.dispatchToBackgroundThread(FeedbackActivity.this, new Runnable() {
 				@Override
 				public void run() {
-					final Holder<Integer> resource = new Holder<Integer>();
+					final HolderInt resource = new HolderInt();
 					String result = WebService.submitFeedback(emailText.getText().toString(), messageText.getText().toString());
 					final boolean success = Boolean.parseBoolean(result);
 					
 					// Determine whether or not the submission succeeded
 					if (success) {
 						Log.clearLogFile();
-						resource.setValue(R.string.feedback_submit_success);
+						resource.value = R.string.feedback_submit_success;
 					} else {
-						resource.setValue(R.string.feedback_submit_failure);
+						resource.value = R.string.feedback_submit_failure;
 					}
 					
 					// Show the user the result
 					Utilities.dispatchToUIThread(Utilities.getContext(), new Runnable() {
 						@Override
 						public void run() {
-							Toast.makeText(Utilities.getContext(), Utilities.getResourceString(resource.getValue()), Toast.LENGTH_LONG).show();
+							Toast.makeText(Utilities.getContext(), Utilities.getResourceString(resource.value), Toast.LENGTH_LONG).show();
 							submitButton.setText(R.string.feedback_submit_button_perform);
 							submitButton.setEnabled(true);
 							if (success) {
