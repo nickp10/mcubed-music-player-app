@@ -1,6 +1,9 @@
 package dev.paddock.adp.mCubed.model;
 
 import java.util.Locale;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -27,11 +30,14 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 	
 	// Media player members
 	private static final MediaPlayer instance = new MediaPlayer();
+	private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
+	private final Lock read = lock.readLock();
+	private final Lock write = lock.writeLock();
 	private android.media.MediaPlayer player;
 	private int currentState = STATE_DEFAULT, seekLockCount, statusLockCount;
 	private MediaPlayerState internalState;
 	private MediaFile mediaFile;
-	private MediaStatus status = MediaStatus.Stop;
+	private MediaStatus status = MediaStatus.Pause;
 	
 	// Seek members
 	private final Runnable seekTask = new Runnable() {
@@ -39,11 +45,17 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 		public void run() {
 			Utilities.pushContext(App.getAppContext());
 			try {
-				if (player != null) {
-					int seek = player.getCurrentPosition();
-					if (seek != 0) {
-						setSeek(seek, true);
+				int seek = 0;
+				read.lock();
+				try {
+					if (player != null) {
+						seek = player.getCurrentPosition();
 					}
+				} finally {
+					read.unlock();
+				}
+				if (seek != 0) {
+					setSeek(seek, true);
 				}
 			} finally {
 				Utilities.popContext();
@@ -63,15 +75,20 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 	private MediaPlayer() { }
 	
 	public void open() {
-		if (player == null) {
-			player = new android.media.MediaPlayer();
-			player.setLooping(false);
-			player.setOnCompletionListener(this);
-			player.setOnErrorListener(this);
-			player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-			if (!syncMediaFile(getMediaFile(), false)) {
-				setMediaFile(null, false);
+		write.lock();
+		try {
+			if (player == null) {
+				player = new android.media.MediaPlayer();
+				player.setLooping(false);
+				player.setOnCompletionListener(this);
+				player.setOnErrorListener(this);
+				player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+				if (!syncMediaFile(getMediaFile(), false)) {
+					setMediaFile(null, false);
+				}
 			}
+		} finally {
+			write.unlock();
 		}
 	}
 	
@@ -81,40 +98,54 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 	
 	public void close(boolean releaseFile) {
 		seekTimer.stop();
-		if (player != null) {
-			player.release();
+		write.lock();
+		try {
+			if (player != null) {
+				player.release();
+			}
+			player = null;
+			currentState = STATE_DEFAULT;
+		} finally {
+			write.unlock();
 		}
-		player = null;
 		if (releaseFile) {
 			setMediaFile(null, false);
 		}
-		setStatus(MediaStatus.Stop, false);
-		currentState = STATE_DEFAULT;
+		setStatus(MediaStatus.Pause, false);
 		seek = 0;
 	}
 	
 	private void setDataSourceInternal(String dataSource) {
-		player.reset();
+		write.lock();
 		try {
-			player.setDataSource(dataSource);
-			currentState = STATE_STOPPED;
-			prepareInternal();
-			setSeek(0, true);
-		} catch (Exception e) {
-			Log.e(e);
+			player.reset();
+			try {
+				player.setDataSource(dataSource);
+				currentState = STATE_STOPPED;
+				prepareInternal();
+				setSeek(0, true);
+			} catch (Exception e) {
+				Log.e(e);
+			}
+		} finally {
+			write.unlock();
 		}
 	}
 	
 	private void prepareInternal() {
-		if (currentState != STATE_PREPARED) {
-			if (currentState != STATE_STOPPED) {
+		int state = getCurrentState();
+		if (state != STATE_PREPARED) {
+			if (state != STATE_STOPPED) {
 				stopInternal();
 			}
+			write.lock();
 			try {
 				player.prepare();
 				currentState = STATE_PREPARED;
 			} catch (Exception e) {
 				Log.e(e);
+			} finally {
+				write.unlock();
 			}
 		}
 	}
@@ -124,11 +155,17 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 	}
 	
 	private void playInternal() {
-		if (currentState == STATE_STOPPED) {
+		int state = getCurrentState();
+		if (state == STATE_STOPPED) {
 			prepareInternal();
 		}
-		player.start();
-		currentState = STATE_STARTED;
+		write.lock();
+		try {
+			player.start();
+			currentState = STATE_STARTED;
+		} finally {
+			write.unlock();
+		}
 		seekTimer.start(true);
 	}
 	
@@ -137,11 +174,17 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 	}
 	
 	private void pauseInternal() {
-		if (currentState != STATE_STARTED || currentState != STATE_PAUSED) {
+		int state = getCurrentState();
+		if (state != STATE_STARTED || state != STATE_PAUSED) {
 			playInternal();
 		}
-		player.pause();
-		currentState = STATE_PAUSED;
+		write.lock();
+		try {
+			player.pause();
+			currentState = STATE_PAUSED;
+		} finally {
+			write.unlock();
+		}
 		seekTimer.stop(true);
 	}
 	
@@ -150,8 +193,13 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 	}
 	
 	private void stopInternal() {
-		player.stop();
-		currentState = STATE_STOPPED;
+		write.lock();
+		try {
+			player.stop();
+			currentState = STATE_STOPPED;
+		} finally {
+			write.unlock();
+		}
 		seekTimer.stop(true);
 	}
 	
@@ -191,6 +239,17 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 		return true;
 	}
 	
+	public int getCurrentState() {
+		int state = STATE_DEFAULT;
+		read.lock();
+		try {
+			state = currentState;
+		} finally {
+			read.unlock();
+		}
+		return state;
+	}
+	
 	public boolean isPlaying() {
 		return getStatus() == MediaStatus.Play;
 	}
@@ -210,13 +269,13 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 	private void setStatus(MediaStatus status, boolean doSync) {
 		if (!isSetStatusLocked() && status != null && this.status != status) {
 			NotificationArgs args = new NotificationArgs(this, "Status", this.status, status);
-			PropertyManager.notifyPropertyChanging(this, "Status", args);
+			PropertyManager.notifyPropertyChanging(args);
 			this.status = status;
 			if (doSync) {
 				syncStatus();
 			}
 			PlaybackServer.propertyChanged(0, Schema.PROP_PB_STATUS, this.status);
-			PropertyManager.notifyPropertyChanged(this, "Status", args);
+			PropertyManager.notifyPropertyChanged(args);
 		}
 	}
 	
@@ -225,10 +284,16 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 	 * @return The current duration of the loaded song in milliseconds.
 	 */
 	public int getDuration() {
-		if (player == null || mediaFile == null || currentState == STATE_DEFAULT || currentState == STATE_STOPPED) {
-			return 0;
+		read.lock();
+		try {
+			int state = getCurrentState();
+			if (player == null || mediaFile == null || state == STATE_DEFAULT || state == STATE_STOPPED) {
+				return 0;
+			}
+			return player.getDuration();
+		} finally {
+			read.unlock();
 		}
-		return player.getDuration();
 	}
 	
 	/**
@@ -252,22 +317,34 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 			if (seek != ms) {
 				// Send property changing
 				NotificationArgs args = new NotificationArgs(this, "Seek", this.seek, ms);
-				PropertyManager.notifyPropertyChanging(this, "Seek", args);
+				PropertyManager.notifyPropertyChanging(args);
 				
 				// Change the property
 				seek = ms;
 				
 				// Send property changed
-				PropertyManager.notifyPropertyChanged(this, "Seek", args);
+				PropertyManager.notifyPropertyChanged(args);
 				PlaybackServer.propertyChanged(0, Schema.PROP_PB_SEEK, seek, Schema.I_MCUBED_SEEK);
 			}
 		} else if (!isSetSeekLocked()) {
 			open();
-			if (currentState == STATE_STOPPED) {
+			if (getCurrentState() == STATE_STOPPED) {
 				prepareInternal();
 			}
-			player.seekTo(ms);
-			setSeek(player.getCurrentPosition(), true);
+			write.lock();
+			try {
+				player.seekTo(ms);
+			} finally {
+				write.unlock();
+			}
+			int seek = 0;
+			read.lock();
+			try {
+				seek = player.getCurrentPosition();
+			} finally {
+				read.unlock();
+			}
+			setSeek(seek, true);
 		}
 	}
 	
@@ -369,7 +446,7 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 					syncStatus();
 				} else {
 					App.getNowPlaying().next();
-					if (currentState == STATE_COMPLETED) {
+					if (getCurrentState() == STATE_COMPLETED) {
 						syncStatus();
 					}
 					if (PreferenceManager.getSettingBoolean(R.string.pref_light_up_screen)) {
