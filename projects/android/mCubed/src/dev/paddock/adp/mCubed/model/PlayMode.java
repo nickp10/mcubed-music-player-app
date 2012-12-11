@@ -65,6 +65,10 @@ public class PlayMode {
 		return currentRequiresRepeat;
 	}
 	
+	public MediaFile peekNext() {
+		return queue.isEmpty() ? null : queue.get(0);
+	}
+	
 	public void reset(boolean clearQueue) {
 		if (playMode != null) {
 			if (clearQueue) {

@@ -400,9 +400,9 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 		for (Iterator<String> it = map.keySet().iterator(); it.hasNext(); ) {
 			String key = it.next();
 			
-			// Remove all occurrences of the instance
+			// Remove the first occurrence of the instance
 			List<E> value = map.get(key);
-			while (value.remove(item)) {
+			if (!itemRemoved && value.remove(item)) {
 				itemRemoved = true;
 			}
 			

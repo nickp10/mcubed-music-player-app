@@ -256,7 +256,9 @@ public class Playlist {
 	}
 	
 	public void playFile(MediaFile file) {
-		prependFilesToQueue(file);
+		if (playMode.peekNext() != file) {
+			prependFilesToQueue(file);
+		}
 		next();
 		App.getPlayer().play();
 	}
