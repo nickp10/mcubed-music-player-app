@@ -569,6 +569,13 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	protected final View inflateView(View convertView, ViewGroup parent, int resource) {
 		if (convertView == null) {
 			convertView = getInflater().inflate(resource, parent, false);
+			convertView.setTag(new BindingListAdapterTag(resource));
+		} else {
+			BindingListAdapterTag tag = Utilities.cast(BindingListAdapterTag.class, convertView.getTag());
+			if (tag != null && tag.getResource() != resource) {
+				convertView = getInflater().inflate(resource, parent, false);
+				convertView.setTag(new BindingListAdapterTag(resource));
+			}
 		}
 		return convertView;
 	}
@@ -585,16 +592,19 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	protected final <T> IViewItem<T> getViewItem(View convertView, IViewItemFactory<T> factory) {
 		IViewItem<T> viewItem = null;
 		if (convertView != null) {
-			Object tag = convertView.getTag();
-			if (tag != null && tag instanceof IViewItem<?>) {
-				viewItem = (IViewItem<T>)tag;
+			BindingListAdapterTag tag = Utilities.cast(BindingListAdapterTag.class, convertView.getTag());
+			if (tag != null) {
+				viewItem = (IViewItem<T>)tag.getViewItem();
 			}
 		}
 		if (viewItem == null && factory != null) {
 			viewItem = factory.createViewItem();
 			if (convertView != null) {
 				viewItem.findViews(convertView);
-				convertView.setTag(viewItem);
+				BindingListAdapterTag tag = Utilities.cast(BindingListAdapterTag.class, convertView.getTag());
+				if (tag != null) {
+					tag.setViewItem(viewItem);
+				}
 			}
 		}
 		return viewItem;
