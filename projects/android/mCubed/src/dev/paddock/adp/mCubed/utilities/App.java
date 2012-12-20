@@ -182,6 +182,9 @@ public class App extends Application {
 		super.onCreate();
 		App.appContext = getApplicationContext();
 		
+		// Setup un-handled exception handling
+		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(this));
+		
 		// Initialize the static members
 		Utilities.pushContext(this);
 		try {
