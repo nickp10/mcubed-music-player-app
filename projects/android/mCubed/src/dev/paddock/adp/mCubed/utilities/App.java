@@ -85,10 +85,12 @@ public class App extends Application {
 				}
 				
 				// Perform the appropriate action
-				if (action == PlaybackAction.Play) {
-					getPlayer().setStatus(MediaStatus.Play);
-				} else if (action == PlaybackAction.Pause) {
-					getPlayer().setStatus(MediaStatus.Pause);
+				if (getInitStatus() == InitStatus.Initialized) {
+					if (action == PlaybackAction.Play) {
+						getPlayer().setStatus(MediaStatus.Play);
+					} else if (action == PlaybackAction.Pause) {
+						getPlayer().setStatus(MediaStatus.Pause);
+					}
 				}
 			}
 		});
@@ -107,10 +109,12 @@ public class App extends Application {
 				}
 				
 				// Perform the appropriate action
-				if (action == PlaybackAction.Play) {
-					getPlayer().setStatus(MediaStatus.Play);
-				} else if (action == PlaybackAction.Pause) {
-					getPlayer().setStatus(MediaStatus.Pause);
+				if (getInitStatus() == InitStatus.Initialized) {
+					if (action == PlaybackAction.Play) {
+						getPlayer().setStatus(MediaStatus.Play);
+					} else if (action == PlaybackAction.Pause) {
+						getPlayer().setStatus(MediaStatus.Pause);
+					}
 				}
 			}
 		});

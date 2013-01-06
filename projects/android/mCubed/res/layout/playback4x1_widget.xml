@@ -31,14 +31,14 @@
 			<FrameLayout
 				android:layout_height="wrap_content"
 				android:layout_width="fill_parent"
-				android:layout_marginTop="5dp"
-				android:layout_marginBottom="5dp">
+				android:layout_marginTop="5dp">
 				<ProgressBar
 					style="@android:style/Widget.ProgressBar.Horizontal"
 					android:layout_height="wrap_content"
 					android:layout_width="fill_parent"
 					android:id="@+id/w41_seek_bar" />
 				<TextView
+				    style="@style/ProgressLabel"
 					android:layout_height="wrap_content"
 					android:layout_width="fill_parent"
 					android:layout_gravity="center_vertical"
@@ -46,10 +46,6 @@
 					android:marqueeRepeatLimit="marquee_forever"
 					android:singleLine="true"
 					android:scrollHorizontally="true"
-					android:shadowColor="#000000"
-					android:shadowDx="1"
-					android:shadowDy="1"
-					android:shadowRadius="1"
 					android:id="@+id/w41_playing_info">
 					<requestFocus/>
 				</TextView>
@@ -60,27 +56,21 @@
 				android:gravity="center_horizontal"
 				android:orientation="horizontal">
 				<ImageButton
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content"
+					style="@style/MediaButton"
 					android:contentDescription="@string/button_prev_content"
 					android:src="@drawable/ic_media_previous"
-					android:background="@drawable/media_button_background"
 					android:id="@+id/w41_prev_button" />
 				<ImageButton
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content"
-					android:layout_marginLeft="15dp"
-					android:layout_marginRight="15dp"
+					style="@style/MediaButton"
+					android:layout_marginLeft="5dp"
+					android:layout_marginRight="5dp"
 					android:contentDescription="@string/button_action_content"
 					android:src="@drawable/ic_media_play"
-					android:background="@drawable/media_button_background"
 					android:id="@+id/w41_play_button" />
 				<ImageButton
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content"
+					style="@style/MediaButton"
 					android:contentDescription="@string/button_next_content"
 					android:src="@drawable/ic_media_next"
-					android:background="@drawable/media_button_background"
 					android:id="@+id/w41_next_button" />
 			</LinearLayout>
 		</LinearLayout>
@@ -95,6 +85,7 @@
 		android:orientation="vertical"
 		android:id="@+id/w41_init_layout">
 		<TextView
+			style="@style/ProgressLabel"
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:layout_marginBottom="10dp"
