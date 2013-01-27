@@ -262,9 +262,25 @@ public class App extends Application {
 		Utilities.saveFile(Schema.FILE_APP_STATE, rootNode.toXML(false));
 	}
 	
-	private static void upgradeApp(int currentVersion) {
-		// TODO Upgrade the application based on the current version and the latest version.
-		// Only implement this if it is needed for a user to upgrade from one version to the next.
+	/**
+	 * Upgrades the application based on the original version found in the user's settings and
+	 * the current deployed version of the application. This should be implemented only if
+	 * needed to perform a necessary upgrade from one version to the next.
+	 * 
+	 * - From 1 to 2 -> No upgrade is needed.
+	 * - From 2 to 3 -> ???.
+	 * @param originalVersion The version found in the user's settings.
+	 * @param currentVersion The current version that the user is running.
+	 */
+	private static void upgradeApp(int originalVersion, int currentVersion) {
+		// Upgrade version 1 to version 2.
+		if (originalVersion == 1) {
+			originalVersion++;
+		}
+		
+		// Update version 2 to version 3.
+		// if (originalVersion == 2) {
+		// }
 	}
 	
 	private static XMLDocument loadAppStateXML() {
@@ -278,10 +294,10 @@ public class App extends Application {
 		progress.setSubIDs(Schema.PROG_PLAYLIST_RESET, Schema.PROG_PLAYLIST_VALIDATE);
 		try {
 			// Ensure the user is upgraded to the latest version
-			int currentVersion = Utilities.parseInt(rootNode.getAttribute("CurrentVersion"));
-			int latestVersion = Schema.UPGRADE_VERSIONS[Schema.UPGRADE_VERSIONS.length - 1];
-			if (currentVersion < latestVersion) {
-				upgradeApp(currentVersion);
+			int originalVersion = Utilities.parseInt(rootNode.getAttribute("CurrentVersion"));
+			int currentVersion = Utilities.getVersionCode();
+			if (originalVersion < currentVersion) {
+				upgradeApp(originalVersion, currentVersion);
 			}
 			
 			// Load the now playing playlist

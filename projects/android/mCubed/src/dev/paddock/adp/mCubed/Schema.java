@@ -13,7 +13,6 @@ public class Schema {
 	public static final String PACKAGE = Schema.class.getPackage().getName();
 	public static final String PREFIX = Schema.class.getName() + ".";
 	public static final String TAG = "mCubed";
-	public static final int[] UPGRADE_VERSIONS = new int[] { 1 };
 	
 	/** SERVICE INTENT SCHEMA **/
 	public static final String I_MCUBED = PREFIX + "I_MCUBED";
