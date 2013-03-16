@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -21,7 +20,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
-import android.media.AudioManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -36,7 +36,6 @@ import dev.paddock.adp.mCubed.model.holders.Holder;
 import dev.paddock.adp.mCubed.model.holders.HolderDouble;
 import dev.paddock.adp.mCubed.model.holders.HolderInt;
 import dev.paddock.adp.mCubed.model.holders.HolderLong;
-import dev.paddock.adp.mCubed.receivers.MediaKeyReceiver;
 
 public class Utilities {
 	private static final Map<Long, Stack<Context>> contextMap = new HashMap<Long, Stack<Context>>();
@@ -334,20 +333,6 @@ public class Utilities {
 		}
 	}
 	
-	public static void registerToMediaKeys(Context context) {
-		AudioManager manager = App.getSystemService(AudioManager.class, context, Context.AUDIO_SERVICE);
-		if (manager != null) {
-			manager.registerMediaButtonEventReceiver(new ComponentName(context, MediaKeyReceiver.class));
-		}
-	}
-	
-	public static void unregisterFromMediaKeys(Context context) {
-		AudioManager manager = App.getSystemService(AudioManager.class, context, Context.AUDIO_SERVICE);
-		if (manager != null) {
-			manager.unregisterMediaButtonEventReceiver(new ComponentName(context, MediaKeyReceiver.class));
-		}
-	}
-	
 	public static boolean appendToFile(String filename, String contents) {
 		return writeToFile(filename, contents, Context.MODE_APPEND);
 	}
@@ -470,6 +455,28 @@ public class Utilities {
 				}
 			}
 		}
+	}
+	
+	public static Bitmap loadBitmap(Uri uri) {
+		ContentResolver contentResolver = getCR();
+		if (contentResolver != null && uri != null) {
+			InputStream stream = null;
+			try {
+				stream = contentResolver.openInputStream(uri);
+				return BitmapFactory.decodeStream(stream);
+			} catch (Exception e) {
+				Log.e(e);
+			} finally {
+				if (stream != null) {
+					try {
+						stream.close();
+					} catch (Exception e) {
+						Log.e(e);
+					}
+				}
+			}
+		}
+		return null;
 	}
 	
 	public static boolean isScreenOn() {

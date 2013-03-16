@@ -3,6 +3,7 @@ package dev.paddock.adp.mCubed.services;
 import java.io.Serializable;
 
 import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.model.AudioFocusState;
 import dev.paddock.adp.mCubed.model.InitStatus;
 import dev.paddock.adp.mCubed.model.MediaStatus;
 import dev.paddock.adp.mCubed.model.OutputMode;
@@ -20,7 +21,9 @@ public abstract class ClientCallback implements IClientCallback {
 		prePropertyChanged(propertyName, propertyValue);
 		
 		// Now call the specific method
-		if (Schema.PROP_BLUETOOTH.equals(propertyName)) {
+		if (Schema.PROP_AUDIO_FOCUS_STATE.equals(propertyName)) {
+			propertyAudioFocusStateChanged((AudioFocusState)propertyValue);
+		} else if (Schema.PROP_BLUETOOTH.equals(propertyName)) {
 			propertyBlueoothChanged((Boolean)propertyValue);
 		} else if (Schema.PROP_HEADPHONE.equals(propertyName)) { 
 			propertyHeadphoneChanged((Boolean)propertyValue);
@@ -46,6 +49,7 @@ public abstract class ClientCallback implements IClientCallback {
 	}
 
 	public void prePropertyChanged(String propertyName, Serializable propertyValue) { }
+	public void propertyAudioFocusStateChanged(AudioFocusState audioFocusState) { }
 	public void propertyBlueoothChanged(boolean isBluetoothConnected) { }
 	public void propertyHeadphoneChanged(boolean isHeadphoneConnected) { }
 	public void propertyMountedChanged(boolean isMounted) { }

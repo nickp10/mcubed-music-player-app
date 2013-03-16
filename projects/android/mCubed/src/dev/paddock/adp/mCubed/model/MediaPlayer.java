@@ -28,6 +28,10 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 	private static final int STATE_STOPPED = 4;
 	private static final int STATE_COMPLETED = 5;
 	
+	// Volume members
+	private static final float DUCK_VOLUME = 0.1f;
+	private static final float FULL_VOLUME = 1.0f;
+	
 	// Media player members
 	private static final MediaPlayer instance = new MediaPlayer();
 	private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
@@ -83,6 +87,11 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 				player.setOnCompletionListener(this);
 				player.setOnErrorListener(this);
 				player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+				if (App.getAudioFocusState() == AudioFocusState.AudioFocusDuck) {
+					player.setVolume(DUCK_VOLUME, DUCK_VOLUME);
+				} else {
+					player.setVolume(FULL_VOLUME, FULL_VOLUME);
+				}
 				if (!syncMediaFile(getMediaFile(), false)) {
 					setMediaFile(null, false);
 				}
@@ -346,6 +355,25 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 			}
 			setSeek(seek, true);
 		}
+	}
+	
+	private void adjustVolume(float volume) {
+		write.lock();
+		try {
+			if (player != null) {
+				player.setVolume(volume, volume);
+			}
+		} finally {
+			write.unlock();
+		}
+	}
+	
+	public void adjustVolumeDuck() {
+		adjustVolume(DUCK_VOLUME);
+	}
+	
+	public void adjustVolumeFull() {
+		adjustVolume(FULL_VOLUME);
 	}
 	
 	public MediaFile getMediaFile() {

@@ -9,6 +9,7 @@ import android.os.AsyncTask.Status;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.model.AsyncTask;
+import dev.paddock.adp.mCubed.model.AudioFocusState;
 import dev.paddock.adp.mCubed.model.Composite;
 import dev.paddock.adp.mCubed.model.InitStatus;
 import dev.paddock.adp.mCubed.model.MediaFile;
@@ -22,6 +23,7 @@ import dev.paddock.adp.mCubed.model.Progress;
 import dev.paddock.adp.mCubed.model.TimerTask;
 import dev.paddock.adp.mCubed.preferences.PlaybackAction;
 import dev.paddock.adp.mCubed.preferences.PreviousAction;
+import dev.paddock.adp.mCubed.receivers.AudioFocusReceiver;
 import dev.paddock.adp.mCubed.receivers.HeadsetReceiver;
 import dev.paddock.adp.mCubed.receivers.MountReceiver;
 import dev.paddock.adp.mCubed.receivers.OutputReceiver;
@@ -150,6 +152,11 @@ public class App extends Application {
 	
 	public static MediaFile getPlayingMedia() {
 		return getPlayer().getMediaFile();
+	}
+	
+	public static AudioFocusState getAudioFocusState() {
+		AudioFocusReceiver audioFocus = AudioFocusReceiver.getAudioFocusReceiver();
+		return audioFocus == null ? AudioFocusState.NoAudioFocus : audioFocus.getAudioFocusState();
 	}
 	
 	public static HeadsetReceiver getHeadset() {

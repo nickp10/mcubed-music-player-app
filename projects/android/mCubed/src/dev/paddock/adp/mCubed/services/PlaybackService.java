@@ -20,7 +20,9 @@ import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.activities.LibraryActivity;
 import dev.paddock.adp.mCubed.activities.OverlayActivity;
 import dev.paddock.adp.mCubed.listeners.IListener;
+import dev.paddock.adp.mCubed.listeners.MediaAssociateListener;
 import dev.paddock.adp.mCubed.listeners.MountListener;
+import dev.paddock.adp.mCubed.model.AudioFocusState;
 import dev.paddock.adp.mCubed.model.MediaFile;
 import dev.paddock.adp.mCubed.model.MediaStatus;
 import dev.paddock.adp.mCubed.model.OutputMode;
@@ -28,6 +30,7 @@ import dev.paddock.adp.mCubed.preferences.NotificationVisibility;
 import dev.paddock.adp.mCubed.preferences.PlayModeEnum;
 import dev.paddock.adp.mCubed.receivers.ClientReceiver;
 import dev.paddock.adp.mCubed.receivers.IReceiver;
+import dev.paddock.adp.mCubed.receivers.RemoteControlReceiver;
 import dev.paddock.adp.mCubed.utilities.App;
 import dev.paddock.adp.mCubed.utilities.Log;
 import dev.paddock.adp.mCubed.utilities.PreferenceManager;
@@ -73,9 +76,6 @@ public class PlaybackService extends Service {
 			App.setIsServiceRunning(true);
 			startForeground(Schema.NOTIF_PLAYING_MEDIA, new Notification());
 			
-			// Register the media key receiver for media keys
-			Utilities.registerToMediaKeys(this);
-			
 			// Register the various receivers
 			receivers.clear();
 			receivers.add(App.getHeadset());
@@ -94,6 +94,7 @@ public class PlaybackService extends Service {
 			// Create the various listeners
 			listeners.clear();
 			listeners.add(new MountListener());
+			listeners.add(new MediaAssociateListener());
 			
 			// Register the various listeners
 			for (IListener listener : listeners) {
@@ -147,9 +148,6 @@ public class PlaybackService extends Service {
 					}
 				}
 			}
-			
-			// Unregister the media key receiver for media keys
-			Utilities.unregisterFromMediaKeys(this);
 			
 			// Stop the service
 			App.setIsServiceRunning(false);
@@ -286,13 +284,24 @@ public class PlaybackService extends Service {
 				}
 				
 				@Override
+				public void propertyAudioFocusStateChanged(AudioFocusState audioFocusState) {
+					if (audioFocusState == AudioFocusState.AudioFocusDuck) {
+						App.getPlayer().adjustVolumeDuck();
+					} else {
+						App.getPlayer().adjustVolumeFull();
+					}
+				}
+				
+				@Override
 				public void propertyPlaybackIDChanged(long playbackID) {
 					PlaybackService.this.updateNotification(true);
+					RemoteControlReceiver.updateCurrentMetadata();
 				}
 				
 				@Override
 				public void propertyPlaybackStatusChanged(MediaStatus playbackStatus) {
 					PlaybackService.this.updateNotification(false);
+					RemoteControlReceiver.updatePlaybackState();
 				}
 				
 				@Override

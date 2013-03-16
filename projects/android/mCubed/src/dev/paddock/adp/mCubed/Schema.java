@@ -47,6 +47,7 @@ public class Schema {
 	public static final int MS_PREFERENCE_CHANGED = 12;
 	
 	/** PROPERTY NAME SCHEMA **/
+	public static final String PROP_AUDIO_FOCUS_STATE = "p_audio_focus_state";
 	public static final String PROP_BLUETOOTH = "p_bluetooth";
 	public static final String PROP_HEADPHONE = "p_headphone";
 	public static final String PROP_MOUNTED = "p_mounted";

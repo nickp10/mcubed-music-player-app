@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.listeners.MediaAssociateListener;
 import dev.paddock.adp.mCubed.receivers.ClientReceiver;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
 import dev.paddock.adp.mCubed.services.PlaybackClient;
@@ -99,8 +100,8 @@ public class ActivityUtils {
 		// Start the resume process
 		Utilities.pushContext(activity);
 		try {
-			// Register the media key receiver for media keys
-			Utilities.registerToMediaKeys(activity);
+			// Re-associate the media player
+			new MediaAssociateListener().register();
 		} finally {
 			Utilities.popContext();
 		}
