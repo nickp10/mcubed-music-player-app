@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.compatability.BluetoothA2dpCompat;
+import dev.paddock.adp.mCubed.compatability.BluetoothProfileCompat;
 import dev.paddock.adp.mCubed.model.DelayedTask;
 import dev.paddock.adp.mCubed.model.NotificationArgs;
 import dev.paddock.adp.mCubed.services.PlaybackServer;
@@ -34,9 +36,9 @@ public class HeadsetReceiver extends BroadcastReceiver implements IReceiver {
 	private void setHeadphonesConnected(boolean isHeadphonesConnected) {
 		if (this.isHeadphonesConnected != isHeadphonesConnected) {
 			NotificationArgs args = new NotificationArgs(this, "HeadphonesConnected", this.isHeadphonesConnected, isHeadphonesConnected);
-			PropertyManager.notifyPropertyChanging(this, "HeadphonesConnected", args);
+			PropertyManager.notifyPropertyChanging(args);
 			this.isHeadphonesConnected = isHeadphonesConnected;
-			PropertyManager.notifyPropertyChanged(this, "HeadphonesConnected", args);
+			PropertyManager.notifyPropertyChanged(args);
 			PlaybackServer.propertyChanged(0, Schema.PROP_HEADPHONE, this.isHeadphonesConnected);
 		}
 	}
@@ -44,23 +46,25 @@ public class HeadsetReceiver extends BroadcastReceiver implements IReceiver {
 	public boolean isBluetoothConnected() {
 		return isBluetoothConnected;
 	}
-	private void setBluetoothConnected(final boolean isBluetoothConnected) {
+	private void setBluetoothConnectedDelayed(final boolean isBluetoothConnected) {
 		if (isBluetoothConnected) {
 			new DelayedTask(Utilities.getContext(), new Runnable() {
 				public void run() {
-					doSetBluetoothConnected(isBluetoothConnected);
+					setBluetoothConnected(isBluetoothConnected);
 				}
 			}, 7000);
 		} else {
-			doSetBluetoothConnected(isBluetoothConnected);
+			setBluetoothConnected(isBluetoothConnected);
 		}
 	}
-	private void doSetBluetoothConnected(boolean isBluetoothConnected) {
-		NotificationArgs args = new NotificationArgs(this, "BluetoothConnected", this.isBluetoothConnected, isBluetoothConnected);
-		PropertyManager.notifyPropertyChanging(this, "BluetoothConnected", args);
-		this.isBluetoothConnected = isBluetoothConnected;
-		PropertyManager.notifyPropertyChanged(this, "BluetoothConnected", args);
-		PlaybackServer.propertyChanged(0, Schema.PROP_BLUETOOTH, this.isBluetoothConnected);
+	private void setBluetoothConnected(boolean isBluetoothConnected) {
+		if (this.isBluetoothConnected != isBluetoothConnected) {
+			NotificationArgs args = new NotificationArgs(this, "BluetoothConnected", this.isBluetoothConnected, isBluetoothConnected);
+			PropertyManager.notifyPropertyChanging(args);
+			this.isBluetoothConnected = isBluetoothConnected;
+			PropertyManager.notifyPropertyChanged(args);
+			PlaybackServer.propertyChanged(0, Schema.PROP_BLUETOOTH, this.isBluetoothConnected);
+		}
 	}
 	
 	private boolean isBluetoothAudio(BluetoothDevice device) {
@@ -77,8 +81,12 @@ public class HeadsetReceiver extends BroadcastReceiver implements IReceiver {
 	public IntentFilter getIntentFilter() {
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
-		intentFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-		intentFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+		if (BluetoothA2dpCompat.ACTION_CONNECTION_STATE_CHANGED == null) {
+			intentFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+			intentFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+		} else {
+			intentFilter.addAction(BluetoothA2dpCompat.ACTION_CONNECTION_STATE_CHANGED);
+		}
 		intentFilter.setPriority(Integer.MAX_VALUE);
 		return intentFilter;
 	}
@@ -97,12 +105,22 @@ public class HeadsetReceiver extends BroadcastReceiver implements IReceiver {
 			} else if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
 				BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 				if (isBluetoothAudio(device)) {
-					setBluetoothConnected(true);
+					setBluetoothConnectedDelayed(true);
 				}
 			} else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
 				BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 				if (isBluetoothAudio(device)) {
-					setBluetoothConnected(false);
+					setBluetoothConnectedDelayed(false);
+				}
+			} else if (action != null && action.equals(BluetoothA2dpCompat.ACTION_CONNECTION_STATE_CHANGED)) {
+				Bundle extras = intent.getExtras();
+				if (extras != null) {
+					int bluetoothState = extras.getInt(BluetoothProfileCompat.EXTRA_STATE);
+					if (bluetoothState == BluetoothProfileCompat.STATE_CONNECTED) {
+						setBluetoothConnected(true);
+					} else if (bluetoothState == BluetoothProfileCompat.STATE_DISCONNECTED) {
+						setBluetoothConnected(false);
+					}
 				}
 			}
 		} finally {

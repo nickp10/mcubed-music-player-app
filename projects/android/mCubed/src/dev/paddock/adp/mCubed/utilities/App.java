@@ -16,7 +16,6 @@ import dev.paddock.adp.mCubed.model.MediaFile;
 import dev.paddock.adp.mCubed.model.MediaGroup;
 import dev.paddock.adp.mCubed.model.MediaPlayer;
 import dev.paddock.adp.mCubed.model.MediaPlayerState;
-import dev.paddock.adp.mCubed.model.MediaStatus;
 import dev.paddock.adp.mCubed.model.NotificationArgs;
 import dev.paddock.adp.mCubed.model.Playlist;
 import dev.paddock.adp.mCubed.model.Progress;
@@ -89,9 +88,9 @@ public class App extends Application {
 				// Perform the appropriate action
 				if (getInitStatus() == InitStatus.Initialized) {
 					if (action == PlaybackAction.Play) {
-						getPlayer().setStatus(MediaStatus.Play);
+						getPlayer().play();
 					} else if (action == PlaybackAction.Pause) {
-						getPlayer().setStatus(MediaStatus.Pause);
+						getPlayer().pause();
 					}
 				}
 			}
@@ -113,9 +112,9 @@ public class App extends Application {
 				// Perform the appropriate action
 				if (getInitStatus() == InitStatus.Initialized) {
 					if (action == PlaybackAction.Play) {
-						getPlayer().setStatus(MediaStatus.Play);
+						getPlayer().play();
 					} else if (action == PlaybackAction.Pause) {
-						getPlayer().setStatus(MediaStatus.Pause);
+						getPlayer().pause();
 					}
 				}
 			}
