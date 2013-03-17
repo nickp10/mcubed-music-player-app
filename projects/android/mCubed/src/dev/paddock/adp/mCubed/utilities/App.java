@@ -275,7 +275,8 @@ public class App extends Application {
 	 * needed to perform a necessary upgrade from one version to the next.
 	 * 
 	 * - From 1 to 2 -> No upgrade is needed.
-	 * - From 2 to 3 -> ???.
+	 * - From 2 to 3 -> No upgrade is needed.
+	 * - From 3 to 4 -> ???.
 	 * @param originalVersion The version found in the user's settings.
 	 * @param currentVersion The current version that the user is running.
 	 */
@@ -286,8 +287,13 @@ public class App extends Application {
 		}
 		
 		// Update version 2 to version 3.
-		// if (originalVersion == 2) {
-		// }
+		if (originalVersion == 2) {
+			originalVersion++;
+		}
+		
+		// Update version 3 to version 4.
+		//if (originalVersion == 2) {
+		//}
 	}
 	
 	private static XMLDocument loadAppStateXML() {

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">mCubed</string>
-	<string name="app_name_version">mCubed 1.01</string>
-	<string name="app_version">1.01</string>
+	<string name="app_name_version">mCubed 1.02</string>
+	<string name="app_version">1.02</string>
 	<string name="app_web_service">http://mcubed.dyndns.info/mCubedServices/</string>
 	<string name="app_widget_1x1">mCubed (1x1)</string>
 	<string name="app_widget_4x1">mCubed (4x1)</string>
@@ -12,16 +12,22 @@
 	<string name="about_website_text">http://mcubed.dyndns.info/</string>
 	<string name="about_changelog_label">Change Log:</string>
 	<string name="about_changelog_text"><![CDATA[
-		\t1.01\t- Filter out notification tones, alarms, and ringtones from the library\n
-		\t\t\t\t- Various performance improvements\n
-		\t\t\t\t- Improvements to devices with multiple SD cards\n
-		\t\t\t\t- Improve the touch friendliness\n
-		\t\t\t\t- Improve backend error logging\n\n
-		\t1.00\t- Initial Release\n
-		\t\t\t\t- 1x1 and 4x1 Widgets\n
-		\t\t\t\t- Dynamic Playlists\n
-		\t\t\t\t- Extensive Settings\n
-		\t\t\t\t- \"Persisted Shuffle\", \"Perpetual Shuffle\", and \"Sequential\" Play Modes
+		1.02\n
+		\t- Improved audio focus (e.g. audio ducking for voice navigation apps)\n
+		\t- Improved remote control support (e.g. bluetooth enhancements)\n
+		\t- Lock-screen support for stock lock-screens (requires Android 4.0+)\n\n
+		1.01\n
+		\t- Filters out notification tones, alarms, and ringtones from the library\n
+		\t- Various performance improvements\n
+		\t- Improvements to devices with multiple SD cards\n
+		\t- Improved the touch friendliness\n
+		\t- Improved backend error logging\n\n
+		1.00\n
+		\t- Initial Release\n
+		\t- 1x1 and 4x1 Widgets\n
+		\t- Dynamic Playlists\n
+		\t- Extensive Settings\n
+		\t- \"Persisted Shuffle\", \"Perpetual Shuffle\", and \"Sequential\" Play Modes
 	]]></string>
 	<string name="button_action_content">Play/Pause</string>
 	<string name="button_close_content">Close</string>
