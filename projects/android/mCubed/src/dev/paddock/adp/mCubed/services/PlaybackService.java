@@ -22,7 +22,8 @@ import dev.paddock.adp.mCubed.activities.OverlayActivity;
 import dev.paddock.adp.mCubed.listeners.IListener;
 import dev.paddock.adp.mCubed.listeners.MediaAssociateListener;
 import dev.paddock.adp.mCubed.listeners.MountListener;
-import dev.paddock.adp.mCubed.listeners.OutputListener;
+import dev.paddock.adp.mCubed.listeners.HeadsetListener;
+import dev.paddock.adp.mCubed.listeners.PhoneStateListener;
 import dev.paddock.adp.mCubed.model.AudioFocusState;
 import dev.paddock.adp.mCubed.model.MediaFile;
 import dev.paddock.adp.mCubed.model.MediaStatus;
@@ -32,6 +33,7 @@ import dev.paddock.adp.mCubed.preferences.PlayModeEnum;
 import dev.paddock.adp.mCubed.receivers.ClientReceiver;
 import dev.paddock.adp.mCubed.receivers.HeadsetReceiver;
 import dev.paddock.adp.mCubed.receivers.IReceiver;
+import dev.paddock.adp.mCubed.receivers.PhoneStateReceiver;
 import dev.paddock.adp.mCubed.receivers.RemoteControlReceiver;
 import dev.paddock.adp.mCubed.utilities.App;
 import dev.paddock.adp.mCubed.utilities.Log;
@@ -81,7 +83,7 @@ public class PlaybackService extends Service {
 			// Register the various receivers
 			receivers.clear();
 			receivers.add(new HeadsetReceiver());
-			receivers.add(App.getPhoneState());
+			receivers.add(new PhoneStateReceiver());
 			receivers.add(getClientReceiver());
 			for (BroadcastReceiver receiver : receivers) {
 				if (receiver instanceof IReceiver) {
@@ -97,7 +99,8 @@ public class PlaybackService extends Service {
 			listeners.clear();
 			listeners.add(new MountListener());
 			listeners.add(new MediaAssociateListener());
-			listeners.add(new OutputListener());
+			listeners.add(new HeadsetListener());
+			listeners.add(new PhoneStateListener());
 			
 			// Register the various listeners
 			for (IListener listener : listeners) {
@@ -276,11 +279,11 @@ public class PlaybackService extends Service {
 					} else if (preferenceName.equals(Utilities.getResourceString(R.string.pref_clear_queue_with_play_mode))) {
 						PlaybackService.this.updatePlayMode();
 					} else if (preferenceName.equals(Utilities.getResourceString(R.string.pref_volume_speaker))) {
-						OutputListener.updateVolume(OutputMode.Speaker);
+						HeadsetListener.updateVolume(OutputMode.Speaker);
 					} else if (preferenceName.equals(Utilities.getResourceString(R.string.pref_volume_headphones))) {
-						OutputListener.updateVolume(OutputMode.Headphones);
+						HeadsetListener.updateVolume(OutputMode.Headphones);
 					} else if (preferenceName.equals(Utilities.getResourceString(R.string.pref_volume_bluetooth))) {
-						OutputListener.updateVolume(OutputMode.Bluetooth);
+						HeadsetListener.updateVolume(OutputMode.Bluetooth);
 					} else if (preferenceName.equals(Utilities.getResourceString(R.string.pref_record_logs))) {
 						Log.setFileLoggingEnabled(PreferenceManager.getSettingBoolean(R.string.pref_record_logs));
 					}

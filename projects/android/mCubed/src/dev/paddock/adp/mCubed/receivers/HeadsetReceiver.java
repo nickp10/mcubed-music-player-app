@@ -8,12 +8,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.os.Bundle;
 import dev.paddock.adp.mCubed.compatability.BluetoothA2dpCompat;
 import dev.paddock.adp.mCubed.compatability.BluetoothProfileCompat;
 import dev.paddock.adp.mCubed.model.DelayedTask;
 import dev.paddock.adp.mCubed.model.NotificationArgs;
 import dev.paddock.adp.mCubed.model.OutputMode;
+import dev.paddock.adp.mCubed.utilities.App;
 import dev.paddock.adp.mCubed.utilities.Log;
 import dev.paddock.adp.mCubed.utilities.PropertyManager;
 import dev.paddock.adp.mCubed.utilities.Utilities;
@@ -21,6 +23,19 @@ import dev.paddock.adp.mCubed.utilities.Utilities;
 public class HeadsetReceiver extends BroadcastReceiver implements IReceiver {
 	private static boolean isBluetoothConnected, isHeadphonesConnected;
 	private static OutputMode outputMode = OutputMode.Speaker;
+	
+	static {
+		Utilities.pushContext(App.getAppContext());
+		try {
+			AudioManager manager = App.getSystemService(AudioManager.class, Context.AUDIO_SERVICE);
+			if (manager != null) {
+				setBluetoothConnected(manager.isBluetoothA2dpOn());
+				setHeadphonesConnected(manager.isWiredHeadsetOn());
+			}
+		} finally {
+			Utilities.popContext();
+		}
+	}
 	
 	/**
 	 * Retrieve whether or not a wired-headphone is connected to the device.
@@ -48,14 +63,6 @@ public class HeadsetReceiver extends BroadcastReceiver implements IReceiver {
 		return isBluetoothConnected;
 	}
 	
-	private static void delayBluetoothConnected() {
-		new DelayedTask(Utilities.getContext(), new Runnable() {
-			public void run() {
-				setBluetoothConnected(true);
-			}
-		}, 7000);
-	}
-	
 	private static void setBluetoothConnected(boolean isBluetoothConnected) {
 		if (HeadsetReceiver.isBluetoothConnected != isBluetoothConnected) {
 			NotificationArgs args = new NotificationArgs(HeadsetReceiver.class, "BluetoothConnected", HeadsetReceiver.isBluetoothConnected, isBluetoothConnected);
@@ -64,6 +71,14 @@ public class HeadsetReceiver extends BroadcastReceiver implements IReceiver {
 			PropertyManager.notifyPropertyChanged(args);
 			updateOutputMode();
 		}
+	}
+	
+	private static void delayBluetoothConnected() {
+		new DelayedTask(Utilities.getContext(), new Runnable() {
+			public void run() {
+				setBluetoothConnected(true);
+			}
+		}, 7000);
 	}
 	
 	private static boolean isBluetoothAudio(BluetoothDevice device) {

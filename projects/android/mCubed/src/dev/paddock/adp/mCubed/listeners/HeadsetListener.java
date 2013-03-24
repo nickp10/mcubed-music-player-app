@@ -16,7 +16,7 @@ import dev.paddock.adp.mCubed.utilities.PreferenceManager;
 import dev.paddock.adp.mCubed.utilities.PropertyManager;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
-public class OutputListener implements IListener {
+public class HeadsetListener implements IListener {
 	private final INotifyListener isBluetoothConnectedListener = new INotifyListener() {
 		@Override
 		public void propertyChanging(Object instance, NotificationArgs args) { }
@@ -52,6 +52,7 @@ public class OutputListener implements IListener {
 		PropertyManager.register(HeadsetReceiver.class, "BluetoothConnected", isBluetoothConnectedListener);
 		PropertyManager.register(HeadsetReceiver.class, "HeadphonesConnected", isHeadphonesConnectedListener);
 		PropertyManager.register(HeadsetReceiver.class, "OutputMode", outputModeListener);
+		updateVolume(null);
 	}
 
 	@Override
@@ -102,7 +103,7 @@ public class OutputListener implements IListener {
 		}
 		
 		// Re-route the event
-		PlaybackServer.propertyChanged(0, Schema.PROP_HEADPHONE, HeadsetReceiver.isHeadphonesConnected());
+		PlaybackServer.propertyChanged(0, Schema.PROP_HEADPHONES, HeadsetReceiver.isHeadphonesConnected());
 	}
 	
 	private void onOutputModeChanged(NotificationArgs args) {

@@ -49,7 +49,7 @@ public class Schema {
 	/** PROPERTY NAME SCHEMA **/
 	public static final String PROP_AUDIO_FOCUS_STATE = "p_audio_focus_state";
 	public static final String PROP_BLUETOOTH = "p_bluetooth";
-	public static final String PROP_HEADPHONE = "p_headphone";
+	public static final String PROP_HEADPHONES = "p_headphones";
 	public static final String PROP_MOUNTED = "p_mounted";
 	public static final String PROP_SCAN_REQUIRED = "p_scan_required";
 	public static final String PROP_OUTPUT_MODE = "p_output_mode";

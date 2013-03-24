@@ -1,65 +1,55 @@
 package dev.paddock.adp.mCubed.receivers;
 
-import dev.paddock.adp.mCubed.Schema;
-import dev.paddock.adp.mCubed.model.MediaPlayerState;
-import dev.paddock.adp.mCubed.model.NotificationArgs;
-import dev.paddock.adp.mCubed.services.PlaybackServer;
-import dev.paddock.adp.mCubed.utilities.App;
-import dev.paddock.adp.mCubed.utilities.PropertyManager;
-import dev.paddock.adp.mCubed.utilities.Utilities;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.telephony.TelephonyManager;
+import dev.paddock.adp.mCubed.model.NotificationArgs;
+import dev.paddock.adp.mCubed.utilities.App;
+import dev.paddock.adp.mCubed.utilities.PropertyManager;
+import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class PhoneStateReceiver extends BroadcastReceiver implements IReceiver {
-	private static final PhoneStateReceiver instance = new PhoneStateReceiver();
-	private MediaPlayerState savedState;
-	private int phoneCallState;
+	private static int phoneCallState;
 	
-	/** 
-	 * Prevent external instances of a PhoneStateReceiver
-	 */
-	private PhoneStateReceiver() {
-		Context context = Utilities.getContext();
-		TelephonyManager manager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
-		setPhoneCallState(manager.getCallState());
+	static {
+		Utilities.pushContext(App.getAppContext());
+		try {
+			TelephonyManager manager = App.getSystemService(TelephonyManager.class, Context.TELEPHONY_SERVICE);
+			if (manager != null) {
+				setPhoneCallState(manager.getCallState());
+			}
+		} finally {
+			Utilities.popContext();
+		}
 	}
 	
-	public static PhoneStateReceiver getInstance() {
-		return instance;
+	public static boolean isPhoneCallActive() {
+		return isPhoneCallActive(getPhoneCallState());
 	}
 	
-	public boolean isPhoneCallActive() {
-		return getPhoneCallState() != TelephonyManager.CALL_STATE_IDLE;
-	}
-	
-	public int getPhoneCallState() {
+	public static int getPhoneCallState() {
 		return phoneCallState;
 	}
 	
-	private void setPhoneCallState(int phoneCallState) {
-		if (this.phoneCallState != phoneCallState) {
-			boolean isPhoneCallActiveOld = isPhoneCallActive();
-			this.phoneCallState = phoneCallState;
-			boolean isPhoneCallActiveNew = isPhoneCallActive();
+	private static void setPhoneCallState(int phoneCallState) {
+		if (PhoneStateReceiver.phoneCallState != phoneCallState) {
+			boolean isPhoneCallActiveOld = isPhoneCallActive(PhoneStateReceiver.phoneCallState);
+			boolean isPhoneCallActiveNew = isPhoneCallActive(phoneCallState);
 			if (isPhoneCallActiveOld != isPhoneCallActiveNew) {
-				NotificationArgs args = new NotificationArgs(this, "PhoneCallActive", isPhoneCallActiveOld, isPhoneCallActiveNew);
-				PropertyManager.notifyPropertyChanging(this, "PhoneCallActive", args);
-				updatePlayer();
-				PropertyManager.notifyPropertyChanged(this, "PhoneCallActive", args);
-				PlaybackServer.propertyChanged(0, Schema.PROP_PHONE_CALL_ACTIVE, isPhoneCallActiveNew);
+				NotificationArgs args = new NotificationArgs(PhoneStateReceiver.class, "PhoneCallActive", isPhoneCallActiveOld, isPhoneCallActiveNew);
+				PropertyManager.notifyPropertyChanging(args);
+				PhoneStateReceiver.phoneCallState = phoneCallState;
+				PropertyManager.notifyPropertyChanged(args);
+			} else {
+				PhoneStateReceiver.phoneCallState = phoneCallState;
 			}
 		}
 	}
 	
-	private void updatePlayer() {
-		if (isPhoneCallActive()) {
-			savedState = App.getPlayer().getMediaPlayerStateWithLocks(false, true, true);
-		} else {
-			App.getPlayer().setMediaPlayerState(savedState);
-		}
+	private static boolean isPhoneCallActive(int phoneCallState) {
+		return phoneCallState != TelephonyManager.CALL_STATE_IDLE;
 	}
 	
 	@Override

@@ -23,7 +23,6 @@ import dev.paddock.adp.mCubed.model.TimerTask;
 import dev.paddock.adp.mCubed.preferences.PreviousAction;
 import dev.paddock.adp.mCubed.receivers.AudioFocusReceiver;
 import dev.paddock.adp.mCubed.receivers.MountReceiver;
-import dev.paddock.adp.mCubed.receivers.PhoneStateReceiver;
 import dev.paddock.adp.mCubed.services.PlaybackServer;
 
 public class App extends Application {
@@ -103,10 +102,6 @@ public class App extends Application {
 	public static AudioFocusState getAudioFocusState() {
 		AudioFocusReceiver audioFocus = AudioFocusReceiver.getAudioFocusReceiver();
 		return audioFocus == null ? AudioFocusState.NoAudioFocus : audioFocus.getAudioFocusState();
-	}
-	
-	public static PhoneStateReceiver getPhoneState() {
-		return PhoneStateReceiver.getInstance();
 	}
 	
 	public static Context getAppContext() {

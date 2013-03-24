@@ -25,8 +25,8 @@ public abstract class ClientCallback implements IClientCallback {
 			propertyAudioFocusStateChanged((AudioFocusState)propertyValue);
 		} else if (Schema.PROP_BLUETOOTH.equals(propertyName)) {
 			propertyBlueoothChanged((Boolean)propertyValue);
-		} else if (Schema.PROP_HEADPHONE.equals(propertyName)) { 
-			propertyHeadphoneChanged((Boolean)propertyValue);
+		} else if (Schema.PROP_HEADPHONES.equals(propertyName)) { 
+			propertyHeadphonesChanged((Boolean)propertyValue);
 		} else if (Schema.PROP_MOUNTED.equals(propertyName)) {
 			propertyMountedChanged((Boolean)propertyValue);
 		} else if (Schema.PROP_SCAN_REQUIRED.equals(propertyName)) {
@@ -51,7 +51,7 @@ public abstract class ClientCallback implements IClientCallback {
 	public void prePropertyChanged(String propertyName, Serializable propertyValue) { }
 	public void propertyAudioFocusStateChanged(AudioFocusState audioFocusState) { }
 	public void propertyBlueoothChanged(boolean isBluetoothConnected) { }
-	public void propertyHeadphoneChanged(boolean isHeadphoneConnected) { }
+	public void propertyHeadphonesChanged(boolean isHeadphonesConnected) { }
 	public void propertyMountedChanged(boolean isMounted) { }
 	public void propertyScanRequiredChanged(boolean isScanRequired) { }
 	public void propertyOutputModeChanged(OutputMode outputMode) { }

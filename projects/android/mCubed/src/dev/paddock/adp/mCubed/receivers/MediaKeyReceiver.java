@@ -14,7 +14,7 @@ public class MediaKeyReceiver extends BroadcastReceiver {
 		Utilities.pushContext(context);
 		try {
 			String action = intent.getAction();
-			if (Intent.ACTION_MEDIA_BUTTON.equals(action) && !App.getPhoneState().isPhoneCallActive()) {
+			if (Intent.ACTION_MEDIA_BUTTON.equals(action) && !PhoneStateReceiver.isPhoneCallActive()) {
 				KeyEvent keyEvent = (KeyEvent)intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
 				if (keyEvent != null && keyEvent.getAction() == KeyEvent.ACTION_UP) {
 					int key = keyEvent.getKeyCode();
