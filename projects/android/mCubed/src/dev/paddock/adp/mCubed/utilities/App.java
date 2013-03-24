@@ -20,12 +20,9 @@ import dev.paddock.adp.mCubed.model.NotificationArgs;
 import dev.paddock.adp.mCubed.model.Playlist;
 import dev.paddock.adp.mCubed.model.Progress;
 import dev.paddock.adp.mCubed.model.TimerTask;
-import dev.paddock.adp.mCubed.preferences.PlaybackAction;
 import dev.paddock.adp.mCubed.preferences.PreviousAction;
 import dev.paddock.adp.mCubed.receivers.AudioFocusReceiver;
-import dev.paddock.adp.mCubed.receivers.HeadsetReceiver;
 import dev.paddock.adp.mCubed.receivers.MountReceiver;
-import dev.paddock.adp.mCubed.receivers.OutputReceiver;
 import dev.paddock.adp.mCubed.receivers.PhoneStateReceiver;
 import dev.paddock.adp.mCubed.services.PlaybackServer;
 
@@ -69,56 +66,6 @@ public class App extends Application {
 				getPlayer().setMediaFile(getNowPlaying().getCurrent());
 			}
 		});
-		
-		// Register to the headphone/bluetooth property changes
-		PropertyManager.register(getHeadset(), "HeadphonesConnected", new INotifyListener() {
-			@Override
-			public void propertyChanging(Object instance, NotificationArgs args) { }
-			
-			@Override
-			public void propertyChanged(Object instance, NotificationArgs args) {
-				// Retrieve the action
-				PlaybackAction action = null;
-				if (getHeadset().isHeadphonesConnected()) {
-					action = PreferenceManager.getSettingEnum(PlaybackAction.class, R.string.pref_headphones_connected);
-				} else {
-					action = PreferenceManager.getSettingEnum(PlaybackAction.class, R.string.pref_headphones_disconnected);
-				}
-				
-				// Perform the appropriate action
-				if (getInitStatus() == InitStatus.Initialized) {
-					if (action == PlaybackAction.Play) {
-						getPlayer().play();
-					} else if (action == PlaybackAction.Pause) {
-						getPlayer().pause();
-					}
-				}
-			}
-		});
-		PropertyManager.register(getHeadset(), "BluetoothConnected", new INotifyListener() {
-			@Override
-			public void propertyChanging(Object instance, NotificationArgs args) { }
-			
-			@Override
-			public void propertyChanged(Object instance, NotificationArgs args) {
-				// Retrieve the action
-				PlaybackAction action = null;
-				if (getHeadset().isBluetoothConnected()) {
-					action = PreferenceManager.getSettingEnum(PlaybackAction.class, R.string.pref_bluetooth_connected);
-				} else {
-					action = PreferenceManager.getSettingEnum(PlaybackAction.class, R.string.pref_bluetooth_disconnected);
-				}
-				
-				// Perform the appropriate action
-				if (getInitStatus() == InitStatus.Initialized) {
-					if (action == PlaybackAction.Play) {
-						getPlayer().play();
-					} else if (action == PlaybackAction.Pause) {
-						getPlayer().pause();
-					}
-				}
-			}
-		});
 	}
 	
 	public static InitStatus getInitStatus() {
@@ -156,14 +103,6 @@ public class App extends Application {
 	public static AudioFocusState getAudioFocusState() {
 		AudioFocusReceiver audioFocus = AudioFocusReceiver.getAudioFocusReceiver();
 		return audioFocus == null ? AudioFocusState.NoAudioFocus : audioFocus.getAudioFocusState();
-	}
-	
-	public static HeadsetReceiver getHeadset() {
-		return HeadsetReceiver.getInstance();
-	}
-	
-	public static OutputReceiver getOutput() {
-		return OutputReceiver.getInstance();
 	}
 	
 	public static PhoneStateReceiver getPhoneState() {

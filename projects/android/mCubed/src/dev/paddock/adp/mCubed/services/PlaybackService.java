@@ -22,6 +22,7 @@ import dev.paddock.adp.mCubed.activities.OverlayActivity;
 import dev.paddock.adp.mCubed.listeners.IListener;
 import dev.paddock.adp.mCubed.listeners.MediaAssociateListener;
 import dev.paddock.adp.mCubed.listeners.MountListener;
+import dev.paddock.adp.mCubed.listeners.OutputListener;
 import dev.paddock.adp.mCubed.model.AudioFocusState;
 import dev.paddock.adp.mCubed.model.MediaFile;
 import dev.paddock.adp.mCubed.model.MediaStatus;
@@ -29,6 +30,7 @@ import dev.paddock.adp.mCubed.model.OutputMode;
 import dev.paddock.adp.mCubed.preferences.NotificationVisibility;
 import dev.paddock.adp.mCubed.preferences.PlayModeEnum;
 import dev.paddock.adp.mCubed.receivers.ClientReceiver;
+import dev.paddock.adp.mCubed.receivers.HeadsetReceiver;
 import dev.paddock.adp.mCubed.receivers.IReceiver;
 import dev.paddock.adp.mCubed.receivers.RemoteControlReceiver;
 import dev.paddock.adp.mCubed.utilities.App;
@@ -78,7 +80,7 @@ public class PlaybackService extends Service {
 			
 			// Register the various receivers
 			receivers.clear();
-			receivers.add(App.getHeadset());
+			receivers.add(new HeadsetReceiver());
 			receivers.add(App.getPhoneState());
 			receivers.add(getClientReceiver());
 			for (BroadcastReceiver receiver : receivers) {
@@ -95,6 +97,7 @@ public class PlaybackService extends Service {
 			listeners.clear();
 			listeners.add(new MountListener());
 			listeners.add(new MediaAssociateListener());
+			listeners.add(new OutputListener());
 			
 			// Register the various listeners
 			for (IListener listener : listeners) {
@@ -273,11 +276,11 @@ public class PlaybackService extends Service {
 					} else if (preferenceName.equals(Utilities.getResourceString(R.string.pref_clear_queue_with_play_mode))) {
 						PlaybackService.this.updatePlayMode();
 					} else if (preferenceName.equals(Utilities.getResourceString(R.string.pref_volume_speaker))) {
-						App.getOutput().updateVolume(OutputMode.Speaker);
+						OutputListener.updateVolume(OutputMode.Speaker);
 					} else if (preferenceName.equals(Utilities.getResourceString(R.string.pref_volume_headphones))) {
-						App.getOutput().updateVolume(OutputMode.Headphones);
+						OutputListener.updateVolume(OutputMode.Headphones);
 					} else if (preferenceName.equals(Utilities.getResourceString(R.string.pref_volume_bluetooth))) {
-						App.getOutput().updateVolume(OutputMode.Bluetooth);
+						OutputListener.updateVolume(OutputMode.Bluetooth);
 					} else if (preferenceName.equals(Utilities.getResourceString(R.string.pref_record_logs))) {
 						Log.setFileLoggingEnabled(PreferenceManager.getSettingBoolean(R.string.pref_record_logs));
 					}
@@ -302,24 +305,6 @@ public class PlaybackService extends Service {
 				public void propertyPlaybackStatusChanged(MediaStatus playbackStatus) {
 					PlaybackService.this.updateNotification(false);
 					RemoteControlReceiver.updatePlaybackState();
-				}
-				
-				@Override
-				public void propertyBlueoothChanged(boolean isBluetoothConnected) {
-					if (isBluetoothConnected) {
-						App.getOutput().updateOutputMode(OutputMode.Bluetooth);
-					} else {
-						App.getOutput().updateOutputMode();
-					}
-				}
-				
-				@Override
-				public void propertyHeadphoneChanged(boolean isHeadphoneConnected) {
-					if (isHeadphoneConnected) {
-						App.getOutput().updateOutputMode(OutputMode.Headphones);
-					} else {
-						App.getOutput().updateOutputMode();
-					}
 				}
 			}, false);
 		}
