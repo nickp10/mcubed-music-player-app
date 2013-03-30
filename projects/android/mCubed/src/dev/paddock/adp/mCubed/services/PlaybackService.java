@@ -279,11 +279,11 @@ public class PlaybackService extends Service {
 					} else if (preferenceName.equals(Utilities.getResourceString(R.string.pref_clear_queue_with_play_mode))) {
 						PlaybackService.this.updatePlayMode();
 					} else if (preferenceName.equals(Utilities.getResourceString(R.string.pref_volume_speaker))) {
-						HeadsetListener.updateVolume(OutputMode.Speaker);
+						HeadsetListener.updateVolume(OutputMode.Speaker, false);
 					} else if (preferenceName.equals(Utilities.getResourceString(R.string.pref_volume_headphones))) {
-						HeadsetListener.updateVolume(OutputMode.Headphones);
+						HeadsetListener.updateVolume(OutputMode.Headphones, false);
 					} else if (preferenceName.equals(Utilities.getResourceString(R.string.pref_volume_bluetooth))) {
-						HeadsetListener.updateVolume(OutputMode.Bluetooth);
+						HeadsetListener.updateVolume(OutputMode.Bluetooth, false);
 					} else if (preferenceName.equals(Utilities.getResourceString(R.string.pref_record_logs))) {
 						Log.setFileLoggingEnabled(PreferenceManager.getSettingBoolean(R.string.pref_record_logs));
 					}

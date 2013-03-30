@@ -52,7 +52,7 @@ public class HeadsetListener implements IListener {
 		PropertyManager.register(HeadsetReceiver.class, "BluetoothConnected", isBluetoothConnectedListener);
 		PropertyManager.register(HeadsetReceiver.class, "HeadphonesConnected", isHeadphonesConnectedListener);
 		PropertyManager.register(HeadsetReceiver.class, "OutputMode", outputModeListener);
-		updateVolume(null);
+		updateVolume(null, false);
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public class HeadsetListener implements IListener {
 	
 	private void onOutputModeChanged(NotificationArgs args) {
 		// Update the volume
-		updateVolume(null);
+		updateVolume(null, args.getNewValue().equals(OutputMode.Bluetooth) || args.getOldValue().equals(OutputMode.Bluetooth));
 		
 		// Re-route the event
 		PlaybackServer.propertyChanged(0, Schema.PROP_OUTPUT_MODE, HeadsetReceiver.getOutputMode());
@@ -133,9 +133,10 @@ public class HeadsetListener implements IListener {
 	 * re-adjusted to 30 since the user changed the headphone speaker volume.
 	 *  
 	 * @param outputMode The output mode that the audio must be playing to in order for
+	 * @param isDelayed Whether or not to delay updating the volume.
 	 * the volume to be updated. Specifying null will bypass this check.
 	 */
-	public static void updateVolume(OutputMode outputMode) {
+	public static void updateVolume(OutputMode outputMode, boolean isDelayed) {
 		// Ensure we are in the right mode
 		OutputMode currentOutputMode = HeadsetReceiver.getOutputMode();
 		if (outputMode != null && outputMode != currentOutputMode) {
@@ -164,13 +165,26 @@ public class HeadsetListener implements IListener {
 				// volume levels. We need to allow these devices to update the volume level and then go
 				// back in and update the volume again. Therefore, we wait for just enough time to allow
 				// the device to set the volume level before attempting to update the volume ourself.
-				new DelayedTask(Utilities.getContext(), new Runnable() {
-					@Override
-					public void run() {
-						manager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeValue, 0);
-					}
-				}, 500);
+				if (isDelayed) {
+					adjustVolumeDelayed(manager, volumeValue);
+				} else {
+					adjustVolume(manager, volumeValue);
+				}
 			}
 		}
+	}
+	
+	private static void adjustVolume(AudioManager manager, int volume) {
+		manager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+	}
+	
+	private static void adjustVolumeDelayed(final AudioManager manager, final int volume) {
+		new DelayedTask(Utilities.getContext(), new Runnable() {
+			
+			@Override
+			public void run() {
+				adjustVolume(manager, volume);
+			}
+		}, 500L);
 	}
 }

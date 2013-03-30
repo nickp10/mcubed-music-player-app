@@ -50,8 +50,8 @@ public class HeadsetReceiver extends BroadcastReceiver implements IReceiver {
 			NotificationArgs args = new NotificationArgs(HeadsetReceiver.class, "HeadphonesConnected", HeadsetReceiver.isHeadphonesConnected, isHeadphonesConnected);
 			PropertyManager.notifyPropertyChanging(args);
 			HeadsetReceiver.isHeadphonesConnected = isHeadphonesConnected;
-			PropertyManager.notifyPropertyChanged(args);
 			updateOutputMode();
+			PropertyManager.notifyPropertyChanged(args);
 		}
 	}
 	
@@ -68,8 +68,8 @@ public class HeadsetReceiver extends BroadcastReceiver implements IReceiver {
 			NotificationArgs args = new NotificationArgs(HeadsetReceiver.class, "BluetoothConnected", HeadsetReceiver.isBluetoothConnected, isBluetoothConnected);
 			PropertyManager.notifyPropertyChanging(args);
 			HeadsetReceiver.isBluetoothConnected = isBluetoothConnected;
-			PropertyManager.notifyPropertyChanged(args);
 			updateOutputMode();
+			PropertyManager.notifyPropertyChanged(args);
 		}
 	}
 	
