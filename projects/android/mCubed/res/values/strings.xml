@@ -12,6 +12,9 @@
 	<string name="about_website_text">http://mcubed.dyndns.info/</string>
 	<string name="about_changelog_label">Change Log:</string>
 	<string name="about_changelog_text"><![CDATA[
+		1.03\n
+		\t- Updated UI (for Android 3.0+)\n
+		\t- Minor UI enhancements\n\n
 		1.02\n
 		\t- Improved audio focus (e.g. audio ducking for voice navigation apps)\n
 		\t- Improved remote control support (e.g. bluetooth enhancements)\n
@@ -25,7 +28,7 @@
 		1.00\n
 		\t- Initial Release\n
 		\t- 1x1 and 4x1 Widgets\n
-		\t- Dynamic Playlists\n
+		\t- Dynamic \"Now Playing\" Playlist\n
 		\t- Extensive Settings\n
 		\t- \"Persisted Shuffle\", \"Perpetual Shuffle\", and \"Sequential\" Play Modes
 	]]></string>
