@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 	<declare-styleable name="VolumePreference">
 		<attr name="units" format="string" />
 		<attr name="maximum" format="integer" />
@@ -7,7 +7,13 @@
 	<declare-styleable name="DimensionPreference">
 		<attr name="dimensions" format="string" />
 	</declare-styleable>
-	<declare-styleable name="LibraryView">
-		<attr name="media_group" format="string" />
-	</declare-styleable>
+	<attr name="action_about" format="reference" />
+	<attr name="action_exit" format="reference" />
+	<attr name="action_feedback" format="reference" />
+	<attr name="action_help" format="reference" />
+	<attr name="action_library" format="reference" />
+	<attr name="action_nowplaying" format="reference" />
+	<attr name="action_playall" format="reference" />
+	<attr name="action_search" format="reference" />
+	<attr name="action_settings" format="reference" />
 </resources>

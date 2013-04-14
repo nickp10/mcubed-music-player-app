@@ -3,8 +3,8 @@ package dev.paddock.adp.mCubed.activities;
 import java.util.Arrays;
 import java.util.List;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,14 +12,12 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.controls.MountDisplay;
-import dev.paddock.adp.mCubed.controls.NowPlayingView;
 import dev.paddock.adp.mCubed.controls.PlayerControls;
 import dev.paddock.adp.mCubed.controls.ProgressDisplay;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
 
-public class OverlayActivity extends Activity implements IActivity {
+public class OverlayActivity extends FragmentActivity implements IActivity {
 	private ImageView closeButton;
-	private NowPlayingView nowPlayingView;
 	private PlayerControls playerControls;
 	private MountDisplay mountDisplay;
 	private ProgressDisplay progressDisplay;
@@ -73,13 +71,7 @@ public class OverlayActivity extends Activity implements IActivity {
 		return super.onCreateOptionsMenu(menu) &&
 				ActivityUtils.onCreateOptionsMenu(this, menu);
 	}
-	
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		return super.onPrepareOptionsMenu(menu) &&
-				ActivityUtils.onPrepareOptionsMenu(this, menu);
-	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		return ActivityUtils.onOptionsItemSelected(this, item) ||
@@ -99,7 +91,6 @@ public class OverlayActivity extends Activity implements IActivity {
 	@Override
 	public void findViews() {
 		closeButton = (ImageView)findViewById(R.id.oa_close_button);
-		nowPlayingView = (NowPlayingView)findViewById(R.id.oa_now_playing_view);
 		playerControls = (PlayerControls)findViewById(R.id.oa_player_controls);
 		mountDisplay = (MountDisplay)findViewById(R.id.oa_mount_display);
 		progressDisplay = (ProgressDisplay)findViewById(R.id.oa_progress_display);
@@ -124,6 +115,6 @@ public class OverlayActivity extends Activity implements IActivity {
 	
 	@Override
 	public List<IProvideClientReceiver> getClientReceivers() {
-		return Arrays.<IProvideClientReceiver>asList(nowPlayingView, playerControls, mountDisplay, progressDisplay);
+		return Arrays.<IProvideClientReceiver>asList(playerControls, mountDisplay, progressDisplay);
 	}
 }

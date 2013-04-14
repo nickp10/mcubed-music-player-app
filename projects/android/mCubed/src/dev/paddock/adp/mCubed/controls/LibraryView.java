@@ -1,57 +1,60 @@
 package dev.paddock.adp.mCubed.controls;
 
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListView;
 import dev.paddock.adp.mCubed.R;
+import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.lists.BindingListAdapter;
 import dev.paddock.adp.mCubed.model.MediaGroup;
 import dev.paddock.adp.mCubed.model.MediaGrouping;
-import dev.paddock.adp.mCubed.utilities.App;
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.util.AttributeSet;
-import android.view.LayoutInflater;
-import android.widget.LinearLayout;
-import android.widget.ListView;
+import dev.paddock.adp.mCubed.utilities.Utilities;
 
-public class LibraryView extends LinearLayout {
+public class LibraryView extends Fragment {
 	private ListView listView;
 	private MediaGroup mediaGroup;
 	private BindingListAdapter<MediaGrouping> itemsAdapter;
-	
-	public LibraryView(Context context) {
-		super(context);
-		initView(context);
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.library_view, container, false);
 	}
 
-	public LibraryView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		initView(context);
-		initAttributes(attrs);
-	}
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		Utilities.pushContext(view.getContext());
+		try {
+			// Initialize the list for the list view
+			itemsAdapter = new LibraryViewAdapter();
 	
-	private void initView(Context context) {
-		// Initialize the list for the list view
-		itemsAdapter = new LibraryViewAdapter(context);
+			// Find and initialize the list view
+			listView = (ListView)view.findViewById(R.id.lv_listView);
+			itemsAdapter.registerWithListView(listView);
+			
+			// Setup the media group for the view
+			setMediaGroup((MediaGroup)getArguments().getSerializable(Schema.BUNDLE_MEDIA_GROUP));
+		} finally {
+			Utilities.popContext();
+		}
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
 		
-		// Inflate the layout
-		LayoutInflater inflater = App.getSystemService(LayoutInflater.class, context, Context.LAYOUT_INFLATER_SERVICE);
-		inflater.inflate(R.layout.library_view, this, true);
-		
-		// Find and initialize the list view
-		listView = (ListView)findViewById(R.id.lv_listView);
-		itemsAdapter.registerWithListView(listView);
+		// Clean-up the view since it has been destroyed
+		setMediaGroup(null);
 	}
-	
-	private void initAttributes(AttributeSet attrs) {
-		TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.LibraryView);
-		setMediaGroup(a.getString(R.styleable.LibraryView_media_group));
-		a.recycle();
-	}
-	
+
 	public MediaGroup getMediaGroup() {
 		return mediaGroup;
 	}
 
-	public void setMediaGroup(MediaGroup mediaGroup) {
+	private void setMediaGroup(MediaGroup mediaGroup) {
 		if (this.mediaGroup != mediaGroup) {
 			this.mediaGroup = mediaGroup;
 			if (this.mediaGroup == null) {
@@ -60,9 +63,5 @@ public class LibraryView extends LinearLayout {
 				itemsAdapter.setList(this.mediaGroup.getGroupings());
 			}
 		}
-	}
-	
-	public void setMediaGroup(String mediaGroup) {
-		setMediaGroup(MediaGroup.valueOf(mediaGroup));
 	}
 }

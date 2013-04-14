@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TabHost
+<FrameLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="fill_parent"
-	android:layout_width="fill_parent"
-	android:id="@android:id/tabhost">
-	<FrameLayout
+	android:layout_width="fill_parent">
+	<LinearLayout
 		android:layout_height="fill_parent"
-		android:layout_width="fill_parent">
-		<LinearLayout
-			android:layout_height="fill_parent"
+		android:layout_width="fill_parent"
+		android:orientation="vertical">
+		<TabWidget
+			android:layout_height="wrap_content"
 			android:layout_width="fill_parent"
-			android:orientation="vertical">
-			<TabWidget
-				android:layout_height="wrap_content"
-				android:layout_width="fill_parent"
-				android:id="@android:id/tabs" />
+			android:id="@android:id/tabs" />
+		<android.support.v4.app.FragmentTabHost
+			android:layout_height="0dp"
+			android:layout_width="fill_parent"
+			android:layout_weight="1"
+			android:id="@android:id/tabhost">
 			<FrameLayout
-				android:layout_height="0dp"
+				android:layout_height="fill_parent"
 				android:layout_width="fill_parent"
-				android:layout_weight="1"
-				android:id="@android:id/tabcontent" />
-			<dev.paddock.adp.mCubed.controls.PlayerControls
-				android:layout_height="wrap_content"
-				android:layout_width="fill_parent"
-				android:layout_marginBottom="5dp"
-				android:id="@+id/npa_player_controls" />
-		</LinearLayout>
-		<dev.paddock.adp.mCubed.controls.MountDisplay
-			android:layout_height="fill_parent"
+				android:id="@+id/npa_tabcontent" />
+		</android.support.v4.app.FragmentTabHost>
+		<dev.paddock.adp.mCubed.controls.PlayerControls
+			android:layout_height="wrap_content"
 			android:layout_width="fill_parent"
-			android:id="@+id/npa_mount_display" />
-		<dev.paddock.adp.mCubed.controls.ProgressDisplay
-			android:layout_height="fill_parent"
-			android:layout_width="fill_parent"
-			android:id="@+id/npa_progress_display" />
-	</FrameLayout>
-</TabHost>
+			android:layout_marginBottom="5dp"
+			android:id="@+id/npa_player_controls" />
+	</LinearLayout>
+	<dev.paddock.adp.mCubed.controls.MountDisplay
+		android:layout_height="fill_parent"
+		android:layout_width="fill_parent"
+		android:id="@+id/npa_mount_display" />
+	<dev.paddock.adp.mCubed.controls.ProgressDisplay
+		android:layout_height="fill_parent"
+		android:layout_width="fill_parent"
+		android:id="@+id/npa_progress_display" />
+</FrameLayout>

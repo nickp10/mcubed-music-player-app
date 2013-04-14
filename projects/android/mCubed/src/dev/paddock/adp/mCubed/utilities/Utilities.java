@@ -261,7 +261,12 @@ public class Utilities {
 	
 	public static Handler getHandler() {
 		if (handler == null) {
-			handler = new Handler(Looper.getMainLooper());
+			Looper looper = Looper.getMainLooper();
+			if (looper == null) {
+				handler = new Handler();
+			} else {
+				handler = new Handler(looper);
+			}
 		}
 		return handler;
 	}

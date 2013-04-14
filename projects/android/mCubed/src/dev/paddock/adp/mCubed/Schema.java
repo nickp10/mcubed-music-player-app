@@ -74,6 +74,10 @@ public class Schema {
 	public static final String PROG_PLAYLIST_GENERATELIST = "prog_pl_generatelist";
 	public static final String PROG_PLAYLIST_VALIDATE = "prog_pl_validate";
 	
+	/** BUNDLE SCHEMA **/
+	public static final String BUNDLE_BOOLEAN_IS_HISTORY = "bundle_is_history";
+	public static final String BUNDLE_MEDIA_GROUP = "bundle_media_group";
+	
 	/** MENU SCHEMA **/
 	public static final int MN_NOWPLAYING = 1;
 	public static final int MN_PLAYALL = 2;

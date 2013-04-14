@@ -44,13 +44,7 @@ public class HelpActivity extends Activity implements IActivity {
 		return super.onCreateOptionsMenu(menu) &&
 				ActivityUtils.onCreateOptionsMenu(this, menu);
 	}
-	
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		return super.onPrepareOptionsMenu(menu) &&
-				ActivityUtils.onPrepareOptionsMenu(this, menu);
-	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		return ActivityUtils.onOptionsItemSelected(this, item) ||

@@ -1,50 +1,63 @@
 package dev.paddock.adp.mCubed.controls;
 
-import android.content.Context;
-import android.util.AttributeSet;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.widget.LinearLayout;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 import dev.paddock.adp.mCubed.R;
+import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.lists.BindingListAdapter;
 import dev.paddock.adp.mCubed.model.MediaFile;
 import dev.paddock.adp.mCubed.model.Playlist;
 import dev.paddock.adp.mCubed.utilities.App;
 import dev.paddock.adp.mCubed.utilities.Comparators;
+import dev.paddock.adp.mCubed.utilities.Utilities;
 
-public class PlaylistView extends LinearLayout {
+public class PlaylistView extends Fragment {
 	private BindingListAdapter<MediaFile> itemsAdapter;
 	private ListView listView;
 	private Playlist playlist;
-	
-	public PlaylistView(Context context) {
-		super(context);
-		initView(context);
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.playlist_view, container, false);
 	}
 
-	public PlaylistView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		initView(context);
-	}
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		Utilities.pushContext(view.getContext());
+		try {
+			// Initialize the list for the list view
+			itemsAdapter = new PlaylistViewAdapter();
 	
-	private void initView(Context context) {
-		// Initialize the list for the list view
-		itemsAdapter = new PlaylistViewAdapter(context);
-		
-		// Inflate the layout
-		LayoutInflater inflater = App.getSystemService(LayoutInflater.class, context, Context.LAYOUT_INFLATER_SERVICE);
-		inflater.inflate(R.layout.playlist_view, this, true);
-		
-		// Find and initialize the list view
-		listView = (ListView)findViewById(R.id.pv_listView);
-		itemsAdapter.registerWithListView(listView);
-	}
+			// Find and initialize the list view
+			listView = (ListView)view.findViewById(R.id.pv_listView);
+			itemsAdapter.registerWithListView(listView);
 	
+			// Setup the list for the view
+			boolean isHistory = getArguments().getBoolean(Schema.BUNDLE_BOOLEAN_IS_HISTORY);
+			setPlaylist(App.getNowPlaying(), isHistory);
+		} finally {
+			Utilities.popContext();
+		}
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		
+		// Clean-up the view since it has been destroyed
+		setPlaylist(null,  false);
+	}
+
 	public Playlist getPlaylist() {
 		return playlist;
 	}
-	
-	public void setPlaylist(Playlist playlist, boolean isHistory) {
+
+	private void setPlaylist(Playlist playlist, boolean isHistory) {
 		if (this.playlist != playlist) {
 			this.playlist = playlist;
 			if (this.playlist == null) {

@@ -3,13 +3,14 @@ package dev.paddock.adp.mCubed.activities;
 import java.util.Arrays;
 import java.util.List;
 
-import android.app.TabActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTabHost;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
+import android.widget.TabWidget;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.controls.MountDisplay;
@@ -18,52 +19,43 @@ import dev.paddock.adp.mCubed.controls.PlayerControls;
 import dev.paddock.adp.mCubed.controls.PlaylistView;
 import dev.paddock.adp.mCubed.controls.ProgressDisplay;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
-import dev.paddock.adp.mCubed.utilities.App;
 
-public class NowPlayingActivity extends TabActivity implements IActivity {
-	private PlaylistView historyView, queueView;
-	private NowPlayingView nowPlayingView;
+public class NowPlayingActivity extends FragmentActivity implements IActivity {
 	private PlayerControls playerControls;
 	private MountDisplay mountDisplay;
 	private ProgressDisplay progressDisplay;
-	private TabHost tabHost;
-	
+	private FragmentTabHost tabHost;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ActivityUtils.onCreate(this, savedInstanceState);
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		ActivityUtils.onDestroy(this);
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
 		ActivityUtils.onResume(this);
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		return super.onCreateOptionsMenu(menu) &&
 				ActivityUtils.onCreateOptionsMenu(this, menu);
 	}
-	
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		return super.onPrepareOptionsMenu(menu) &&
-				ActivityUtils.onPrepareOptionsMenu(this, menu);
-	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		return ActivityUtils.onOptionsItemSelected(this, item) ||
 				super.onOptionsItemSelected(item);
 	}
-	
+
 	@Override
 	public List<Integer> getMenuOptions() {
 		return Arrays.asList(Schema.MN_LIBRARY, Schema.MN_PLAYALL,
@@ -78,7 +70,7 @@ public class NowPlayingActivity extends TabActivity implements IActivity {
 
 	@Override
 	public void findViews() {
-		tabHost = (TabHost)findViewById(android.R.id.tabhost);
+		tabHost = (FragmentTabHost)findViewById(android.R.id.tabhost);
 		playerControls = (PlayerControls)findViewById(R.id.npa_player_controls);
 		mountDisplay = (MountDisplay)findViewById(R.id.npa_mount_display);
 		progressDisplay = (ProgressDisplay)findViewById(R.id.npa_progress_display);
@@ -86,14 +78,11 @@ public class NowPlayingActivity extends TabActivity implements IActivity {
 
 	@Override
 	public void setupViews() {
-		nowPlayingView = new NowPlayingView(this);
-		historyView = new PlaylistView(this);
-		queueView = new PlaylistView(this);
-		historyView.setPlaylist(App.getNowPlaying(), true);
-		queueView.setPlaylist(App.getNowPlaying(), false);
-		createTabSpec("Now Playing", nowPlayingView);
-		createTabSpec("History", historyView);
-		createTabSpec("Queue", queueView);
+		tabHost.setup(this, getSupportFragmentManager(), R.id.npa_tabcontent);
+		createTabSpec("Now Playing", NowPlayingView.class, null);
+		createTabSpec("History", PlaylistView.class, createBundle(true));
+		createTabSpec("Queue", PlaylistView.class, createBundle(false));
+		trimTabPadding(tabHost);
 	}
 
 	@Override
@@ -103,23 +92,34 @@ public class NowPlayingActivity extends TabActivity implements IActivity {
 	@Override
 	public void registerListeners() {
 	}
-	
+
 	@Override
 	public void handleExtras(Bundle extras) {
 	}
-	
+
 	@Override
 	public List<IProvideClientReceiver> getClientReceivers() {
-		return Arrays.<IProvideClientReceiver>asList(mountDisplay, progressDisplay, nowPlayingView, playerControls);
+		return Arrays.<IProvideClientReceiver>asList(mountDisplay, progressDisplay, playerControls);
 	}
-	
-	private void createTabSpec(String display, final View contentView) {
-		TabSpec tabSpec = tabHost.newTabSpec(display).setIndicator(display).setContent(new TabHost.TabContentFactory() {
-			@Override
-			public View createTabContent(String tag) {
-				return contentView;
+
+	private Bundle createBundle(boolean isHistory) {
+		Bundle bundle = new Bundle();
+		bundle.putBoolean(Schema.BUNDLE_BOOLEAN_IS_HISTORY, isHistory);
+		return bundle;
+	}
+
+	private void createTabSpec(String display, Class<?> fragmentClass, Bundle bundle) {
+		TabSpec tabSpec = tabHost.newTabSpec(display).setIndicator(display);
+		tabHost.addTab(tabSpec, fragmentClass, bundle);
+	}
+
+	private void trimTabPadding(FragmentTabHost tabHost) {
+		TabWidget tabWidget = tabHost.getTabWidget();
+		for (int i = 0; i < tabWidget.getChildCount(); i++) {
+			View child = tabWidget.getChildAt(i);
+			if (child != null) {
+				child.setPadding(0, child.getPaddingTop(), 0, child.getPaddingBottom());
 			}
-		});
-		tabHost.addTab(tabSpec);
+		}
 	}
 }

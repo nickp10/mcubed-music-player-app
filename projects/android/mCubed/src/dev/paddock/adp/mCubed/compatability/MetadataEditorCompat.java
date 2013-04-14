@@ -13,7 +13,6 @@ import android.graphics.Bitmap;
  * the associated client. Once the meta-data has been "applied", you cannot
  * reuse this instance of the MetadataEditor.
  */
-@SuppressWarnings("rawtypes")
 public class MetadataEditorCompat {
 	private Method mPutStringMethod;
 	private Method mPutBitmapMethod;
@@ -34,7 +33,7 @@ public class MetadataEditorCompat {
 		mActualMetadataEditor = actualMetadataEditor;
 		
 		if (sHasRemoteControlAPIs && actualMetadataEditor != null) {
-			Class metadataEditorClass = actualMetadataEditor.getClass();
+			Class<?> metadataEditorClass = actualMetadataEditor.getClass();
 			try {
 				mPutStringMethod = metadataEditorClass.getMethod("putString", int.class, String.class);
 				mPutBitmapMethod = metadataEditorClass.getMethod("putBitmap", int.class, Bitmap.class);

@@ -3,7 +3,6 @@ package dev.paddock.adp.mCubed.controls;
 import java.util.Comparator;
 import java.util.List;
 
-import android.content.Context;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.lists.BindingListAdapter;
 import dev.paddock.adp.mCubed.lists.IViewItem;
@@ -13,11 +12,7 @@ import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class LibraryViewAdapter extends BindingListAdapter<MediaGrouping> {
 	private Object[] sections;
-	
-	public LibraryViewAdapter(Context context) {
-		super(context);
-	}
-	
+
 	@Override
 	protected void onBeforeInitialize() {
 		setItemViewResource(R.layout.library_view_item);
