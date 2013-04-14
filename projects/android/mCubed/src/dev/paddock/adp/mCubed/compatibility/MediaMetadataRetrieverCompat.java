@@ -1,4 +1,4 @@
-package dev.paddock.adp.mCubed.compatability;
+package dev.paddock.adp.mCubed.compatibility;
 
 import dev.paddock.adp.mCubed.utilities.CompatibilityUtilities;
 
@@ -20,10 +20,6 @@ public class MediaMetadataRetrieverCompat {
 	public static int METADATA_KEY_TITLE;
 	public static int METADATA_KEY_WRITER;
 	public static int METADATA_KEY_YEAR;
-	public static int OPTION_CLOSEST;
-	public static int OPTION_CLOSEST_SYNC;
-	public static int OPTION_NEXT_SYNC;
-	public static int OPTION_PREVIOUS_SYNC;
 	
 	static {
 		CompatibilityUtilities.loadStaticFields("android.media.MediaMetadataRetriever", MediaMetadataRetrieverCompat.class);

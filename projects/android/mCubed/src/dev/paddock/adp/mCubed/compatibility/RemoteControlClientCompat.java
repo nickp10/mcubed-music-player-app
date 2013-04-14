@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.paddock.adp.mCubed.compatability;
+package dev.paddock.adp.mCubed.compatibility;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -33,7 +33,6 @@ import dev.paddock.adp.mCubed.utilities.CompatibilityUtilities;
  * before the RemoteControlClient can be registered through
  * {@link android.media.AudioManager#registerRemoteControlClient(android.media.RemoteControlClient)}.
  */
-@SuppressWarnings("rawtypes")
 public class RemoteControlClientCompat {
 	private static Class<?> sRemoteControlClientClass;
 	
@@ -57,8 +56,8 @@ public class RemoteControlClientCompat {
 	public static int PLAYSTATE_STOPPED;
 
 	// RCC short for RemoteControlClient
-	private static Constructor sRCCConstructorIntent;
-	private static Constructor sRCCConstructorIntentLooper;
+	private static Constructor<?> sRCCConstructorIntent;
+	private static Constructor<?> sRCCConstructorIntentLooper;
 	private static Method sRCCEditMetadataMethod;
 	private static Method sRCCSetPlayStateMethod;
 	private static Method sRCCSetTransportControlFlags;

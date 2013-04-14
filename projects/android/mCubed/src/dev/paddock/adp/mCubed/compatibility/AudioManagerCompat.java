@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.paddock.adp.mCubed.compatability;
+package dev.paddock.adp.mCubed.compatibility;
 
 import java.lang.reflect.Method;
 
@@ -25,18 +25,17 @@ import android.media.AudioManager;
  * These methods only run on ICS devices. On previous devices, all methods are
  * no-ops.
  */
-@SuppressWarnings("rawtypes")
 public class AudioManagerCompat {
-	private static Method _registerRemoteControlClientMethod;
-	private static Method _unregisterRemoteControlClientMethod;
-	private static boolean _hasAPIs;
+	private static Method registerRemoteControlClientMethod;
+	private static Method unregisterRemoteControlClientMethod;
+	private static boolean hasAPIs;
 
 	static {
 		try {
-			Class remoteControlClientClass = RemoteControlClientCompat.getActualRemoteControlClientClass();
-			_registerRemoteControlClientMethod = AudioManager.class.getMethod("registerRemoteControlClient", remoteControlClientClass);
-			_unregisterRemoteControlClientMethod = AudioManager.class.getMethod("unregisterRemoteControlClient", remoteControlClientClass);
-			_hasAPIs = true;
+			Class<?> remoteControlClientClass = RemoteControlClientCompat.getActualRemoteControlClientClass();
+			registerRemoteControlClientMethod = AudioManager.class.getMethod("registerRemoteControlClient", remoteControlClientClass);
+			unregisterRemoteControlClientMethod = AudioManager.class.getMethod("unregisterRemoteControlClient", remoteControlClientClass);
+			hasAPIs = true;
 		} catch (NoSuchMethodException e) {
 			// Silently fail when running on an OS before ICS.
 		} catch (IllegalArgumentException e) {
@@ -47,9 +46,9 @@ public class AudioManagerCompat {
 	}
 
 	public static void registerRemoteControlClient(AudioManager audioManager, RemoteControlClientCompat remoteControlClient) {
-		if (_hasAPIs) {
+		if (hasAPIs) {
 			try {
-				_registerRemoteControlClientMethod.invoke(audioManager, remoteControlClient.getActualRemoteControlClientObject());
+				registerRemoteControlClientMethod.invoke(audioManager, remoteControlClient.getActualRemoteControlClientObject());
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -57,9 +56,9 @@ public class AudioManagerCompat {
 	}
 
 	public static void unregisterRemoteControlClient(AudioManager audioManager, RemoteControlClientCompat remoteControlClient) {
-		if (_hasAPIs) {
+		if (hasAPIs) {
 			try {
-				_unregisterRemoteControlClientMethod.invoke(audioManager, remoteControlClient.getActualRemoteControlClientObject());
+				unregisterRemoteControlClientMethod.invoke(audioManager, remoteControlClient.getActualRemoteControlClientObject());
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}

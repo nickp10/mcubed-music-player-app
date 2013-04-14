@@ -1,4 +1,4 @@
-package dev.paddock.adp.mCubed.compatability;
+package dev.paddock.adp.mCubed.compatibility;
 
 import java.lang.reflect.Method;
 

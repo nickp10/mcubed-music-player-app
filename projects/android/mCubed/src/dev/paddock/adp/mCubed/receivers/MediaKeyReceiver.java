@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.view.KeyEvent;
-import dev.paddock.adp.mCubed.compatability.KeyEventCompat;
 import dev.paddock.adp.mCubed.utilities.App;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
@@ -24,9 +23,9 @@ public class MediaKeyReceiver extends BroadcastReceiver {
 						} else {
 							App.getPlayer().play();
 						}
-					} else if (key == KeyEventCompat.KEYCODE_MEDIA_PAUSE) {
+					} else if (key == KeyEvent.KEYCODE_MEDIA_PAUSE) {
 						App.getPlayer().pause();
-					} else if (key == KeyEventCompat.KEYCODE_MEDIA_PLAY) {
+					} else if (key == KeyEvent.KEYCODE_MEDIA_PLAY) {
 						App.getPlayer().play();
 					} else if (key == KeyEvent.KEYCODE_MEDIA_NEXT) {
 						App.movePlaybackNext();

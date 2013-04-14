@@ -4,14 +4,15 @@ import java.util.Locale;
 
 import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothProfile;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.Bundle;
-import dev.paddock.adp.mCubed.compatability.BluetoothA2dpCompat;
-import dev.paddock.adp.mCubed.compatability.BluetoothProfileCompat;
+import dev.paddock.adp.mCubed.compatibility.BluetoothA2dpCompat;
+import dev.paddock.adp.mCubed.compatibility.BluetoothProfileCompat;
 import dev.paddock.adp.mCubed.model.DelayedTask;
 import dev.paddock.adp.mCubed.model.NotificationArgs;
 import dev.paddock.adp.mCubed.model.OutputMode;
@@ -161,9 +162,9 @@ public class HeadsetReceiver extends BroadcastReceiver implements IReceiver {
 				Bundle extras = intent.getExtras();
 				if (extras != null) {
 					int bluetoothState = extras.getInt(BluetoothProfileCompat.EXTRA_STATE);
-					if (bluetoothState == BluetoothProfileCompat.STATE_CONNECTED) {
+					if (bluetoothState == BluetoothProfile.STATE_CONNECTED) {
 						setBluetoothConnected(true);
-					} else if (bluetoothState == BluetoothProfileCompat.STATE_DISCONNECTED) {
+					} else if (bluetoothState == BluetoothProfile.STATE_DISCONNECTED) {
 						setBluetoothConnected(false);
 					}
 				}
