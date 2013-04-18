@@ -16,4 +16,5 @@
 	<attr name="action_playall" format="reference" />
 	<attr name="action_search" format="reference" />
 	<attr name="action_settings" format="reference" />
+	<attr name="border_color" format="reference|color" />
 </resources>

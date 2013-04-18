@@ -10,6 +10,7 @@
 		<item name="action_playall">@drawable/action_playall_dark</item>
 		<item name="action_search">@drawable/action_search_dark</item>
 		<item name="action_settings">@drawable/action_settings_dark</item>
+		<item name="border_color">?android:attr/colorActivatedHighlight</item>
 	</style>
 	<style name="mCubedTheme.Light" parent="@android:style/Theme.Holo.Light">
 		<item name="action_about">@drawable/action_about_light</item>
@@ -21,5 +22,9 @@
 		<item name="action_playall">@drawable/action_playall_light</item>
 		<item name="action_search">@drawable/action_search_light</item>
 		<item name="action_settings">@drawable/action_settings_light</item>
+		<item name="border_color">?android:attr/colorActivatedHighlight</item>
+	</style>
+	<style name="MediaFileGroupDivider" parent="@style/Divider">
+		<item name="android:layout_height">2dp</item>
 	</style>
 </resources>

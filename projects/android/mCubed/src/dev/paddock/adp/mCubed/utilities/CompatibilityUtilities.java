@@ -9,33 +9,23 @@ public class CompatibilityUtilities {
 			Class<?> actualClass = classLoader.loadClass(actualClassName);
 			loadStaticFields(actualClass, compatClass);
 		} catch (ClassNotFoundException e) {
-			// Silently fail is the OS doesn't support the actual API.
-		} catch (IllegalArgumentException e) {
-			// Silently fail is the OS doesn't support the actual API.
-		} catch (SecurityException e) {
-			// Silently fail is the OS doesn't support the actual API.
+			// Silently fail because the OS does not support the actual API.
 		}
 	}
 
 	public static void loadStaticFields(Class<?> actualClass, Class<?> compatClass) {
-		try {
-			// Dynamically populate all the fields from the actual class into the compatibility class.
-			for (Field compatField : compatClass.getFields()) {
-				try {
-					Field actualField = actualClass.getField(compatField.getName());
-					compatField.set(null, actualField.get(null));
-				} catch (NoSuchFieldException e) {
-					Log.w("Could not get real field: " + compatField.getName(), e);
-				} catch (IllegalArgumentException e) {
-					Log.w("Error trying to pull field value for: " + compatField.getName(), e);
-				} catch (IllegalAccessException e) {
-					Log.w("Error trying to pull field value for: " + compatField.getName(), e);
-				}
+		// Dynamically populate all the fields from the actual class into the compatibility class.
+		for (Field compatField : compatClass.getFields()) {
+			try {
+				Field actualField = actualClass.getField(compatField.getName());
+				compatField.set(null, actualField.get(null));
+			} catch (NoSuchFieldException e) {
+				// Silently fail because the OS does not contain the static field
+			} catch (IllegalArgumentException e) {
+				Log.w("Error trying to pull field value for: " + compatField.getName(), e);
+			} catch (IllegalAccessException e) {
+				Log.w("Error trying to pull field value for: " + compatField.getName(), e);
 			}
-		} catch (IllegalArgumentException e) {
-			// Silently fail is the OS doesn't support the actual API.
-		} catch (SecurityException e) {
-			// Silently fail is the OS doesn't support the actual API.
 		}
 	}
 }

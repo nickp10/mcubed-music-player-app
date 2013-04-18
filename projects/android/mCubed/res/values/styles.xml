@@ -10,5 +10,13 @@
 		<item name="action_playall">@drawable/action_playall_light</item>
 		<item name="action_search">@drawable/action_search_light</item>
 		<item name="action_settings">@drawable/action_settings_light</item>
+		<item name="border_color">#FFFFFF</item>
+	</style>
+	<style name="Divider">
+		<item name="android:layout_width">fill_parent</item>
+		<item name="android:background">?attr/border_color</item>
+	</style>
+	<style name="MediaFileGroupDivider" parent="@style/Divider">
+		<item name="android:layout_height">0dp</item>
 	</style>
 </resources>

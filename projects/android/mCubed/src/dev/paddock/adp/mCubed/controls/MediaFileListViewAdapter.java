@@ -14,10 +14,16 @@ public class MediaFileListViewAdapter extends BindingListAdapter<MediaFile> {
 	public MediaFileListViewAdapter(Context context) {
 		super(context);
 	}
-	
+
 	@Override
 	protected void onBeforeInitialize() {
 		setHeaderViewResource(R.layout.media_file_list_view_header);
+		setHeaderViewItemFactory(new IViewItemFactory<String>() {
+			@Override
+			public IViewItem<String> createViewItem() {
+				return new MediaFileListViewHeader();
+			}
+		});
 		setItemViewResource(R.layout.media_file_list_view_item);
 		setItemViewItemFactory(new IViewItemFactory<MediaFile>() {
 			@Override
