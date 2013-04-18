@@ -17,6 +17,7 @@ public class MediaFileListViewAdapter extends BindingListAdapter<MediaFile> {
 
 	@Override
 	protected void onBeforeInitialize() {
+		setHeadersEnabled(false);
 		setHeaderViewResource(R.layout.media_file_list_view_header);
 		setHeaderViewItemFactory(new IViewItemFactory<String>() {
 			@Override

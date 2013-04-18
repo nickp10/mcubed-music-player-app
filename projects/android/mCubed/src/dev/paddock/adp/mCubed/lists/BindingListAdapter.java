@@ -45,6 +45,7 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 	private AbsListView currentListView;
 	private BindingList<E> list;
 	private boolean isNotifyOnChange = true, isDataSetChangedPosted, isDataSetInvalidatedPosted;
+	private boolean isHeadersEnabled = true, isItemsEnabled = true;
 	private int headerDropDownViewResource, headerViewResource, itemDropDownViewResource, itemViewResource;
 	private LayoutInflater inflater;
 	private IViewItemFactory<String> headerViewItemFactory;
@@ -515,7 +516,25 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 		this.itemDropDownViewResource = itemDropDownViewResource;
 		notifyDataSetInvalidated();
 	}
-	
+
+	public final boolean isHeadersEnabled() {
+		return isHeadersEnabled;
+	}
+
+	public final void setHeadersEnabled(boolean isHeadersEnabled) {
+		this.isHeadersEnabled = isHeadersEnabled;
+		notifyDataSetInvalidated();
+	}
+
+	public final boolean isItemsEnabled() {
+		return isItemsEnabled;
+	}
+
+	public final void setItemsEnabled(boolean isItemsEnabled) {
+		this.isItemsEnabled = isItemsEnabled;
+		notifyDataSetInvalidated();
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public final View getDropDownView(int position, View convertView, ViewGroup parent) {
@@ -950,5 +969,21 @@ public class BindingListAdapter<E> extends BaseAdapter implements
 		} finally {
 			Utilities.popContext();
 		}
+	}
+
+	@Override
+	public boolean areAllItemsEnabled() {
+		return isItemsEnabled() && isHeadersEnabled();
+	}
+
+	@Override
+	public boolean isEnabled(int position) {
+		int type = getItemViewType(position);
+		if (type == VIEW_TYPE_GROUP_HEADER) {
+			return isHeadersEnabled();
+		} else if (type == VIEW_TYPE_ITEM) {
+			return isItemsEnabled();
+		}
+		return super.isEnabled(position);
 	}
 }
