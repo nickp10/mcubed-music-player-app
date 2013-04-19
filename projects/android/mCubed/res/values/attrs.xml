@@ -17,4 +17,5 @@
 	<attr name="action_search" format="reference" />
 	<attr name="action_settings" format="reference" />
 	<attr name="border_color" format="reference|color" />
+	<attr name="style_progress_bar" format="reference" />
 </resources>

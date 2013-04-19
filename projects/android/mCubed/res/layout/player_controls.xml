@@ -13,9 +13,10 @@
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:layout_gravity="center_vertical"
+			android:textIsSelectable="false"
 			android:id="@+id/pc_seek_text" />
 		<SeekBar
-			style="@android:style/Widget.ProgressBar.Horizontal"
+			style="?attr/style_progress_bar"
 			android:layout_height="wrap_content"
 			android:layout_width="0dp"
 			android:layout_weight="1"
@@ -27,6 +28,7 @@
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:layout_gravity="center_vertical"
+			android:textIsSelectable="false"
 			android:id="@+id/pc_duration_text" />
 	</LinearLayout>
 	<RelativeLayout

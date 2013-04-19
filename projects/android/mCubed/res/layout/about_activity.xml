@@ -11,48 +11,48 @@
 		android:layout_gravity="center_horizontal"
 		android:orientation="vertical">
 		<TextView
-		    style="@android:style/TextAppearance"
+			style="@android:style/TextAppearance"
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:layout_gravity="center_horizontal"
 			android:drawableTop="@drawable/icon"
 			android:text="@string/app_name_version" />
 		<ScrollView
-		    android:layout_height="0dp"
-		    android:layout_width="fill_parent"
-		    android:layout_weight="1">
-		    <RelativeLayout
-		        android:layout_height="wrap_content"
-		        android:layout_width="fill_parent">
-		        <TextView
-		            style="@style/AboutLabel"
-		            android:text="@string/about_developer_label"
-		            android:id="@+id/aa_developer_label" />
-		        <TextView
-		            style="@style/AboutText"
-		            android:layout_toRightOf="@id/aa_developer_label"
-		            android:text="@string/about_developer_text" />
-		        <TextView
-		            style="@style/AboutLabel"
-		            android:layout_below="@id/aa_developer_label"
-		            android:text="@string/about_website_label"
-		            android:id="@+id/aa_website_label" />
-		        <TextView
-		            style="@style/AboutText"
-		            android:layout_below="@id/aa_developer_label"
-		            android:layout_toRightOf="@id/aa_website_label"
-		            android:autoLink="web"
-		            android:text="@string/about_website_text" />
-		        <TextView
-		            style="@style/AboutLabel"
-		            android:layout_below="@id/aa_website_label"
-		            android:text="@string/about_changelog_label"
-		            android:id="@+id/aa_changelog_label" />
-		        <TextView
-		            style="@style/AboutText"
-		            android:layout_below="@+id/aa_changelog_label"
-		            android:text="@string/about_changelog_text" />
-		    </RelativeLayout>
+			android:layout_height="0dp"
+			android:layout_width="fill_parent"
+			android:layout_weight="1">
+			<RelativeLayout
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent">
+				<TextView
+					style="@style/AboutLabel"
+					android:text="@string/about_developer_label"
+					android:id="@+id/aa_developer_label" />
+				<TextView
+					style="@style/AboutText"
+					android:layout_toRightOf="@id/aa_developer_label"
+					android:text="@string/about_developer_text" />
+				<TextView
+					style="@style/AboutLabel"
+					android:layout_below="@id/aa_developer_label"
+					android:text="@string/about_website_label"
+					android:id="@+id/aa_website_label" />
+				<TextView
+					style="@style/AboutText"
+					android:layout_below="@id/aa_developer_label"
+					android:layout_toRightOf="@id/aa_website_label"
+					android:autoLink="web"
+					android:text="@string/about_website_text" />
+				<TextView
+					style="@style/AboutLabel"
+					android:layout_below="@id/aa_website_label"
+					android:text="@string/about_changelog_label"
+					android:id="@+id/aa_changelog_label" />
+				<TextView
+					style="@style/AboutText"
+					android:layout_below="@+id/aa_changelog_label"
+					android:text="@string/about_changelog_text" />
+			</RelativeLayout>
 		</ScrollView>
 	</LinearLayout>
 	<dev.paddock.adp.mCubed.controls.MountDisplay

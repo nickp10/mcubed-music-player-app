@@ -21,7 +21,7 @@ public class OverlayActivity extends FragmentActivity implements IActivity {
 	private PlayerControls playerControls;
 	private MountDisplay mountDisplay;
 	private ProgressDisplay progressDisplay;
-	
+
 //	/**
 //	 * Click listener for the open button.
 //	 */
@@ -37,7 +37,7 @@ public class OverlayActivity extends FragmentActivity implements IActivity {
 //			}
 //		}
 //	};
-	
+
 	/**
 	 * Click listener for the close button.
 	 */
@@ -47,25 +47,25 @@ public class OverlayActivity extends FragmentActivity implements IActivity {
 			OverlayActivity.this.finish();
 		}
 	};
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ActivityUtils.onCreate(this, savedInstanceState);
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		ActivityUtils.onDestroy(this);
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
 		ActivityUtils.onResume(this);
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		return super.onCreateOptionsMenu(menu) &&
@@ -77,7 +77,7 @@ public class OverlayActivity extends FragmentActivity implements IActivity {
 		return ActivityUtils.onOptionsItemSelected(this, item) ||
 				super.onOptionsItemSelected(item);
 	}
-	
+
 	@Override
 	public List<Integer> getMenuOptions() {
 		return Arrays.asList();
@@ -108,11 +108,11 @@ public class OverlayActivity extends FragmentActivity implements IActivity {
 	public void registerListeners() {
 		closeButton.setOnClickListener(closeClickListener);
 	}
-	
+
 	@Override
 	public void handleExtras(Bundle extras) {
 	}
-	
+
 	@Override
 	public List<IProvideClientReceiver> getClientReceivers() {
 		return Arrays.<IProvideClientReceiver>asList(playerControls, mountDisplay, progressDisplay);

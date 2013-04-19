@@ -14,13 +14,14 @@
 		android:orientation="vertical"
 		android:background="@drawable/w41_background">
 		<TextView
-		    style="@style/ProgressLabel"
+			style="@style/ProgressLabel"
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:layout_marginBottom="10dp"
+			android:textIsSelectable="false"
 			android:id="@+id/pd_title" />
 		<ProgressBar
-			style="@android:style/Widget.ProgressBar.Horizontal"
+			style="?attr/style_progress_bar"
 			android:layout_height="wrap_content"
 			android:layout_width="fill_parent" 
 			android:max="100"
