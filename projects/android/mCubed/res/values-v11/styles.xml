@@ -11,6 +11,8 @@
 		<item name="action_search">@drawable/action_search_dark</item>
 		<item name="action_settings">@drawable/action_settings_dark</item>
 		<item name="border_color">?android:attr/colorActivatedHighlight</item>
+		<item name="overlay_background">@drawable/overlay_background</item>
+		<item name="overlay_exit">@drawable/action_exit_dark</item>
 		<item name="style_progress_bar">@android:style/Widget.Holo.ProgressBar.Horizontal</item>
 	</style>
 	<style name="mCubedTheme.Light" parent="@android:style/Theme.Holo.Light">
@@ -24,7 +26,14 @@
 		<item name="action_search">@drawable/action_search_light</item>
 		<item name="action_settings">@drawable/action_settings_light</item>
 		<item name="border_color">?android:attr/colorActivatedHighlight</item>
+		<item name="overlay_background">@drawable/overlay_background_light</item>
+		<item name="overlay_exit">@drawable/action_exit_light</item>
 		<item name="style_progress_bar">@android:style/Widget.Holo.Light.ProgressBar.Horizontal</item>
+	</style>
+	<style name="mCubedTheme.Light.Translucent" parent="@style/mCubedTheme.Light">
+		<item name="android:windowIsTranslucent">true</item>
+		<item name="android:windowNoTitle">true</item>
+		<item name="android:windowBackground">@android:color/transparent</item>
 	</style>
 	<style name="MediaFileGroupDivider" parent="@style/Divider">
 		<item name="android:layout_height">2dp</item>

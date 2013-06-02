@@ -11,9 +11,17 @@
 		<item name="action_search">@drawable/action_search_light</item>
 		<item name="action_settings">@drawable/action_settings_light</item>
 		<item name="border_color">#FFFFFF</item>
+		<item name="overlay_background">@drawable/overlay_background</item>
+		<item name="overlay_exit">@drawable/action_exit_dark</item>
 		<item name="style_progress_bar">@android:style/Widget.ProgressBar.Horizontal</item>
 	</style>
+	<style name="mCubedTheme.Translucent" parent="@style/mCubedTheme">
+		<item name="android:windowIsTranslucent">true</item>
+		<item name="android:windowNoTitle">true</item>
+		<item name="android:windowBackground">@android:color/transparent</item>
+	</style>
 	<style name="mCubedTheme.Light" parent="@style/mCubedTheme" />
+	<style name="mCubedTheme.Light.Translucent" parent="@style/mCubedTheme.Translucent" />
 	<style name="Divider">
 		<item name="android:layout_width">fill_parent</item>
 		<item name="android:background">?attr/border_color</item>

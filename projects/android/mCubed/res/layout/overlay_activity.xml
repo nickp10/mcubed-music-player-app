@@ -9,7 +9,7 @@
 	<LinearLayout
 		android:layout_height="fill_parent"
 		android:layout_width="fill_parent"
-		android:background="@drawable/oa_background"
+		android:background="?attr/overlay_background"
 		android:orientation="vertical">
 		<fragment android:name="dev.paddock.adp.mCubed.controls.NowPlayingView"
 			android:layout_height="0dp"
@@ -29,7 +29,7 @@
 		android:layout_marginRight="5dp"
 		android:layout_gravity="right"
 		android:contentDescription="@string/button_close_content"
-		android:src="@android:drawable/ic_menu_close_clear_cancel"
+		android:src="?attr/overlay_exit"
 		android:id="@+id/oa_close_button" />
 	<dev.paddock.adp.mCubed.controls.MountDisplay
 		android:layout_height="fill_parent"
