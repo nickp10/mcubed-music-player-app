@@ -49,9 +49,9 @@ public class AboutActivity extends Activity implements IActivity {
 	
 	@Override
 	public List<Integer> getMenuOptions() {
-		return Arrays.asList(Schema.MN_NOWPLAYING, Schema.MN_PLAYALL,
-				Schema.MN_SETTINGS, Schema.MN_LIBRARY, Schema.MN_EXIT,
-				Schema.MN_FEEDBACK, Schema.MN_HELP);
+		return Arrays.asList(Schema.MN_NOWPLAYING, Schema.MN_LIBRARY,
+				Schema.MN_PLAYALL, Schema.MN_SETTINGS, Schema.MN_FEEDBACK,
+				Schema.MN_HELP, Schema.MN_EXIT);
 	}
 
 	@Override

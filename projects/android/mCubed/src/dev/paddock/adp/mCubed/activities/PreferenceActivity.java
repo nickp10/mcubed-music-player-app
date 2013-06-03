@@ -1,5 +1,6 @@
 package dev.paddock.adp.mCubed.activities;
 
+import java.util.Arrays;
 import java.util.List;
 
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.view.Menu;
 import android.view.MenuItem;
 import dev.paddock.adp.mCubed.R;
+import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.preferences.NotificationVisibility;
 import dev.paddock.adp.mCubed.preferences.PlayModeEnum;
 import dev.paddock.adp.mCubed.preferences.PlaybackAction;
@@ -51,7 +53,9 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 	
 	@Override
 	public List<Integer> getMenuOptions() {
-		return null;
+		return Arrays.asList(Schema.MN_NOWPLAYING, Schema.MN_LIBRARY,
+				Schema.MN_PLAYALL, Schema.MN_ABOUT, Schema.MN_FEEDBACK,
+				Schema.MN_HELP, Schema.MN_EXIT);
 	}
 
 	@Override

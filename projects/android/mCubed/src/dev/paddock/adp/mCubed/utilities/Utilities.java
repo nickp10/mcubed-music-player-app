@@ -19,6 +19,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Resources.Theme;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -27,6 +28,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.util.TypedValue;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.model.AsyncTask;
 import dev.paddock.adp.mCubed.model.PublishProgress;
@@ -336,6 +338,19 @@ public class Utilities {
 				}
 			}
 		}
+	}
+	
+	public static int resolveAttribute(int attribute) {
+		Context context = Utilities.getContext();
+		if (context != null) {
+			Theme theme = context.getTheme();
+			if (theme != null) {
+				TypedValue value = new TypedValue();
+				theme.resolveAttribute(attribute, value, true);
+				return value.resourceId;
+			}
+		}
+		return 0;
 	}
 	
 	public static boolean appendToFile(String filename, String contents) {

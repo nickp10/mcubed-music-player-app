@@ -54,8 +54,8 @@ public class MediaFileDetailsActivity extends Activity implements IActivity {
 	@Override
 	public List<Integer> getMenuOptions() {
 		return Arrays.asList(Schema.MN_NOWPLAYING, Schema.MN_PLAYALL,
-				Schema.MN_SETTINGS, Schema.MN_HELP, Schema.MN_EXIT,
-				Schema.MN_ABOUT, Schema.MN_FEEDBACK);
+				Schema.MN_SETTINGS, Schema.MN_ABOUT, Schema.MN_FEEDBACK,
+				Schema.MN_HELP, Schema.MN_EXIT);
 	}
 
 	@Override
