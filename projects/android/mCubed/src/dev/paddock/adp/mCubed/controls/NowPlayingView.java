@@ -60,7 +60,9 @@ public class NowPlayingView extends Fragment implements IProvideClientReceiver {
 	}
 
 	private void updateViews() {
-		mediaFileView.setMediaFile(App.getPlayingMedia());
+		if (mediaFileView != null) {
+			mediaFileView.setMediaFile(App.getPlayingMedia());
+		}
 	}
 
 	@Override
