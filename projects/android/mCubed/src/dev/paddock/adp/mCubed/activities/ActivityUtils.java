@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.compatibility.ActivityCompat;
 import dev.paddock.adp.mCubed.listeners.MediaAssociateListener;
 import dev.paddock.adp.mCubed.receivers.ClientReceiver;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
@@ -26,6 +27,9 @@ public class ActivityUtils {
 		// Initialize the creation
 		Utilities.pushContext(activity);
 		try {
+			// Enable the back button on the action bar
+			ActivityCompat.getActionBar(activity).setDisplayHomeAsUpEnabled(true);
+			
 			// Set the content view and retrieve the views
 			int layoutID = activity.getLayoutID();
 			if (layoutID != 0) {
@@ -109,6 +113,10 @@ public class ActivityUtils {
 	public static <E extends Activity & IActivity> boolean onOptionsItemSelected(E activity, MenuItem item) {
 		Utilities.pushContext(activity);
 		try {
+			if (item.getItemId() == android.R.id.home) {
+				activity.onBackPressed();
+				return true;
+			}
 			return ActivityMenu.runMenuItem(activity, item.getItemId());
 		} finally {
 			Utilities.popContext();
