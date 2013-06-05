@@ -13,18 +13,18 @@ public class ActivityCompat {
 			getActionBarMethod = Activity.class.getMethod("getActionBar");
 			hasAPIs = true;
 		} catch (NoSuchMethodException e) {
-			// Silently fail when running on an OS before ICS.
+			// Silently fail when running on an OS before API 11.
 		}
 	}
 	
 	public static ActionBarCompat getActionBar(Activity activity) {
 		if (hasAPIs) {
 			try {
-				return new ActionBarCompat(true, getActionBarMethod.invoke(activity));
+				return new ActionBarCompat(getActionBarMethod.invoke(activity));
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		}
-		return new ActionBarCompat(false, null);
+		return new ActionBarCompat(null);
 	}
 }

@@ -4,14 +4,12 @@ import java.lang.reflect.Method;
 
 public class ActionBarCompat {
 	private Method setDisplayHomeAsUpEnabledMethod;
-	private boolean hasAPIs;
 	private Object actualActionBar;
 	
-	public ActionBarCompat(boolean hasAPIs, Object actionBar) {
-		this.hasAPIs = hasAPIs;
+	public ActionBarCompat(Object actionBar) {
 		actualActionBar = actionBar;
 		
-		if (hasAPIs && actionBar != null) {
+		if (actionBar != null) {
 			Class<?> actionBarClass = actionBar.getClass();
 			try {
 				setDisplayHomeAsUpEnabledMethod = actionBarClass.getMethod("setDisplayHomeAsUpEnabled", boolean.class);
@@ -22,7 +20,7 @@ public class ActionBarCompat {
 	}
 	
 	public void setDisplayHomeAsUpEnabled(boolean showHomeAsUp) {
-		if (hasAPIs) {
+		if (actualActionBar != null) {
 			try {
 				setDisplayHomeAsUpEnabledMethod.invoke(actualActionBar, showHomeAsUp);
 			} catch (Exception e) {
