@@ -10,6 +10,7 @@
 	<attr name="action_about" format="reference" />
 	<attr name="action_exit" format="reference" />
 	<attr name="action_feedback" format="reference" />
+	<attr name="action_fullscreen" format="reference" />
 	<attr name="action_help" format="reference" />
 	<attr name="action_library" format="reference" />
 	<attr name="action_nowplaying" format="reference" />
@@ -18,6 +19,7 @@
 	<attr name="action_settings" format="reference" />
 	<attr name="border_color" format="reference|color" />
 	<attr name="overlay_background" format="reference" />
+	<attr name="overlay_open" format="reference" />
 	<attr name="overlay_exit" format="reference" />
 	<attr name="style_progress_bar" format="reference" />
 </resources>

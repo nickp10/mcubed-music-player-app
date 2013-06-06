@@ -4,6 +4,7 @@
 		<item name="action_about">@drawable/action_about_light</item>
 		<item name="action_exit">@drawable/action_exit_light</item>
 		<item name="action_feedback">@drawable/action_feedback_light</item>
+		<item name="action_fullscreen">@drawable/action_fullscreen_light</item>
 		<item name="action_help">@drawable/action_help_light</item>
 		<item name="action_library">@drawable/action_library_light</item>
 		<item name="action_nowplaying">@drawable/action_nowplaying_light</item>
@@ -12,6 +13,7 @@
 		<item name="action_settings">@drawable/action_settings_light</item>
 		<item name="border_color">#FFFFFF</item>
 		<item name="overlay_background">@drawable/overlay_background</item>
+		<item name="overlay_open">@drawable/action_fullscreen_dark</item>
 		<item name="overlay_exit">@drawable/action_exit_dark</item>
 		<item name="style_progress_bar">@android:style/Widget.ProgressBar.Horizontal</item>
 	</style>

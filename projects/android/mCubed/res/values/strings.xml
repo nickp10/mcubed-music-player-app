@@ -35,6 +35,7 @@
 	<string name="button_action_content">Play/Pause</string>
 	<string name="button_close_content">Close</string>
 	<string name="button_next_content">Next</string>
+	<string name="button_open_content">Open</string>
 	<string name="button_prev_content">Previous</string>
 	<string name="cover_art_content">Cover Artwork</string>
 	<string name="dp_prompt">Select a Unit</string>

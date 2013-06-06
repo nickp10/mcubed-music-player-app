@@ -26,11 +26,14 @@
 				android:layout_marginBottom="5dp"
 				android:id="@+id/oa_player_controls" />
 		</LinearLayout>
-		<ImageView
-			android:layout_height="36dp"
-			android:layout_width="36dp"
-			android:layout_marginTop="5dp"
-			android:layout_marginRight="5dp"
+		<ImageButton
+			style="@style/OverlayActionButton"
+			android:layout_gravity="left"
+			android:contentDescription="@string/button_open_content"
+			android:src="?attr/overlay_open"
+			android:id="@+id/oa_open_button" />
+		<ImageButton
+			style="@style/OverlayActionButton"
 			android:layout_gravity="right"
 			android:contentDescription="@string/button_close_content"
 			android:src="?attr/overlay_exit"

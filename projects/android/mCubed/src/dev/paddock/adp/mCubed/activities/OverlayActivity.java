@@ -9,34 +9,35 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.controls.MountDisplay;
 import dev.paddock.adp.mCubed.controls.PlayerControls;
 import dev.paddock.adp.mCubed.controls.ProgressDisplay;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
+import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class OverlayActivity extends FragmentActivity implements IActivity {
-	private ImageView closeButton;
+	private ImageButton openButton, closeButton;
 	private PlayerControls playerControls;
 	private MountDisplay mountDisplay;
 	private ProgressDisplay progressDisplay;
 
-//	/**
-//	 * Click listener for the open button.
-//	 */
-//	private OnClickListener openClickListener = new OnClickListener() {
-//		@Override
-//		public void onClick(View v) {
-//			Utilities.pushContext(OverlayActivity.this);
-//			try {
-//				ActivityUtils.startMainActivity();
-//				OverlayActivity.this.finish();
-//			} finally {
-//				Utilities.popContext();
-//			}
-//		}
-//	};
+	/**
+	 * Click listener for the open button.
+	 */
+	private OnClickListener openClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			Utilities.pushContext(OverlayActivity.this);
+			try {
+				ActivityUtils.startActivity(NowPlayingActivity.class);
+				OverlayActivity.this.finish();
+			} finally {
+				Utilities.popContext();
+			}
+		}
+	};
 
 	/**
 	 * Click listener for the close button.
@@ -90,7 +91,8 @@ public class OverlayActivity extends FragmentActivity implements IActivity {
 
 	@Override
 	public void findViews() {
-		closeButton = (ImageView)findViewById(R.id.oa_close_button);
+		closeButton = (ImageButton)findViewById(R.id.oa_close_button);
+		openButton = (ImageButton)findViewById(R.id.oa_open_button);
 		playerControls = (PlayerControls)findViewById(R.id.oa_player_controls);
 		mountDisplay = (MountDisplay)findViewById(R.id.oa_mount_display);
 		progressDisplay = (ProgressDisplay)findViewById(R.id.oa_progress_display);
@@ -107,6 +109,7 @@ public class OverlayActivity extends FragmentActivity implements IActivity {
 	@Override
 	public void registerListeners() {
 		closeButton.setOnClickListener(closeClickListener);
+		openButton.setOnClickListener(openClickListener);
 	}
 
 	@Override
