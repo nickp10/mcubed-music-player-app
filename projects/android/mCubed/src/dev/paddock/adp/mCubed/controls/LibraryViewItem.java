@@ -1,5 +1,6 @@
 package dev.paddock.adp.mCubed.controls;
 
+import android.net.Uri;
 import android.view.ContextMenu;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,15 +12,18 @@ import dev.paddock.adp.mCubed.activities.MediaFileDetailsActivity;
 import dev.paddock.adp.mCubed.activities.MediaFileListActivity;
 import dev.paddock.adp.mCubed.lists.IViewItem;
 import dev.paddock.adp.mCubed.model.Composite;
+import dev.paddock.adp.mCubed.model.DelayedTask;
 import dev.paddock.adp.mCubed.model.ListAction;
 import dev.paddock.adp.mCubed.model.MediaFile;
 import dev.paddock.adp.mCubed.model.MediaGroup;
 import dev.paddock.adp.mCubed.model.MediaGrouping;
 import dev.paddock.adp.mCubed.utilities.App;
 
-public class LibraryViewItem implements IViewItem<MediaGrouping> {
+public class LibraryViewItem implements IViewItem<MediaGrouping>, Runnable {
 	private TextView textView;
 	private ImageView coverView;
+	private DelayedTask coverTask;
+	private Uri coverUri;
 	
 	@Override
 	public void findViews(View rootView) {
@@ -31,10 +35,20 @@ public class LibraryViewItem implements IViewItem<MediaGrouping> {
 	public void updateViews(MediaGrouping item) {
 		textView.setText(item.getName());
 		if (item.getGroup() == MediaGroup.Album) {
-			coverView.setImageURI(item.getAlbumArt());
+			if (coverTask != null) {
+				coverTask.cancel(false);
+			}
+			coverUri = item.getAlbumArt();
+			coverView.setImageURI(null);
+			coverTask = new DelayedTask(coverView.getContext(), this, 750);
 		} else {
 			coverView.setVisibility(View.GONE);
 		}
+	}
+	
+	@Override
+	public void run() {
+		coverView.setImageURI(coverUri);
 	}
 
 	@Override
