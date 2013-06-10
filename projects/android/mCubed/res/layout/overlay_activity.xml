@@ -19,6 +19,7 @@
 				android:layout_height="0dp"
 				android:layout_width="fill_parent"
 				android:layout_weight="1"
+				android:layout_marginTop="2dp"
 				android:id="@+id/oa_now_playing_view" />
 			<dev.paddock.adp.mCubed.controls.PlayerControls
 				android:layout_height="wrap_content"

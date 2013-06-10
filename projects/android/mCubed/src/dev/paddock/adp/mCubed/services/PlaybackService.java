@@ -15,14 +15,15 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.activities.LibraryActivity;
 import dev.paddock.adp.mCubed.activities.OverlayActivity;
+import dev.paddock.adp.mCubed.listeners.HeadsetListener;
 import dev.paddock.adp.mCubed.listeners.IListener;
 import dev.paddock.adp.mCubed.listeners.MediaAssociateListener;
 import dev.paddock.adp.mCubed.listeners.MountListener;
-import dev.paddock.adp.mCubed.listeners.HeadsetListener;
 import dev.paddock.adp.mCubed.listeners.PhoneStateListener;
 import dev.paddock.adp.mCubed.model.AudioFocusState;
 import dev.paddock.adp.mCubed.model.MediaFile;
@@ -112,7 +113,7 @@ public class PlaybackService extends Service {
 			
 			// Setup the notification
 			cancelNotification(null);
-			updateNotification(true);
+			updateNotification();
 			
 			// Setup other preferences
 			updatePlayMode();
@@ -170,18 +171,13 @@ public class PlaybackService extends Service {
 		manager.cancel(Schema.TAG, Schema.NOTIF_PLAYING_MEDIA);
 	}
 	
-	private void updateNotification(boolean doTicker) {
+	private void updateNotification() {
 		// Grab some data
 		NotificationManager manager = App.getSystemService(NotificationManager.class, NOTIFICATION_SERVICE);
 		NotificationVisibility visibility = PreferenceManager.getSettingEnum(NotificationVisibility.class, R.string.pref_notification_visibility);
 		MediaFile media = App.getPlayingMedia();
 		boolean isPlaying = App.getPlayer().isPlaying();
-		
-		// Cancel the existing one to signal the ticker
-		if (doTicker) {
-			cancelNotification(manager);
-		}
-		
+
 		// Make sure we have media
 		if (media == null) {
 			cancelNotification(manager);
@@ -213,14 +209,19 @@ public class PlaybackService extends Service {
 		// Setup the notification details
 		String title = media.getTitle();
 		String content = media.getArtist();
-		String ticker = content + " - " + title;
+		String ticker = String.format("%s - %s", content, title);
 		int icon = isPlaying ? R.drawable.notify_play : R.drawable.notify_pause;
 		
 		// Create and show the notification
-		Notification notification = new Notification(icon, ticker, System.currentTimeMillis());
-		notification.setLatestEventInfo(this, title, content, pendingIntent);
-		notification.flags |= Notification.FLAG_ONGOING_EVENT;
-		manager.notify(Schema.TAG, Schema.NOTIF_PLAYING_MEDIA, notification);
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(this).
+			setContentIntent(pendingIntent).
+			setContentText(content).
+			setContentTitle(title).
+			setOngoing(true).
+			setSmallIcon(icon).
+			setTicker(ticker).
+			setWhen(System.currentTimeMillis());
+		manager.notify(Schema.TAG, Schema.NOTIF_PLAYING_MEDIA, builder.build());
 	}
 	
 	private void updatePlayMode() {
@@ -271,9 +272,9 @@ public class PlaybackService extends Service {
 				@Override
 				public void preferenceChanged(int intentID, String preferenceName) {
 					if (preferenceName.equals(Utilities.getResourceString(R.string.pref_notification_visibility))) {
-						PlaybackService.this.updateNotification(false);
+						PlaybackService.this.updateNotification();
 					} else if (preferenceName.equals(Utilities.getResourceString(R.string.pref_open_overlay_player))) {
-						PlaybackService.this.updateNotification(false);
+						PlaybackService.this.updateNotification();
 					} else if (preferenceName.equals(Utilities.getResourceString(R.string.pref_play_mode))) {
 						PlaybackService.this.updatePlayMode();
 					} else if (preferenceName.equals(Utilities.getResourceString(R.string.pref_clear_queue_with_play_mode))) {
@@ -300,13 +301,13 @@ public class PlaybackService extends Service {
 				
 				@Override
 				public void propertyPlaybackIDChanged(long playbackID) {
-					PlaybackService.this.updateNotification(true);
+					PlaybackService.this.updateNotification();
 					RemoteControlReceiver.updateCurrentMetadata();
 				}
 				
 				@Override
 				public void propertyPlaybackStatusChanged(MediaStatus playbackStatus) {
-					PlaybackService.this.updateNotification(false);
+					PlaybackService.this.updateNotification();
 					RemoteControlReceiver.updatePlaybackState();
 				}
 			}, false);
