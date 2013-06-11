@@ -46,12 +46,10 @@ public class AboutActivity extends Activity implements IActivity {
 		return ActivityUtils.onOptionsItemSelected(this, item) ||
 				super.onOptionsItemSelected(item);
 	}
-	
+
 	@Override
 	public List<Integer> getMenuOptions() {
-		return Arrays.asList(Schema.MN_NOWPLAYING, Schema.MN_LIBRARY,
-				Schema.MN_PLAYALL, Schema.MN_SETTINGS, Schema.MN_FEEDBACK,
-				Schema.MN_HELP, Schema.MN_EXIT);
+		return ActivityUtils.getMenuOptions(Schema.MN_ABOUT);
 	}
 
 	@Override

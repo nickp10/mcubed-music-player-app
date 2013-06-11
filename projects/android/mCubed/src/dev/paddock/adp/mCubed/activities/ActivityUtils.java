@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -121,6 +122,43 @@ public class ActivityUtils {
 		} finally {
 			Utilities.popContext();
 		}
+	}
+
+	public static List<Integer> getMenuOptions(int exceptMenu) {
+		if (Build.VERSION.SDK_INT >= 11) {
+			return getMenuOptionsAPI11AndUp(exceptMenu);
+		} else {
+			return getMenuOptionsAPIBefore11(exceptMenu);
+		}
+	}
+
+	private static List<Integer> getMenuOptionsAPI11AndUp(int exceptMenu) {
+		List<Integer> options = new ArrayList<Integer>(Arrays.asList(
+			Schema.MN_NOWPLAYING, Schema.MN_LIBRARY, Schema.MN_PLAYALL,
+			Schema.MN_SETTINGS, Schema.MN_ABOUT, Schema.MN_FEEDBACK,
+			Schema.MN_HELP, Schema.MN_EXIT
+		));
+		options.remove(Integer.valueOf(exceptMenu));
+		return options;
+	}
+
+	private static List<Integer> getMenuOptionsAPIBefore11(int exceptMenu) {
+		List<Integer> options = null;
+		if (exceptMenu == Schema.MN_ABOUT || exceptMenu == Schema.MN_FEEDBACK || exceptMenu == Schema.MN_HELP) {
+			options = new ArrayList<Integer>(Arrays.asList(
+				Schema.MN_NOWPLAYING, Schema.MN_PLAYALL, Schema.MN_SETTINGS,
+				Schema.MN_LIBRARY, Schema.MN_EXIT, Schema.MN_ABOUT,
+				Schema.MN_FEEDBACK, Schema.MN_HELP
+			));
+		} else {
+			options = new ArrayList<Integer>(Arrays.asList(
+				Schema.MN_NOWPLAYING, Schema.MN_LIBRARY, Schema.MN_PLAYALL,
+				Schema.MN_SETTINGS, Schema.MN_HELP, Schema.MN_EXIT,
+				Schema.MN_ABOUT, Schema.MN_FEEDBACK
+			));
+		}
+		options.remove(Integer.valueOf(exceptMenu));
+		return options;
 	}
 
 	public static <E extends Activity> void startActivity(Class<E> clazz) {
