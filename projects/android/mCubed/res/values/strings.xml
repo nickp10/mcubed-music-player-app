@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">mCubed</string>
-	<string name="app_name_version">mCubed 1.02</string>
-	<string name="app_version">1.02</string>
+	<string name="app_name_version">mCubed 1.03</string>
+	<string name="app_version">1.03</string>
 	<string name="app_web_service">http://mcubed.dyndns.info/mCubedServices/</string>
 	<string name="app_widget_1x1">mCubed (1x1)</string>
 	<string name="app_widget_4x1">mCubed (4x1)</string>
@@ -13,6 +13,8 @@
 	<string name="about_changelog_label">Change Log:</string>
 	<string name="about_changelog_text"><![CDATA[
 		1.03\n
+		\t- Headset/headphone connection fixes\n
+		\t- Improved notification (for Android 3.0+)\n
 		\t- Updated UI (for Android 3.0+)\n
 		\t- Minor UI enhancements\n\n
 		1.02\n

@@ -209,23 +209,22 @@ public class App extends Application {
 	 * 
 	 * - From 1 to 2 -> No upgrade is needed.
 	 * - From 2 to 3 -> No upgrade is needed.
-	 * - From 3 to 4 -> ???.
+	 * - From 3 to 4 -> No upgrade is needed.
+	 * - From 4 to 5 -> ???.
+	 * - From 5 to 6 -> ???.
+	 * - From 6 to 7 -> ???.
 	 * @param originalVersion The version found in the user's settings.
 	 * @param currentVersion The current version that the user is running.
 	 */
 	private static void upgradeApp(int originalVersion, int currentVersion) {
-		// Upgrade version 1 to version 2.
-		if (originalVersion == 1) {
-			originalVersion++;
+		// Upgrade version 1 to version 4.
+		if (originalVersion <= 3) {
+			originalVersion = 4;
 		}
 		
-		// Update version 2 to version 3.
-		if (originalVersion == 2) {
-			originalVersion++;
-		}
-		
-		// Update version 3 to version 4.
-		//if (originalVersion == 2) {
+		// Update version 4 to version 5.
+		//if (originalVersion == 4) {
+		//	originalVersion++;
 		//}
 	}
 	
