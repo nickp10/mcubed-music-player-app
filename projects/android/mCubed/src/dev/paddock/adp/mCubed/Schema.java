@@ -122,10 +122,13 @@ public class Schema {
 	public static final String FILE_APP_STATE = "mCubedAppState.xml";
 	public static final String FILE_LOGS = "mCubedLogs.txt";
 	public static final String FILE_MOUNTS = "mCubedMounts.txt";
-	
+
 	/** NOTIFICATIONS SCHEMA **/
 	public static final int NOTIF_PLAYING_MEDIA = 1;
-	
+	public static final String NOTIF_PLAY_CLICK = PREFIX + "NOTIF_PLAY_CLICK";
+	public static final String NOTIF_PREV_CLICK = PREFIX + "NOTIF_PREV_CLICK";
+	public static final String NOTIF_NEXT_CLICK = PREFIX + "NOTIF_NEXT_CLICK";
+
 	/** WEB SERVICE SCHEMA **/
 	public static final int WS_TIMEOUT_MILLIS = 30000;
 	public static final String WS_METHOD_SUBMIT_FEEDBACK = "Feedback";

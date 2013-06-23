@@ -44,6 +44,8 @@
 			</intent-filter>
 		</receiver>
 
+		<receiver android:name=".receivers.NotificationReceiver" />
+
 		<receiver android:name=".widgets.Playback4x1Provider" android:label="@string/app_widget_4x1">
 			<intent-filter>
 				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

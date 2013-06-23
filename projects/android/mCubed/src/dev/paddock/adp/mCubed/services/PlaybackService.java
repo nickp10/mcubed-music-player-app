@@ -16,6 +16,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.widget.RemoteViews;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.activities.LibraryActivity;
@@ -36,6 +37,7 @@ import dev.paddock.adp.mCubed.receivers.HeadsetReceiver;
 import dev.paddock.adp.mCubed.receivers.IReceiver;
 import dev.paddock.adp.mCubed.receivers.PhoneStateReceiver;
 import dev.paddock.adp.mCubed.receivers.RemoteControlReceiver;
+import dev.paddock.adp.mCubed.receivers.NotificationReceiver;
 import dev.paddock.adp.mCubed.utilities.App;
 import dev.paddock.adp.mCubed.utilities.Log;
 import dev.paddock.adp.mCubed.utilities.PreferenceManager;
@@ -170,7 +172,7 @@ public class PlaybackService extends Service {
 		}
 		manager.cancel(Schema.TAG, Schema.NOTIF_PLAYING_MEDIA);
 	}
-	
+
 	private void updateNotification() {
 		// Grab some data
 		NotificationManager manager = App.getSystemService(NotificationManager.class, NOTIFICATION_SERVICE);
@@ -214,6 +216,7 @@ public class PlaybackService extends Service {
 		
 		// Create and show the notification
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(this).
+			setContent(createNotificationView(media)).
 			setContentIntent(pendingIntent).
 			setContentText(content).
 			setContentTitle(title).
@@ -223,7 +226,25 @@ public class PlaybackService extends Service {
 			setWhen(System.currentTimeMillis());
 		manager.notify(Schema.TAG, Schema.NOTIF_PLAYING_MEDIA, builder.build());
 	}
-	
+
+	private RemoteViews createNotificationView(MediaFile media) {
+		String info = String.format("\"%s\" by %s", media.getTitle(), media.getArtist());
+		RemoteViews view = new RemoteViews(getPackageName(), R.layout.notification);
+		view.setTextViewText(R.id.notif_playing_info, info);
+		view.setImageViewUri(R.id.notif_cover_image, media.getAlbumArt());
+		view.setImageViewResource(R.id.notif_play_button, App.isInitialized() && App.getPlayer().isPlaying() ? R.drawable.ic_media_pause : R.drawable.ic_media_play);
+		view.setOnClickPendingIntent(R.id.notif_next_button, generateNotificationClickIntent(Schema.NOTIF_NEXT_CLICK));
+		view.setOnClickPendingIntent(R.id.notif_prev_button, generateNotificationClickIntent(Schema.NOTIF_PREV_CLICK));
+		view.setOnClickPendingIntent(R.id.notif_play_button, generateNotificationClickIntent(Schema.NOTIF_PLAY_CLICK));
+		return view;
+	}
+
+	private PendingIntent generateNotificationClickIntent(String action) {
+		Intent intent = new Intent(this, NotificationReceiver.class);
+		intent.setAction(action);
+		return PendingIntent.getBroadcast(this, 0, intent, 0);
+	}
+
 	private void updatePlayMode() {
 		PlayModeEnum playMode = PreferenceManager.getSettingEnum(PlayModeEnum.class, R.string.pref_play_mode);
 		boolean clearQueue = PreferenceManager.getSettingBoolean(R.string.pref_clear_queue_with_play_mode);

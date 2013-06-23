@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent"
+	android:layout_width="fill_parent"
+	android:paddingLeft="5dp"
+	android:paddingRight="5dp"
+	android:orientation="horizontal">
+	<ImageView
+		android:layout_height="60dp"
+		android:layout_width="60dp"
+		android:layout_gravity="center_vertical"
+		android:contentDescription="@string/cover_art_content"
+		android:scaleType="centerInside"
+		android:id="@+id/notif_cover_image" />
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent"
+		android:layout_marginLeft="10dp"
+		android:layout_marginRight="10dp"
+		android:layout_gravity="center_vertical"
+		android:orientation="vertical">
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:layout_gravity="center_vertical"
+			android:gravity="center_horizontal"
+			android:ellipsize="marquee"
+			android:marqueeRepeatLimit="marquee_forever"
+			android:singleLine="true"
+			android:scrollHorizontally="true"
+			android:textIsSelectable="false"
+			android:textStyle="bold"
+			android:id="@+id/notif_playing_info">
+			<requestFocus/>
+		</TextView>
+		<LinearLayout
+			android:layout_height="fill_parent"
+			android:layout_width="fill_parent"
+			android:gravity="center_horizontal"
+			android:orientation="horizontal">
+			<ImageButton
+				style="@style/MediaButton"
+				android:contentDescription="@string/button_prev_content"
+				android:src="@drawable/ic_media_previous"
+				android:id="@+id/notif_prev_button" />
+			<ImageButton
+				style="@style/MediaButton"
+				android:layout_marginLeft="5dp"
+				android:layout_marginRight="5dp"
+				android:contentDescription="@string/button_action_content"
+				android:src="@drawable/ic_media_play"
+				android:id="@+id/notif_play_button" />
+			<ImageButton
+				style="@style/MediaButton"
+				android:contentDescription="@string/button_next_content"
+				android:src="@drawable/ic_media_next"
+				android:id="@+id/notif_next_button" />
+		</LinearLayout>
+	</LinearLayout>
+</LinearLayout>
