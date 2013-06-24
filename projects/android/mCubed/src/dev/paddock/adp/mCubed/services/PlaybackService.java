@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.net.Uri;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
@@ -230,8 +231,13 @@ public class PlaybackService extends Service {
 	private RemoteViews createNotificationView(MediaFile media) {
 		String info = String.format("\"%s\" by %s", media.getTitle(), media.getArtist());
 		RemoteViews view = new RemoteViews(getPackageName(), R.layout.notification);
+		Uri art = media.getAlbumArt();
+		if (art == null) {
+			view.setImageViewResource(R.id.notif_cover_image, R.drawable.img_cover_missing);
+		} else {
+			view.setImageViewUri(R.id.notif_cover_image, art);
+		}
 		view.setTextViewText(R.id.notif_playing_info, info);
-		view.setImageViewUri(R.id.notif_cover_image, media.getAlbumArt());
 		view.setImageViewResource(R.id.notif_play_button, App.isInitialized() && App.getPlayer().isPlaying() ? R.drawable.ic_media_pause : R.drawable.ic_media_play);
 		view.setOnClickPendingIntent(R.id.notif_next_button, generateNotificationClickIntent(Schema.NOTIF_NEXT_CLICK));
 		view.setOnClickPendingIntent(R.id.notif_prev_button, generateNotificationClickIntent(Schema.NOTIF_PREV_CLICK));
