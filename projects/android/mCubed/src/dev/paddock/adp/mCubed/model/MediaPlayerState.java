@@ -6,7 +6,8 @@ import dev.paddock.adp.mCubed.utilities.XMLNode;
 public class MediaPlayerState {
 	private int seek;
 	private MediaStatus status;
-	private boolean isSeekValueAcquired, isSeekLockAcquired, isStatusValueAcquired, isStatusLockAcquired;
+	private final boolean isSeekLockAcquired, isStatusLockAcquired;
+	private boolean isSeekValueAcquired, isStatusValueAcquired;
 	
 	public MediaPlayerState(int seek, boolean isSeekValueAcquired, boolean isSeekLockAcquired,
 			MediaStatus status, boolean isStatusValueAcquired, boolean isStatusLockAcquired) {
@@ -22,8 +23,16 @@ public class MediaPlayerState {
 		return seek;
 	}
 	
+	public void setSeek(int seek) {
+		this.seek = seek;
+	}
+	
 	public MediaStatus getStatus() {
 		return status;
+	}
+	
+	public void setStatus(MediaStatus status) {
+		this.status = status;
 	}
 	
 	public boolean isSeekValueAcquired() {
@@ -51,18 +60,25 @@ public class MediaPlayerState {
 	}
 	
 	public static MediaPlayerState fromXML(XMLNode node) {
-		XMLNode seekNode = node.getChildNode("Seek");
-		int seek = Utilities.parseInt(seekNode.getNodeText());
-		boolean isSeekLockAcquired = Boolean.parseBoolean(seekNode.getAttribute("Lock"));
-		boolean isSeekValueAcquired = Boolean.parseBoolean(seekNode.getAttribute("Acquired"));
-		XMLNode statusNode = node.getChildNode("Status");
-		String statusText = statusNode.getNodeText();
+		boolean isSeekLockAcquired = false, isSeekValueAcquired = false, isStatusLockAcquired = false, isStatusValueAcquired = false;
 		MediaStatus status = null;
-		if (!Utilities.isNullOrEmpty(statusText)) {
-			status = MediaStatus.valueOf(statusText);
+		int seek = 0;
+		
+		XMLNode seekNode = node.getChildNode("Seek");
+		if (seekNode != null) {
+			seek = Utilities.parseInt(seekNode.getNodeText());
+			isSeekLockAcquired = Boolean.parseBoolean(seekNode.getAttribute("Lock"));
+			isSeekValueAcquired = Boolean.parseBoolean(seekNode.getAttribute("Acquired"));
 		}
-		boolean isStatusLockAcquired = Boolean.parseBoolean(statusNode.getAttribute("Lock"));
-		boolean isStatusValueAcquired = Boolean.parseBoolean(statusNode.getAttribute("Acquired"));
+		XMLNode statusNode = node.getChildNode("Status");
+		if (statusNode != null) {
+			String statusText = statusNode.getNodeText();
+			if (!Utilities.isNullOrEmpty(statusText)) {
+				status = MediaStatus.valueOf(statusText);
+			}
+			isStatusLockAcquired = Boolean.parseBoolean(statusNode.getAttribute("Lock"));
+			isStatusValueAcquired = Boolean.parseBoolean(statusNode.getAttribute("Acquired"));
+		}
 		return new MediaPlayerState(seek, isSeekValueAcquired, isSeekLockAcquired, status, isStatusValueAcquired, isStatusLockAcquired);
 	}
 	
@@ -75,6 +91,7 @@ public class MediaPlayerState {
 		XMLNode statusNode = node.addChildNode("Status");
 		statusNode.setAttribute("Lock", Boolean.toString(isStatusLockAcquired()));
 		statusNode.setAttribute("Acquired", Boolean.toString(isStatusValueAcquired()));
+		MediaStatus status = getStatus();
 		if (status != null) {
 			statusNode.setNodeText(status.name());
 		}

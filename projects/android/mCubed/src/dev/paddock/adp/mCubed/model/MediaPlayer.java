@@ -1,5 +1,7 @@
 package dev.paddock.adp.mCubed.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -39,6 +41,7 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 	private final Lock write = lock.writeLock();
 	private android.media.MediaPlayer player;
 	private int currentState = STATE_DEFAULT, seekLockCount, statusLockCount;
+	private final List<MediaPlayerState> statusStates = new ArrayList<MediaPlayerState>();
 	private MediaPlayerState internalState;
 	private MediaFile mediaFile;
 	private MediaStatus status = MediaStatus.Pause;
@@ -276,15 +279,21 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 	}
 	
 	private void setStatus(MediaStatus status, boolean doSync) {
-		if (!isSetStatusLocked() && status != null && this.status != status) {
-			NotificationArgs args = new NotificationArgs(this, "Status", this.status, status);
-			PropertyManager.notifyPropertyChanging(args);
-			this.status = status;
-			if (doSync) {
-				syncStatus();
+		if (status != null) {
+			if (isSetStatusLocked()) {
+				for (MediaPlayerState statusState : statusStates) {
+					statusState.setStatus(status);
+				}
+			} else if (this.status != status) {
+				NotificationArgs args = new NotificationArgs(this, "Status", this.status, status);
+				PropertyManager.notifyPropertyChanging(args);
+				this.status = status;
+				if (doSync) {
+					syncStatus();
+				}
+				PlaybackServer.propertyChanged(0, Schema.PROP_PB_STATUS, this.status);
+				PropertyManager.notifyPropertyChanged(args);
 			}
-			PlaybackServer.propertyChanged(0, Schema.PROP_PB_STATUS, this.status);
-			PropertyManager.notifyPropertyChanged(args);
 		}
 	}
 	
@@ -433,13 +442,15 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 		if (doPause && this.status == MediaStatus.Play) {
 			pause();
 		}
+		MediaPlayerState state = new MediaPlayerState(seek, acquireSeek, lockSeek, status, acquireStatus, lockStatus);
 		if (lockSeek) {
 			seekLockCount++;
 		}
 		if (lockStatus) {
 			statusLockCount++;
+			statusStates.add(state);
 		}
-		return new MediaPlayerState(seek, acquireSeek, lockSeek, status, acquireStatus, lockStatus);
+		return state;
 	}
 	
 	public void setMediaPlayerState(MediaPlayerState state) {
@@ -448,6 +459,7 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 				seekLockCount--;
 			}
 			if (state.isStatusLockAcquired() && isSetStatusLocked()) {
+				statusStates.remove(state);
 				statusLockCount--;
 			}
 			if (state.isSeekValueAcquired()) {
