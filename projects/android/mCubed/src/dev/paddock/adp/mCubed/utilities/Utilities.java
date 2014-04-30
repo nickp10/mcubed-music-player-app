@@ -331,6 +331,8 @@ public class Utilities {
 				if (queryCursor != null && queryCursor.moveToFirst()) {
 					while(!cursor.run(queryCursor) && queryCursor.moveToNext());
 				}
+			} catch (SecurityException e) {
+				Log.e(e);
 			} finally {
 				// Make sure we close the cursor
 				if (queryCursor != null) {
