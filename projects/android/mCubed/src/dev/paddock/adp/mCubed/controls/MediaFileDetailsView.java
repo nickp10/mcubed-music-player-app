@@ -70,7 +70,11 @@ public class MediaFileDetailsView extends LinearLayout {
 			coverImageView.setImageURI(art);
 		}
 	}
-	
+
+	public MediaFile getMediaFile() {
+		return mediaFile;
+	}
+
 	public void setMediaFile(MediaFile mediaFile) {
 		if (this.mediaFile != mediaFile) {
 			this.mediaFile = mediaFile;

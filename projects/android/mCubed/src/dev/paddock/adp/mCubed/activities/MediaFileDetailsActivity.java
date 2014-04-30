@@ -96,4 +96,8 @@ public class MediaFileDetailsActivity extends Activity implements IActivity {
 	public List<IProvideClientReceiver> getClientReceivers() {
 		return Arrays.<IProvideClientReceiver>asList(mountDisplay, progressDisplay);
 	}
+
+	public MediaFile getMediaFile() {
+		return mediaFileView == null ? null : mediaFileView.getMediaFile();
+	}
 }

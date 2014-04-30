@@ -8,6 +8,8 @@ import android.view.MenuItem;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.model.Composite;
+import dev.paddock.adp.mCubed.model.IMediaFileProvider;
+import dev.paddock.adp.mCubed.model.MediaFile;
 import dev.paddock.adp.mCubed.model.MediaGroup;
 import dev.paddock.adp.mCubed.services.PlaybackClient;
 import dev.paddock.adp.mCubed.utilities.App;
@@ -31,6 +33,27 @@ public class ActivityMenu {
 		createMenuItem(Schema.MN_PLAYALL, "Play All", R.attr.action_playall, MenuItem.SHOW_AS_ACTION_IF_ROOM, new Action<Activity>() {
 			public void act(Activity activity) {
 				if (App.isInitialized() && App.isMounted()) {
+					// Handle playing a particular artist/album/genre/playlist
+					MediaFileListActivity fileList = Utilities.cast(MediaFileListActivity.class, activity);
+					if (fileList != null) {
+						IMediaFileProvider mediaFileProvider = fileList.getMediaFileProvider();
+						if (mediaFileProvider != null) {
+							App.getNowPlaying().playComposite(mediaFileProvider.createComposite());
+							return;
+						}
+					}
+					
+					// Handle playing a particular song
+					MediaFileDetailsActivity fileDetails = Utilities.cast(MediaFileDetailsActivity.class, activity);
+					if (fileDetails != null) {
+						MediaFile mediaFile = fileDetails.getMediaFile();
+						if (mediaFile != null) {
+							App.getNowPlaying().playFile(mediaFile);
+							return;
+						}
+					}
+					
+					// Otherwise, play everything
 					App.getNowPlaying().playComposite(new Composite(MediaGroup.All.getGrouping(0)));
 				}
 			}

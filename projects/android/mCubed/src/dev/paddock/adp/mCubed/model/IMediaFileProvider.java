@@ -4,4 +4,5 @@ import java.util.List;
 
 public interface IMediaFileProvider {
 	List<MediaFile> getMediaFiles();
+	Composite createComposite();
 }

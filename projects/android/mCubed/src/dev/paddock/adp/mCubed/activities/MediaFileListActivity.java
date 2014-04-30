@@ -20,7 +20,7 @@ public class MediaFileListActivity extends Activity implements IActivity {
 	private MediaFileListView mediaFileView;
 	private MountDisplay mountDisplay;
 	private ProgressDisplay progressDisplay;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -90,5 +90,9 @@ public class MediaFileListActivity extends Activity implements IActivity {
 	@Override
 	public List<IProvideClientReceiver> getClientReceivers() {
 		return Arrays.<IProvideClientReceiver>asList(mountDisplay, progressDisplay);
+	}
+
+	public IMediaFileProvider getMediaFileProvider() {
+		return mediaFileView == null ? null : mediaFileView.getMediaFileProvider();
 	}
 }

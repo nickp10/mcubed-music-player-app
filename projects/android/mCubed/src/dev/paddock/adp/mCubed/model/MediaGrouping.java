@@ -21,7 +21,11 @@ public class MediaGrouping implements IMediaFileProvider, Serializable {
 		this.id = id;
 		this.name = name;
 	}
-	
+
+	public Composite createComposite() {
+		return new Composite(this);
+	}
+
 	public List<MediaFile> getMediaFiles() {
 		return getMediaFiles(null, null);
 	}
