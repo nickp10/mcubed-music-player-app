@@ -33,7 +33,7 @@ public class BluetoothPreferences {
 		Context context = Utilities.getContext();
 		BluetoothDevice device = HeadsetReceiver.getLastDevice();
 		String useDefaultsKey = getDeviceString(context, device, R.string.pref_bluetooth_defaults);
-		if (PreferenceManager.getSettingBoolean(useDefaultsKey)) {
+		if (PreferenceManager.getSetting(Boolean.class, useDefaultsKey, true)) {
 			return PreferenceManager.getSettingEnum(PlaybackAction.class, resource);
 		}
 		String resourceKey = getDeviceString(context, device, resource);
