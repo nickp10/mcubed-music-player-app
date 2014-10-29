@@ -2,71 +2,76 @@
 <PreferenceScreen
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:custom="http://schemas.android.com/apk/res/dev.paddock.adp.mCubed">
-	<PreferenceCategory android:title="Playback Settings">
-		<ListPreference android:title="Repeat Status"
-			android:summary="Specifies the status of the repeat action, whether it be repeating the playlist, the song, or no repeat."
+	<PreferenceScreen android:title="@string/pref_playback_screen_title"
+		android:summary="@string/pref_playback_screen_summary"
+		android:key="@string/pref_playback_screen">
+		<ListPreference android:title="@string/pref_repeat_status_title"
+			android:summary="@string/pref_repeat_status_summary"
 			android:key="@string/pref_repeat_status" />
-		<ListPreference android:title="Play Mode"
-			android:summary="Specifies how to play media in the playlist. Persisted shuffle is guaranteed to NEVER repeat a song until all songs have been played."
+		<ListPreference android:title="@string/pref_play_mode_title"
+			android:summary="@string/pref_play_mode_summary"
 			android:key="@string/pref_play_mode" />
-		<CheckBoxPreference android:title="Play Mode Clears Queue"
-			android:summary="Determines whether or not the queue of upcoming songs in the playlist should be cleared when the play mode option changes."
+		<CheckBoxPreference android:title="@string/pref_clear_queue_with_play_mode_title"
+			android:summary="@string/pref_clear_queue_with_play_mode_summary"
 			android:key="@string/pref_clear_queue_with_play_mode" />
-		<ListPreference android:title="Previous Button Action"
-			android:summary="The 'Smart' option will restart the current song or play the previous song depending on how much of the song has played."
+		<ListPreference android:title="@string/pref_previous_action_title"
+			android:summary="@string/pref_previous_action_summary"
 			android:key="@string/pref_previous_action" />
-		<dev.paddock.adp.mCubed.preferences.DimensionPreference android:title="Previous Smart Condition"
-			android:summary="Specifies the condition of how much the current song must have played before the previous button will instead restart the song."
+		<dev.paddock.adp.mCubed.preferences.DimensionPreference android:title="@string/pref_previous_smart_condition_title"
+			android:summary="@string/pref_previous_smart_condition_summary"
 			android:key="@string/pref_previous_smart_condition"
 			custom:dimensions="%,%,0,100;s,Seconds,0,999" />
-		<CheckBoxPreference android:title="Light Up Screen"
-			android:summary="Determines whether or not the screen should light up when a song changes, only if the screen isn't already lit up."
-			android:key="@string/pref_light_up_screen" />
-	</PreferenceCategory>
-	<PreferenceCategory android:title="Notification Settings">
-		<ListPreference android:title="Notification Visibility"
-			android:summary="Determines when the notification icon should be displayed."
-			android:key="@string/pref_notification_visibility" />
-		<CheckBoxPreference android:title="Open Overlay Player"
-			android:summary="Determines whether or not a mini-player will overlay the current application when the notification icon is clicked."
-			android:key="@string/pref_open_overlay_player" />
-	</PreferenceCategory>
-	<PreferenceCategory android:title="Headphone/Auxiliary Settings">
-		<ListPreference android:title="Headphone Connected"
-			android:summary="Determines the action that will occur when headphones/auxiliary devices are connected to the 3.5mm jack."
+	</PreferenceScreen>
+	<PreferenceScreen android:title="@string/pref_bluetooth_screen_title"
+		android:summary="@string/pref_bluetooth_screen_summary"
+		android:key="@string/pref_bluetooth_screen" />
+	<PreferenceScreen android:title="@string/pref_headphones_screen_title"
+		android:summary="@string/pref_headphones_screen_summary"
+		android:key="@string/pref_headphones_screen">
+		<ListPreference android:title="@string/pref_headphones_connected_title"
+			android:summary="@string/pref_headphones_connected_summary"
 			android:key="@string/pref_headphones_connected" />
-		<ListPreference android:title="Headphone Disconnected"
-			android:summary="Determines the action that will occur when headphones/auxiliary devices are disconnected from the 3.5mm jack."
+		<ListPreference android:title="@string/pref_headphones_disconnected_title"
+			android:summary="@string/pref_headphones_disconnected_summary"
 			android:key="@string/pref_headphones_disconnected" />
-	</PreferenceCategory>
-	<PreferenceCategory android:title="Headset/Bluetooth Settings">
-		<ListPreference android:title="Headset Connected"
-			android:summary="Determines the action that will occur when headsets/bluetooth devices are paired and connected."
-			android:key="@string/pref_bluetooth_connected" />
-		<ListPreference android:title="Headset Disconnected"
-			android:summary="Determines the action that will occur when headsets/bluetooth devices are unpaired or disconnected."
-			android:key="@string/pref_bluetooth_disconnected" />
-	</PreferenceCategory>
-	<PreferenceCategory android:title="Volume Settings">
-		<dev.paddock.adp.mCubed.preferences.SeekBarPreference android:title="Speaker Volume"
-			android:summary="Specifies what the media volume will be set to if headsets/headphones are disconnected. Disabled doesn't update the volume."
+	</PreferenceScreen>
+	<PreferenceScreen android:title="@string/pref_notification_screen_title"
+		android:summary="@string/pref_notification_screen_summary"
+		android:key="@string/pref_notification_screen">
+		<CheckBoxPreference android:title="@string/pref_light_up_screen_title"
+			android:summary="@string/pref_light_up_screen_summary"
+			android:key="@string/pref_light_up_screen" />
+		<ListPreference android:title="@string/pref_notification_visibility_title"
+			android:summary="@string/pref_notification_visibility_summary"
+			android:key="@string/pref_notification_visibility" />
+		<CheckBoxPreference android:title="@string/pref_open_overlay_player_title"
+			android:summary="@string/pref_open_overlay_player_summary"
+			android:key="@string/pref_open_overlay_player" />
+	</PreferenceScreen>
+	<PreferenceScreen android:title="@string/pref_volume_screen_title"
+		android:summary="@string/pref_volume_screen_summary"
+		android:key="@string/pref_volume_screen">
+		<dev.paddock.adp.mCubed.preferences.SeekBarPreference android:title="@string/pref_volume_speaker_title"
+			android:summary="@string/pref_volume_speaker_summary"
 			android:key="@string/pref_volume_speaker"
 			custom:units="%" />
-		<dev.paddock.adp.mCubed.preferences.SeekBarPreference android:title="Headphone Volume"
-			android:summary="Specifies what the media volume will be set to if headphones/auxiliary devices are connected. Disabled doesn't update the volume."
+		<dev.paddock.adp.mCubed.preferences.SeekBarPreference android:title="@string/pref_volume_headphones_title"
+			android:summary="@string/pref_volume_headphones_summary"
 			android:key="@string/pref_volume_headphones"
 			custom:units="%" />
-		<dev.paddock.adp.mCubed.preferences.SeekBarPreference android:title="Bluetooth Volume"
-			android:summary="Specifies what the media volume will be set to if headsets/bluetooth devices are connected. Disabled doesn't update the volume."
+		<dev.paddock.adp.mCubed.preferences.SeekBarPreference android:title="@string/pref_volume_bluetooth_title"
+			android:summary="@string/pref_volume_bluetooth_summary"
 			android:key="@string/pref_volume_bluetooth"
 			custom:units="%" />
-	</PreferenceCategory>
-	<PreferenceCategory android:title="Advanced Settings">
-		<CheckBoxPreference android:title="Record Logs"
-			android:summary="Determines whether or not error logs are automatically recorded. It is STRONGLY recommended that this remains enabled."
+	</PreferenceScreen>
+	<PreferenceScreen android:title="@string/pref_advanced_screen_title"
+		android:summary="@string/pref_advanced_screen_summary"
+		android:key="@string/pref_advanced_screen">
+		<CheckBoxPreference android:title="@string/pref_record_logs_title"
+			android:summary="@string/pref_record_logs_summary"
 			android:key="@string/pref_record_logs" />
-		<CheckBoxPreference android:title="Resume Automatically"
-			android:summary="Determines whether or not playback will resume after it was automatically paused for an event (phone calls, SD card mounting, exiting mCubed, etc.)."
+		<CheckBoxPreference android:title="@string/pref_resume_automatically_title"
+			android:summary="@string/pref_resume_automatically_summary"
 			android:key="@string/pref_resume_automatically" />
-	</PreferenceCategory>
+	</PreferenceScreen>
 </PreferenceScreen>

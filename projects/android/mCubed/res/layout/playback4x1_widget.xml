@@ -19,7 +19,7 @@
 			android:layout_gravity="center_vertical"
 			android:layout_marginLeft="10dp"
 			android:contentDescription="@string/cover_art_content"
-			android:scaleType="centerInside"
+			android:scaleType="fitCenter"
 			android:id="@+id/w41_cover_image" />
 		<LinearLayout
 			android:layout_height="wrap_content"

@@ -76,7 +76,7 @@ public class NowPlayingActivity extends FragmentActivity implements IActivity {
 
 	@Override
 	public void setupViews() {
-		tabHost.setup(this, getSupportFragmentManager(), R.id.npa_tabcontent);
+		tabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
 		createTabSpec("Now Playing", NowPlayingView.class, null);
 		createTabSpec("History", PlaylistView.class, createBundle(true));
 		createTabSpec("Queue", PlaylistView.class, createBundle(false));

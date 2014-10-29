@@ -2,22 +2,30 @@ package dev.paddock.adp.mCubed.activities;
 
 import java.util.List;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.PreferenceCategory;
+import android.preference.PreferenceScreen;
 import android.view.Menu;
 import android.view.MenuItem;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.model.NotificationArgs;
 import dev.paddock.adp.mCubed.preferences.NotificationVisibility;
 import dev.paddock.adp.mCubed.preferences.PlayModeEnum;
 import dev.paddock.adp.mCubed.preferences.PlaybackAction;
 import dev.paddock.adp.mCubed.preferences.PreferenceEnum;
 import dev.paddock.adp.mCubed.preferences.PreviousAction;
 import dev.paddock.adp.mCubed.preferences.RepeatStatus;
+import dev.paddock.adp.mCubed.receivers.HeadsetReceiver;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
+import dev.paddock.adp.mCubed.utilities.INotifyListener;
 import dev.paddock.adp.mCubed.utilities.PreferenceManager;
+import dev.paddock.adp.mCubed.utilities.PropertyManager;
 
 public class PreferenceActivity extends android.preference.PreferenceActivity implements IActivity {	
 	@Override
@@ -74,6 +82,8 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 		PreferenceManager.setupDefaults();
 		addPreferencesFromResource(R.xml.preferences);
 		
+		setupBluetoothPreferences();
+		
 		// Get the previous smart condition preference
 		String preferenceKey = getString(R.string.pref_previous_smart_condition);
 		final Preference smartConditionPref = findPreference(preferenceKey);
@@ -113,8 +123,59 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 		setListPreferences(R.string.pref_bluetooth_disconnected, PlaybackAction.values());
 	}
 
+	private void setupBluetoothPreferences() {
+		// Add a preference screen for each bluetooth device
+		final BluetoothPreferences bluetoothPreferences = new BluetoothPreferences(this);
+		final PreferenceScreen bluetoothScreen = (PreferenceScreen)findPreference(getString(R.string.pref_bluetooth_screen));
+		final PreferenceCategory bluetoothDeviceCategory = new PreferenceCategory(this);
+		bluetoothDeviceCategory.setTitle(R.string.pref_bluetooth_device_category_title);
+		bluetoothScreen.removeAll();
+		bluetoothScreen.addPreference(bluetoothDeviceCategory);
+		if (HeadsetReceiver.isBluetoothOn()) {
+			for (BluetoothDevice device : BluetoothAdapter.getDefaultAdapter().getBondedDevices()) {
+				// Setup the default preferences
+				bluetoothPreferences.setupDefaults(device);
+	
+				// Create a screen for the bluetooth device
+				PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(this);
+				screen.setTitle(device.getName());
+				bluetoothDeviceCategory.addPreference(screen);
+	
+				// Add the default checkbox preference
+				Preference defaultPreference = bluetoothPreferences.createDefaultPreference(device);
+				screen.addPreference(defaultPreference);
+	
+				// Add each bluetooth preference
+				for (Preference preference : bluetoothPreferences.createBluetoothPreferences(device)) {
+					screen.addPreference(preference);
+					preference.setDependency(defaultPreference.getKey());
+				}
+			}
+		} else {
+			bluetoothScreen.addPreference(bluetoothPreferences.createBluetoothSwitchPreference());
+		}
+		
+		// Add each bluetooth preference for the default settings
+		final PreferenceCategory bluetoothDefaultsCategory = new PreferenceCategory(this);
+		bluetoothDefaultsCategory.setTitle(R.string.pref_bluetooth_defaults_category_title);
+		bluetoothScreen.addPreference(bluetoothDefaultsCategory);
+		for (Preference preference : bluetoothPreferences.createBluetoothPreferences()) {
+			bluetoothDefaultsCategory.addPreference(preference);
+		}
+	}
+
 	@Override
 	public void registerListeners() {
+		PropertyManager.register(HeadsetReceiver.class, "BluetoothOn", new INotifyListener() {
+			
+			@Override
+			public void propertyChanging(Object instance, NotificationArgs args) { }
+			
+			@Override
+			public void propertyChanged(Object instance, NotificationArgs args) {
+				PreferenceActivity.this.setupBluetoothPreferences();
+			}
+		});
 	}
 
 	@Override
@@ -130,7 +191,10 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 		// Get the list preference view
 		String preferenceKey = getString(preferenceResource);
 		ListPreference list = (ListPreference)findPreference(preferenceKey);
-		
+		setListPreferences(list, enumValues);
+	}
+
+	public <T extends Enum<T> & PreferenceEnum.IPreference> void setListPreferences(ListPreference list, T[] enumValues) {
 		// Get the options
 		String[] entryKeys = new String[enumValues.length];
 		String[] entryValues = new String[enumValues.length];

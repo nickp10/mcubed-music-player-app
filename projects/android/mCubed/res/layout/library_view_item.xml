@@ -16,7 +16,7 @@
 			android:layout_marginRight="10dp"
 			android:layout_gravity="center_vertical"
 			android:contentDescription="@string/cover_art_content"
-			android:scaleType="centerInside"
+			android:scaleType="fitCenter"
 			android:id="@+id/lvi_cover_image" />
 	</LinearLayout>
 	<TextView

@@ -73,7 +73,7 @@ public class LibraryActivity extends FragmentActivity implements IActivity {
 
 	@Override
 	public void setupViews() {
-		tabHost.setup(this, getSupportFragmentManager(), R.id.la_tabcontent);
+		tabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
 		createTabSpec("Artists", MediaGroup.Artist);
 		createTabSpec("Albums", MediaGroup.Album);
 		createTabSpec("Genres", MediaGroup.Genre);

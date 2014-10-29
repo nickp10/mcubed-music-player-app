@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.activities.BluetoothPreferences;
 import dev.paddock.adp.mCubed.model.DelayedTask;
 import dev.paddock.adp.mCubed.model.NotificationArgs;
 import dev.paddock.adp.mCubed.model.OutputMode;
@@ -66,9 +67,9 @@ public class HeadsetListener implements IListener {
 		// Retrieve the action
 		PlaybackAction action = null;
 		if (HeadsetReceiver.isBluetoothConnected()) {
-			action = PreferenceManager.getSettingEnum(PlaybackAction.class, R.string.pref_bluetooth_connected);
+			action = BluetoothPreferences.getAction(R.string.pref_bluetooth_connected);
 		} else {
-			action = PreferenceManager.getSettingEnum(PlaybackAction.class, R.string.pref_bluetooth_disconnected);
+			action = BluetoothPreferences.getAction(R.string.pref_bluetooth_disconnected);
 		}
 		
 		// Perform the appropriate action
