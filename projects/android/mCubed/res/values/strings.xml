@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">mCubed</string>
-	<string name="app_name_version">mCubed 1.03.1</string>
-	<string name="app_version">1.03.1</string>
+	<string name="app_name_version">mCubed 1.04</string>
+	<string name="app_version">1.04</string>
 	<string name="app_web_service">http://mcubed.dyndns.info/mCubedServices/</string>
 	<string name="app_widget_1x1">mCubed (1x1)</string>
 	<string name="app_widget_4x1">mCubed (4x1)</string>
@@ -12,6 +12,11 @@
 	<string name="about_website_text">http://mcubed.dyndns.info/</string>
 	<string name="about_changelog_label">Change Log:</string>
 	<string name="about_changelog_text"><![CDATA[
+		1.04\n
+		\t- Added Bluetooth device specific settings\n\n
+		\t- Fixed SD card permission issue\n\n
+		\t- Improved automatically resume feature\n\n
+		\t- Removed ongoing \"mCubed is Running\" notification\n\n
 		1.03.1\n
 		\t- Critical fix for force close due to the new notification\n\n
 		1.03\n
