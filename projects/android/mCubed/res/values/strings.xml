@@ -13,9 +13,9 @@
 	<string name="about_changelog_label">Change Log:</string>
 	<string name="about_changelog_text"><![CDATA[
 		1.04\n
-		\t- Added Bluetooth device specific settings\n\n
-		\t- Fixed SD card permission issue\n\n
-		\t- Improved automatically resume feature\n\n
+		\t- Added Bluetooth device specific settings\n
+		\t- Fixed SD card permission issue\n
+		\t- Improved automatically resume feature\n
 		\t- Removed ongoing \"mCubed is Running\" notification\n\n
 		1.03.1\n
 		\t- Critical fix for force close due to the new notification\n\n
