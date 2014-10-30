@@ -5,8 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -36,9 +34,9 @@ import dev.paddock.adp.mCubed.preferences.PlayModeEnum;
 import dev.paddock.adp.mCubed.receivers.ClientReceiver;
 import dev.paddock.adp.mCubed.receivers.HeadsetReceiver;
 import dev.paddock.adp.mCubed.receivers.IReceiver;
+import dev.paddock.adp.mCubed.receivers.NotificationReceiver;
 import dev.paddock.adp.mCubed.receivers.PhoneStateReceiver;
 import dev.paddock.adp.mCubed.receivers.RemoteControlReceiver;
-import dev.paddock.adp.mCubed.receivers.NotificationReceiver;
 import dev.paddock.adp.mCubed.utilities.App;
 import dev.paddock.adp.mCubed.utilities.Log;
 import dev.paddock.adp.mCubed.utilities.PreferenceManager;
@@ -82,7 +80,6 @@ public class PlaybackService extends Service {
 			// Start the service
 			Log.i("PlaybackService started");
 			App.setIsServiceRunning(true);
-			startForeground(Schema.NOTIF_PLAYING_MEDIA, new Notification());
 			
 			// Register the various receivers
 			receivers.clear();
@@ -115,7 +112,7 @@ public class PlaybackService extends Service {
 			PreferenceManager.registerPreferenceChangeListener(getPreferenceListener());
 			
 			// Setup the notification
-			cancelNotification(null);
+			cancelNotification();
 			updateNotification();
 			
 			// Setup other preferences
@@ -167,35 +164,31 @@ public class PlaybackService extends Service {
 		}
 	}
 	
-	private void cancelNotification(NotificationManager manager) {
-		if (manager == null) {
-			manager = App.getSystemService(NotificationManager.class, NOTIFICATION_SERVICE);
-		}
-		manager.cancel(Schema.TAG, Schema.NOTIF_PLAYING_MEDIA);
+	private void cancelNotification() {
+		stopForeground(true);
 	}
 
 	private void updateNotification() {
 		// Grab some data
-		NotificationManager manager = App.getSystemService(NotificationManager.class, NOTIFICATION_SERVICE);
 		NotificationVisibility visibility = PreferenceManager.getSettingEnum(NotificationVisibility.class, R.string.pref_notification_visibility);
 		MediaFile media = App.getPlayingMedia();
 		boolean isPlaying = App.getPlayer().isPlaying();
 
 		// Make sure we have media
 		if (media == null) {
-			cancelNotification(manager);
+			cancelNotification();
 			return;
 		}
 		
 		// Make sure the notification visibility isn't never
 		if (visibility == NotificationVisibility.Never) {
-			cancelNotification(manager);
+			cancelNotification();
 			return;
 		}
 		
 		// If we only show the notification when playing, make sure we're playing
 		if (visibility == NotificationVisibility.OnlyWhilePlaying && !isPlaying) {
-			cancelNotification(manager);
+			cancelNotification();
 			return;
 		}
 		
@@ -225,7 +218,7 @@ public class PlaybackService extends Service {
 			setSmallIcon(icon).
 			setTicker(ticker).
 			setWhen(System.currentTimeMillis());
-		manager.notify(Schema.TAG, Schema.NOTIF_PLAYING_MEDIA, builder.build());
+		startForeground(Schema.NOTIF_PLAYING_MEDIA, builder.build());
 	}
 
 	private RemoteViews createNotificationView(MediaFile media) {
@@ -265,7 +258,7 @@ public class PlaybackService extends Service {
 				
 				@Override
 				public void stopService(int intentID) {
-					PlaybackService.this.cancelNotification(null);
+					PlaybackService.this.cancelNotification();
 					PlaybackService.this.stopSelf();
 				}
 				

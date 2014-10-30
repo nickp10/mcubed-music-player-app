@@ -45,7 +45,7 @@ public class App extends Application {
 				Utilities.popContext();
 			}
 		}
-	}, 600000);
+	}, 300000);
 	
 	private static void staticInitialization() {
 		// Make sure this only gets run once
