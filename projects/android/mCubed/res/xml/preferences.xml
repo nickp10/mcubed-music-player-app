@@ -48,6 +48,20 @@
 			android:summary="@string/pref_open_overlay_player_summary"
 			android:key="@string/pref_open_overlay_player" />
 	</PreferenceScreen>
+	<PreferenceScreen android:title="@string/pref_scrobble_screen_title"
+		android:summary="@string/pref_scrobble_screen_summary"
+		android:key="@string/pref_scrobble_screen">
+		<CheckBoxPreference android:title="@string/pref_scrobble_on_title"
+			android:summary="@string/pref_scrobble_on_summary"
+			android:key="@string/pref_scrobble_on" />
+		<Preference android:title="@string/pref_scrobble_login_title"
+			android:summary="@string/pref_scrobble_login_summary"
+			android:key="@string/pref_scrobble_login"
+			android:dependency="@string/pref_scrobble_on" />
+		<Preference android:title="@string/pref_scrobble_logout_title"
+			android:summary="@string/pref_scrobble_logout_summary"
+			android:key="@string/pref_scrobble_logout" />
+	</PreferenceScreen>
 	<PreferenceScreen android:title="@string/pref_volume_screen_title"
 		android:summary="@string/pref_volume_screen_summary"
 		android:key="@string/pref_volume_screen">

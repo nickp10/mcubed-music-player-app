@@ -4,10 +4,13 @@ import java.util.List;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
 import android.view.Menu;
@@ -23,29 +26,32 @@ import dev.paddock.adp.mCubed.preferences.PreviousAction;
 import dev.paddock.adp.mCubed.preferences.RepeatStatus;
 import dev.paddock.adp.mCubed.receivers.HeadsetReceiver;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
+import dev.paddock.adp.mCubed.scrobble.MobileSessionRequest;
+import dev.paddock.adp.mCubed.scrobble.ScrobbleService;
 import dev.paddock.adp.mCubed.utilities.INotifyListener;
 import dev.paddock.adp.mCubed.utilities.PreferenceManager;
 import dev.paddock.adp.mCubed.utilities.PropertyManager;
+import dev.paddock.adp.mCubed.utilities.Utilities;
 
-public class PreferenceActivity extends android.preference.PreferenceActivity implements IActivity {	
+public class PreferenceActivity extends android.preference.PreferenceActivity implements IActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ActivityUtils.onCreate(this, savedInstanceState);
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		ActivityUtils.onDestroy(this);
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
 		ActivityUtils.onResume(this);
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		return super.onCreateOptionsMenu(menu) &&
@@ -81,13 +87,13 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 		// Create the preferences
 		PreferenceManager.setupDefaults();
 		addPreferencesFromResource(R.xml.preferences);
-		
+
 		setupBluetoothPreferences();
-		
+
 		// Get the previous smart condition preference
 		String preferenceKey = getString(R.string.pref_previous_smart_condition);
 		final Preference smartConditionPref = findPreference(preferenceKey);
-		
+
 		// Add a listener to the previous action changed
 		preferenceKey = getString(R.string.pref_previous_action);
 		findPreference(preferenceKey).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -97,11 +103,11 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 				return true;
 			}
 		});
-		
+
 		// Get the overlay preference
 		preferenceKey = getString(R.string.pref_open_overlay_player);
 		final Preference overlayPref = findPreference(preferenceKey);
-		
+
 		// Add a listener to the notification visibility changed
 		preferenceKey = getString(R.string.pref_notification_visibility);
 		findPreference(preferenceKey).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -111,7 +117,43 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 				return true;
 			}
 		});
-		
+
+		// Get the Scrobble preferences
+		preferenceKey = getString(R.string.pref_scrobble_screen);
+		final PreferenceScreen scrobbleScreenPref = (PreferenceScreen) findPreference(preferenceKey);
+		preferenceKey = getString(R.string.pref_scrobble_login);
+		final Preference scrobbleLoginPref = findPreference(preferenceKey);
+		preferenceKey = getString(R.string.pref_scrobble_logout);
+		final Preference scrobbleLogoutPref = findPreference(preferenceKey);
+
+		// Add a listener to the Scrobble key changed
+		PreferenceManager.registerPreferenceChangeListener(new OnSharedPreferenceChangeListener() {
+			@Override
+			public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+				if (key.equals(Utilities.getResourceString(R.string.pref_scrobble_key))) {
+					updateScrobbleVisibilities(scrobbleScreenPref, scrobbleLoginPref, scrobbleLogoutPref);
+				}
+			}
+		});
+		updateScrobbleVisibilities(scrobbleScreenPref, scrobbleLoginPref, scrobbleLogoutPref);
+
+		// Add click listeners to the login and logout preferences
+		scrobbleLoginPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				ScrobbleService.sendRequest(new MobileSessionRequest("", ""));
+				PreferenceManager.setSettingString(R.string.pref_scrobble_key, "bahbahbah");
+				return true;
+			}
+		});
+		scrobbleLogoutPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				PreferenceManager.setSettingString(R.string.pref_scrobble_key, null);
+				return true;
+			}
+		});
+
 		// Add options for the list preferences
 		setListPreferences(R.string.pref_repeat_status, RepeatStatus.values());
 		setListPreferences(R.string.pref_play_mode, PlayModeEnum.values());
@@ -126,7 +168,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 	private void setupBluetoothPreferences() {
 		// Add a preference screen for each bluetooth device
 		final BluetoothPreferences bluetoothPreferences = new BluetoothPreferences(this);
-		final PreferenceScreen bluetoothScreen = (PreferenceScreen)findPreference(getString(R.string.pref_bluetooth_screen));
+		final PreferenceScreen bluetoothScreen = (PreferenceScreen) findPreference(getString(R.string.pref_bluetooth_screen));
 		final PreferenceCategory bluetoothDeviceCategory = new PreferenceCategory(this);
 		bluetoothDeviceCategory.setTitle(R.string.pref_bluetooth_device_category_title);
 		bluetoothScreen.removeAll();
@@ -135,16 +177,16 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 			for (BluetoothDevice device : BluetoothAdapter.getDefaultAdapter().getBondedDevices()) {
 				// Setup the default preferences
 				bluetoothPreferences.setupDefaults(device);
-	
+
 				// Create a screen for the bluetooth device
 				PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(this);
 				screen.setTitle(device.getName());
 				bluetoothDeviceCategory.addPreference(screen);
-	
+
 				// Add the default checkbox preference
 				Preference defaultPreference = bluetoothPreferences.createDefaultPreference(device);
 				screen.addPreference(defaultPreference);
-	
+
 				// Add each bluetooth preference
 				for (Preference preference : bluetoothPreferences.createBluetoothPreferences(device)) {
 					screen.addPreference(preference);
@@ -154,7 +196,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 		} else {
 			bluetoothScreen.addPreference(bluetoothPreferences.createBluetoothSwitchPreference());
 		}
-		
+
 		// Add each bluetooth preference for the default settings
 		final PreferenceCategory bluetoothDefaultsCategory = new PreferenceCategory(this);
 		bluetoothDefaultsCategory.setTitle(R.string.pref_bluetooth_defaults_category_title);
@@ -164,13 +206,24 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 		}
 	}
 
+	private void updateScrobbleVisibilities(PreferenceScreen scrobbleScreenPref, Preference scrobbleLoginPref, Preference scrobbleLogoutPref) {
+		if (ScrobbleService.isLoggedIn()) {
+			scrobbleScreenPref.removePreference(scrobbleLoginPref);
+			scrobbleScreenPref.addPreference(scrobbleLogoutPref);
+		} else {
+			scrobbleScreenPref.addPreference(scrobbleLoginPref);
+			scrobbleScreenPref.removePreference(scrobbleLogoutPref);
+		}
+	}
+
 	@Override
 	public void registerListeners() {
 		PropertyManager.register(HeadsetReceiver.class, "BluetoothOn", new INotifyListener() {
-			
+
 			@Override
-			public void propertyChanging(Object instance, NotificationArgs args) { }
-			
+			public void propertyChanging(Object instance, NotificationArgs args) {
+			}
+
 			@Override
 			public void propertyChanged(Object instance, NotificationArgs args) {
 				PreferenceActivity.this.setupBluetoothPreferences();
@@ -186,11 +239,11 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 	public List<IProvideClientReceiver> getClientReceivers() {
 		return null;
 	}
-	
+
 	private <T extends Enum<T> & PreferenceEnum.IPreference> void setListPreferences(int preferenceResource, T[] enumValues) {
 		// Get the list preference view
 		String preferenceKey = getString(preferenceResource);
-		ListPreference list = (ListPreference)findPreference(preferenceKey);
+		ListPreference list = (ListPreference) findPreference(preferenceKey);
 		setListPreferences(list, enumValues);
 	}
 
@@ -204,11 +257,11 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 			entryValues[current] = enumValue.getDisplay();
 			current++;
 		}
-		
+
 		// Set the options and the default value
 		list.setEntries(entryValues);
 		list.setEntryValues(entryKeys);
-		
+
 		// Send the initial update event
 		OnPreferenceChangeListener listener = list.getOnPreferenceChangeListener();
 		if (listener != null) {

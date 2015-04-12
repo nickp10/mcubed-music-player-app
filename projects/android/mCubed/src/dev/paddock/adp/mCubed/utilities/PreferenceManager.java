@@ -1,5 +1,7 @@
 package dev.paddock.adp.mCubed.utilities;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import android.content.SharedPreferences;
@@ -16,6 +18,7 @@ import dev.paddock.adp.mCubed.preferences.RepeatStatus;
 
 public class PreferenceManager {
 	private static final SparseArray<Object> defaultValues = new SparseArray<Object>();
+	private static final List<OnSharedPreferenceChangeListener> sharedPreferenceChangeListeners = new ArrayList<OnSharedPreferenceChangeListener>();
 
 	static {
 		defaultValues.put(R.string.pref_bluetooth_connected, PlaybackAction.DoNothing.name());
@@ -339,6 +342,7 @@ public class PreferenceManager {
 	public static void registerPreferenceChangeListener(OnSharedPreferenceChangeListener listener) {
 		SharedPreferences preferences = Utilities.getPreferences();
 		if (preferences != null && listener != null) {
+			sharedPreferenceChangeListeners.add(listener);
 			preferences.registerOnSharedPreferenceChangeListener(listener);
 		}
 	}
@@ -347,6 +351,7 @@ public class PreferenceManager {
 		SharedPreferences preferences = Utilities.getPreferences();
 		if (preferences != null && listener != null) {
 			preferences.unregisterOnSharedPreferenceChangeListener(listener);
+			sharedPreferenceChangeListeners.remove(listener);
 		}
 	}
 }
