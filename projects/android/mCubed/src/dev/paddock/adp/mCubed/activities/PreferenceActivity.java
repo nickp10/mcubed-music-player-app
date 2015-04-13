@@ -130,8 +130,13 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 		PreferenceManager.registerPreferenceChangeListener(new OnSharedPreferenceChangeListener() {
 			@Override
 			public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-				if (key.equals(Utilities.getResourceString(R.string.pref_scrobble_key))) {
-					updateScrobbleVisibilities(scrobbleScreenPref, scrobbleLoginPref, scrobbleLogoutPref);
+				Utilities.pushContext(PreferenceActivity.this);
+				try {
+					if (key.equals(Utilities.getResourceString(R.string.pref_scrobble_key))) {
+						updateScrobbleVisibilities(scrobbleScreenPref, scrobbleLoginPref, scrobbleLogoutPref);
+					}
+				} finally {
+					Utilities.popContext();
 				}
 			}
 		});
@@ -141,16 +146,26 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 		scrobbleLoginPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				ScrobbleService.sendRequest(new MobileSessionRequest("", ""));
-				PreferenceManager.setSettingString(R.string.pref_scrobble_key, "bahbahbah");
+				Utilities.dispatchToBackgroundThread(PreferenceActivity.this, new Runnable() {
+					@Override
+					public void run() {
+						ScrobbleService.sendRequest(new MobileSessionRequest("", ""));
+						PreferenceManager.setSettingString(R.string.pref_scrobble_key, "bahbahbah");
+					}
+				});
 				return true;
 			}
 		});
 		scrobbleLogoutPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				PreferenceManager.setSettingString(R.string.pref_scrobble_key, null);
-				return true;
+				Utilities.pushContext(PreferenceActivity.this);
+				try {
+					PreferenceManager.setSettingString(R.string.pref_scrobble_key, null);
+					return true;
+				} finally {
+					Utilities.popContext();
+				}
 			}
 		});
 
