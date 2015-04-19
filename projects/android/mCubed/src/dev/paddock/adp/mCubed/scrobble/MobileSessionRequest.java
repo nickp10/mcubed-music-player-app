@@ -1,8 +1,9 @@
 package dev.paddock.adp.mCubed.scrobble;
 
-public class MobileSessionRequest extends ScrobbleRequest {
+public class MobileSessionRequest extends ScrobbleRequest<MobileSessionResponse> {
 
 	public MobileSessionRequest(String username, String password) {
+		super(MobileSessionResponse.class);
 		setUsername(username);
 		setPassword(password);
 	}

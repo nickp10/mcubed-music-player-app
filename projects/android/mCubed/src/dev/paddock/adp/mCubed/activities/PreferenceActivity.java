@@ -27,6 +27,7 @@ import dev.paddock.adp.mCubed.preferences.RepeatStatus;
 import dev.paddock.adp.mCubed.receivers.HeadsetReceiver;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
 import dev.paddock.adp.mCubed.scrobble.MobileSessionRequest;
+import dev.paddock.adp.mCubed.scrobble.ScrobbleException;
 import dev.paddock.adp.mCubed.scrobble.ScrobbleService;
 import dev.paddock.adp.mCubed.utilities.INotifyListener;
 import dev.paddock.adp.mCubed.utilities.PreferenceManager;
@@ -149,7 +150,11 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 				Utilities.dispatchToBackgroundThread(PreferenceActivity.this, new Runnable() {
 					@Override
 					public void run() {
-						ScrobbleService.sendRequest(new MobileSessionRequest("", ""));
+						try {
+							ScrobbleService.sendRequest(new MobileSessionRequest("", ""));
+						} catch (ScrobbleException e) {
+							e.printStackTrace();
+						}
 						PreferenceManager.setSettingString(R.string.pref_scrobble_key, "bahbahbah");
 					}
 				});

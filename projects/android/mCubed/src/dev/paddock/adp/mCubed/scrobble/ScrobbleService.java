@@ -30,7 +30,7 @@ public class ScrobbleService {
 		return PreferenceManager.getSettingString(R.string.pref_scrobble_key);
 	}
 
-	public static ScrobbleResponse sendRequest(ScrobbleRequest scrobbleRequest) {
+	public static <TRequest extends ScrobbleRequest<TResponse>, TResponse extends ScrobbleResponse> TResponse sendRequest(TRequest scrobbleRequest) throws ScrobbleException {
 		HttpParams params = new BasicHttpParams();
 		HttpConnectionParams.setConnectionTimeout(params, Schema.WS_TIMEOUT_MILLIS);
 		HttpConnectionParams.setSoTimeout(params, Schema.WS_TIMEOUT_MILLIS);
@@ -39,10 +39,13 @@ public class ScrobbleService {
 			HttpPost request = new HttpPost(API_URL);
 			request.setEntity(new UrlEncodedFormEntity(scrobbleRequest.createParameters()));
 			String response = httpclient.execute(request, new BasicResponseHandler());
-			return ScrobbleResponse.parse(response);
+			return ScrobbleResponse.parse(scrobbleRequest.getResponseClass(), response);
+		} catch (ScrobbleException e) {
+			Log.e(e);
+			throw e;
 		} catch (Exception e) {
 			Log.e(e);
-			return null;
+			throw new ScrobbleException(e);
 		} finally {
 			httpclient.getConnectionManager().shutdown();
 		}

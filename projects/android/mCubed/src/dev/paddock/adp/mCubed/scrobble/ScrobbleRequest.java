@@ -10,12 +10,14 @@ import org.apache.http.NameValuePair;
 import dev.paddock.adp.mCubed.utilities.Log;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
-public abstract class ScrobbleRequest {
+public abstract class ScrobbleRequest<TResponse extends ScrobbleResponse> {
 	private final List<ScrobbleKeyValuePair> scrobblePairs = new ArrayList<ScrobbleKeyValuePair>();
 	private static final String API_KEY = "06bd23c697c83e151b2447c204f9c9bb";
 	private static final String API_SECRET = "7763946374c097697b86e23d148cf46b";
+	private final Class<TResponse> responseClass;
 
-	public ScrobbleRequest() {
+	public ScrobbleRequest(Class<TResponse> responseClass) {
+		this.responseClass = responseClass;
 		setupCommonPairs();
 	}
 
@@ -66,6 +68,10 @@ public abstract class ScrobbleRequest {
 			parameters.add(pair.createNameValuePair());
 		}
 		return parameters;
+	}
+
+	public Class<TResponse> getResponseClass() {
+		return responseClass;
 	}
 
 	public List<ScrobbleKeyValuePair> getScrobblePairs() {
