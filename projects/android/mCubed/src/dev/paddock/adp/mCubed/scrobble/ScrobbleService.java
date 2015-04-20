@@ -1,9 +1,11 @@
 package dev.paddock.adp.mCubed.scrobble;
 
+import java.io.InputStream;
+
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -38,8 +40,10 @@ public class ScrobbleService {
 		try {
 			HttpPost request = new HttpPost(API_URL);
 			request.setEntity(new UrlEncodedFormEntity(scrobbleRequest.createParameters()));
-			String response = httpclient.execute(request, new BasicResponseHandler());
-			return ScrobbleResponse.parse(scrobbleRequest.getResponseClass(), response);
+			HttpResponse response = httpclient.execute(request);
+			InputStream responseStream = response.getEntity().getContent();
+			String responseBody = Utilities.loadStream(responseStream);
+			return ScrobbleResponse.parse(scrobbleRequest.getResponseClass(), responseBody);
 		} catch (ScrobbleException e) {
 			Log.e(e);
 			throw e;
