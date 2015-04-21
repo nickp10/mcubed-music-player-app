@@ -59,6 +59,8 @@
 	<string name="feedback_submit_button_progressing">Submitting&#8230;</string>
 	<string name="feedback_submit_failure">Unable to submit feedback. Make sure you are connected to the Internet.</string>
 	<string name="feedback_submit_success">Feedback submitted successfully. Thank you.</string>
+	<string name="lp_username_hint">Username</string>
+	<string name="lp_password_hint">Password</string>
 	<string name="mfdv_artist_label">Artist</string>
 	<string name="mfdv_album_label">Album</string>
 	<string name="mfdv_genre_label">Genre</string>

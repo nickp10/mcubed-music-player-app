@@ -17,7 +17,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
+import dev.paddock.adp.mCubed.model.Credentials;
 import dev.paddock.adp.mCubed.model.NotificationArgs;
+import dev.paddock.adp.mCubed.preferences.LoginPreference;
 import dev.paddock.adp.mCubed.preferences.NotificationVisibility;
 import dev.paddock.adp.mCubed.preferences.PlayModeEnum;
 import dev.paddock.adp.mCubed.preferences.PlaybackAction;
@@ -27,8 +29,10 @@ import dev.paddock.adp.mCubed.preferences.RepeatStatus;
 import dev.paddock.adp.mCubed.receivers.HeadsetReceiver;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
 import dev.paddock.adp.mCubed.scrobble.MobileSessionRequest;
+import dev.paddock.adp.mCubed.scrobble.MobileSessionResponse;
 import dev.paddock.adp.mCubed.scrobble.ScrobbleException;
 import dev.paddock.adp.mCubed.scrobble.ScrobbleService;
+import dev.paddock.adp.mCubed.utilities.Delegate.Action;
 import dev.paddock.adp.mCubed.utilities.INotifyListener;
 import dev.paddock.adp.mCubed.utilities.PreferenceManager;
 import dev.paddock.adp.mCubed.utilities.PropertyManager;
@@ -55,14 +59,18 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		//@formatter:off
 		return super.onCreateOptionsMenu(menu) &&
 				ActivityUtils.onCreateOptionsMenu(this, menu);
+		//@formatter:on
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		//@formatter:off
 		return ActivityUtils.onOptionsItemSelected(this, item) ||
 				super.onOptionsItemSelected(item);
+		//@formatter:on
 	}
 
 	@Override
@@ -123,7 +131,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 		preferenceKey = getString(R.string.pref_scrobble_screen);
 		final PreferenceScreen scrobbleScreenPref = (PreferenceScreen) findPreference(preferenceKey);
 		preferenceKey = getString(R.string.pref_scrobble_login);
-		final Preference scrobbleLoginPref = findPreference(preferenceKey);
+		final LoginPreference scrobbleLoginPref = (LoginPreference) findPreference(preferenceKey);
 		preferenceKey = getString(R.string.pref_scrobble_logout);
 		final Preference scrobbleLogoutPref = findPreference(preferenceKey);
 
@@ -144,21 +152,20 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 		updateScrobbleVisibilities(scrobbleScreenPref, scrobbleLoginPref, scrobbleLogoutPref);
 
 		// Add click listeners to the login and logout preferences
-		scrobbleLoginPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+		scrobbleLoginPref.setLoginAction(new Action<Credentials>() {
 			@Override
-			public boolean onPreferenceClick(Preference preference) {
+			public void act(final Credentials credentials) {
 				Utilities.dispatchToBackgroundThread(PreferenceActivity.this, new Runnable() {
 					@Override
 					public void run() {
 						try {
-							ScrobbleService.sendRequest(new MobileSessionRequest("", ""));
+							MobileSessionRequest request = new MobileSessionRequest(credentials.getUsername(), credentials.getPassword());
+							MobileSessionResponse response = ScrobbleService.sendRequest(request);
+							PreferenceManager.setSettingString(R.string.pref_scrobble_key, response.getKey());
 						} catch (ScrobbleException e) {
-							e.printStackTrace();
 						}
-						PreferenceManager.setSettingString(R.string.pref_scrobble_key, "bahbahbah");
 					}
 				});
-				return true;
 			}
 		});
 		scrobbleLogoutPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {

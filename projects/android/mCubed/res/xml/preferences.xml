@@ -54,7 +54,7 @@
 		<CheckBoxPreference android:title="@string/pref_scrobble_on_title"
 			android:summary="@string/pref_scrobble_on_summary"
 			android:key="@string/pref_scrobble_on" />
-		<Preference android:title="@string/pref_scrobble_login_title"
+		<dev.paddock.adp.mCubed.preferences.LoginPreference android:title="@string/pref_scrobble_login_title"
 			android:summary="@string/pref_scrobble_login_summary"
 			android:key="@string/pref_scrobble_login"
 			android:dependency="@string/pref_scrobble_on" />
