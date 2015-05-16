@@ -59,6 +59,7 @@
 	<string name="feedback_submit_button_progressing">Submitting&#8230;</string>
 	<string name="feedback_submit_failure">Unable to submit feedback. Make sure you are connected to the Internet.</string>
 	<string name="feedback_submit_success">Feedback submitted successfully. Thank you.</string>
+	<string name="login_no_action">A login action was not specified.</string>
 	<string name="lp_username_hint">Username</string>
 	<string name="lp_password_hint">Password</string>
 	<string name="mfdv_artist_label">Artist</string>
@@ -165,4 +166,6 @@
 	<string name="pref_bluetooth_defaults_loaded">pref_bluetooth_defaults_loaded</string>
 	<string name="prog_initializing">Initializing&#8230;</string>
 	<string name="prog_scanning">Scanning&#8230;</string>
+	<string name="scrobble_invalid_login">Invalid username or password.</string>
+	<string name="scrobble_no_connection">An Internet connection could not be established. Make sure you are connected and try again.</string>
 </resources>

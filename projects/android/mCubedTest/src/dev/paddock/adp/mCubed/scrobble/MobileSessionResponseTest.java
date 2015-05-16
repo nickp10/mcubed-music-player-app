@@ -20,9 +20,24 @@ public class MobileSessionResponseTest extends AndroidTestCase {
 			assertNotNull(e.getErrorMessage());
 		}
 	}
-	
-	public void test() throws Exception {
-		//MobileSessionRequest request = new MobileSessionRequest("nickp_10", "invalid");
-		//ScrobbleService.sendRequest(request);
+
+	public void testFailInvalidAPIKey() throws Exception {
+		try {
+			ScrobbleResponseUtils.parseResponse(MobileSessionResponse.class, "MobileSessionResponseInvalidAPIKey.xml");
+			fail("Scrobble exception expected");
+		} catch (ScrobbleException e) {
+			assertEquals("10", e.getErrorCode());
+			assertNotNull(e.getErrorMessage());
+		}
+	}
+
+	public void testFailInvalidSignature() throws Exception {
+		try {
+			ScrobbleResponseUtils.parseResponse(MobileSessionResponse.class, "MobileSessionResponseInvalidSignature.xml");
+			fail("Scrobble exception expected");
+		} catch (ScrobbleException e) {
+			assertEquals("13", e.getErrorCode());
+			assertNotNull(e.getErrorMessage());
+		}
 	}
 }

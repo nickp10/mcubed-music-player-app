@@ -32,7 +32,7 @@ import dev.paddock.adp.mCubed.scrobble.MobileSessionRequest;
 import dev.paddock.adp.mCubed.scrobble.MobileSessionResponse;
 import dev.paddock.adp.mCubed.scrobble.ScrobbleException;
 import dev.paddock.adp.mCubed.scrobble.ScrobbleService;
-import dev.paddock.adp.mCubed.utilities.Delegate.Action;
+import dev.paddock.adp.mCubed.utilities.Delegate.Func;
 import dev.paddock.adp.mCubed.utilities.INotifyListener;
 import dev.paddock.adp.mCubed.utilities.PreferenceManager;
 import dev.paddock.adp.mCubed.utilities.PropertyManager;
@@ -152,20 +152,21 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
 		updateScrobbleVisibilities(scrobbleScreenPref, scrobbleLoginPref, scrobbleLogoutPref);
 
 		// Add click listeners to the login and logout preferences
-		scrobbleLoginPref.setLoginAction(new Action<Credentials>() {
+		scrobbleLoginPref.setLoginAction(new Func<Credentials, String>() {
 			@Override
-			public void act(final Credentials credentials) {
-				Utilities.dispatchToBackgroundThread(PreferenceActivity.this, new Runnable() {
-					@Override
-					public void run() {
-						try {
-							MobileSessionRequest request = new MobileSessionRequest(credentials.getUsername(), credentials.getPassword());
-							MobileSessionResponse response = ScrobbleService.sendRequest(request);
-							PreferenceManager.setSettingString(R.string.pref_scrobble_key, response.getKey());
-						} catch (ScrobbleException e) {
-						}
+			public String act(final Credentials credentials) {
+				try {
+					MobileSessionRequest request = new MobileSessionRequest(credentials.getUsername(), credentials.getPassword());
+					MobileSessionResponse response = ScrobbleService.sendRequest(request);
+					PreferenceManager.setSettingString(R.string.pref_scrobble_key, response.getKey());
+					return null;
+				} catch (ScrobbleException e) {
+					if (e.isNoConnection()) {
+						return Utilities.getResourceString(R.string.scrobble_no_connection);
+					} else {
+						return Utilities.getResourceString(R.string.scrobble_invalid_login);
 					}
-				});
+				}
 			}
 		});
 		scrobbleLogoutPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {

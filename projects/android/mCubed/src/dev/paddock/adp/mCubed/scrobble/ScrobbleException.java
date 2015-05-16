@@ -16,7 +16,7 @@ public class ScrobbleException extends Exception {
 	}
 
 	public ScrobbleException(String errorCode, String errorMessage, Throwable cause) {
-		super(String.format(Locale.US, "Error occurred with Scrobble [ErrorCode=%s, ErrorMessage=%s]", errorCode, errorMessage));
+		super(String.format(Locale.US, "Error occurred with Scrobble [ErrorCode=%s, ErrorMessage=%s]", errorCode, errorMessage), cause);
 		this.errorCode = errorCode;
 		this.errorMessage = errorMessage;
 	}
@@ -27,5 +27,14 @@ public class ScrobbleException extends Exception {
 
 	public String getErrorMessage() {
 		return errorMessage;
+	}
+
+	/**
+	 * Determines whether or not the exception occurred due to a connection failure.
+	 * 
+	 * @return True if the exception indicates a connection failure, or false otherwise.
+	 */
+	public boolean isNoConnection() {
+		return "1".equals(getErrorCode());
 	}
 }
