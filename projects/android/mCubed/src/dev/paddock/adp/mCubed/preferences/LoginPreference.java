@@ -11,14 +11,17 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.model.Credentials;
-import dev.paddock.adp.mCubed.utilities.Utilities;
 import dev.paddock.adp.mCubed.utilities.Delegate.Func;
+import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class LoginPreference extends DialogPreference {
 	private EditText username, password;
+	private LinearLayout loggingInProgress;
+	private TextView error;
 	private Func<Credentials, String> loginAction;
 
 	public LoginPreference(Context context, AttributeSet attrs) {
@@ -34,6 +37,8 @@ public class LoginPreference extends DialogPreference {
 		// Find the elements
 		username = (EditText) view.findViewById(R.id.lp_username);
 		password = (EditText) view.findViewById(R.id.lp_password);
+		loggingInProgress = (LinearLayout) view.findViewById(R.id.lp_logging_in_progress);
+		error = (TextView) view.findViewById(R.id.lp_error_text);
 
 		// Update the typeface of the hint text on the password field
 		password.setTypeface(Typeface.DEFAULT);
@@ -63,12 +68,20 @@ public class LoginPreference extends DialogPreference {
 	}
 
 	private void login(final AlertDialog dialog) {
+		if (loggingInProgress.getVisibility() == View.VISIBLE) {
+			return; // Already logging in
+		}
+		if (error.getVisibility() == View.VISIBLE) {
+			showFields();
+			return;
+		}
+		showProgress();
 		Utilities.dispatchToBackgroundThread(Utilities.getContext(), new Runnable() {
 			@Override
 			public void run() {
 				final String error;
 				if (loginAction == null) {
-					error = Utilities.getResourceString(R.string.login_no_action); 
+					error = Utilities.getResourceString(R.string.login_no_action);
 				} else {
 					error = loginAction.act(new Credentials(username.getText().toString(), password.getText().toString()));
 				}
@@ -76,15 +89,36 @@ public class LoginPreference extends DialogPreference {
 					@Override
 					public void run() {
 						if (Utilities.isNullOrEmpty(error)) {
-							Toast.makeText(getContext(), "Logged in", Toast.LENGTH_LONG).show();
 							dialog.dismiss();
 						} else {
-							Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
+							showError(error);
 						}
 					}
 				});
 			}
 		});
+	}
+
+	private void showProgress() {
+		username.setVisibility(View.GONE);
+		password.setVisibility(View.GONE);
+		loggingInProgress.setVisibility(View.VISIBLE);
+		error.setVisibility(View.GONE);
+	}
+
+	private void showFields() {
+		username.setVisibility(View.VISIBLE);
+		password.setVisibility(View.VISIBLE);
+		loggingInProgress.setVisibility(View.GONE);
+		error.setVisibility(View.GONE);
+	}
+
+	private void showError(String error) {
+		username.setVisibility(View.GONE);
+		password.setVisibility(View.GONE);
+		loggingInProgress.setVisibility(View.GONE);
+		this.error.setVisibility(View.VISIBLE);
+		this.error.setText(error);
 	}
 
 	public void setLoginAction(Func<Credentials, String> loginAction) {

@@ -15,4 +15,34 @@
 		android:hint="@string/lp_password_hint"
 		android:inputType="textPassword"
 		android:id="@+id/lp_password" />
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent"
+		android:layout_gravity="center"
+		android:layout_margin="15dp"
+		android:gravity="center"
+		android:orientation="vertical"
+		android:visibility="gone"
+		android:id="@+id/lp_logging_in_progress">
+		<TextView
+			style="@style/ProgressLabel"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:layout_marginBottom="10dp"
+			android:textIsSelectable="false"
+			android:text="@string/lp_logging_in_text" />
+		<ProgressBar
+			style="?attr/style_progress_bar"
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:indeterminate="true" />
+	</LinearLayout>
+	<TextView
+		style="@style/ErrorLabel"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:layout_margin="15dp"
+		android:textIsSelectable="false"
+		android:visibility="gone"
+		android:id="@+id/lp_error_text" />
 </LinearLayout>
