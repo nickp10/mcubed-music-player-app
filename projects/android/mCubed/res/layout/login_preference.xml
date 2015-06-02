@@ -3,7 +3,7 @@
 	android:orientation="vertical"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
-	android:padding="5dip">
+	android:padding="20dp">
 	<EditText
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
@@ -12,6 +12,7 @@
 	<EditText
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
+		android:layout_marginTop="10dp"
 		android:hint="@string/lp_password_hint"
 		android:inputType="textPassword"
 		android:id="@+id/lp_password" />
@@ -19,7 +20,6 @@
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent"
 		android:layout_gravity="center"
-		android:layout_margin="15dp"
 		android:gravity="center"
 		android:orientation="vertical"
 		android:visibility="gone"
@@ -41,7 +41,6 @@
 		style="@style/ErrorLabel"
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content"
-		android:layout_margin="15dp"
 		android:textIsSelectable="false"
 		android:visibility="gone"
 		android:id="@+id/lp_error_text" />
