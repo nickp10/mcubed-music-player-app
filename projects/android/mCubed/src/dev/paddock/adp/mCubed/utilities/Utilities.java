@@ -43,16 +43,21 @@ public class Utilities {
 	private static final Map<Long, Stack<Context>> contextMap = new HashMap<Long, Stack<Context>>();
 	private static final Map<Long, Stack<AsyncTask>> taskMap = new HashMap<Long, Stack<AsyncTask>>();
 	private static Handler handler;
-	
+
 	/**
 	 * Prevents an instance of Utilities
 	 */
-	private Utilities() { }
-	
+	private Utilities() {
+	}
+
+	public static int currentUnixTimeSeconds() {
+		return (int) (System.currentTimeMillis() / 1000L);
+	}
+
 	public static boolean isNullOrEmpty(String str) {
 		return str == null || str.length() == 0;
 	}
-	
+
 	public static int stringCompare(String leftString, String rightString, boolean ignoreCase) {
 		if (leftString == null) {
 			return rightString == null ? 0 : -1;
@@ -62,16 +67,16 @@ public class Utilities {
 			return ignoreCase ? leftString.compareToIgnoreCase(rightString) : leftString.compareTo(rightString);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static <T> T cast(Class<T> clazz, Object obj) {
 		if (obj == null || !clazz.isAssignableFrom(obj.getClass())) {
 			return null;
 		} else {
-			return (T)obj;
+			return (T) obj;
 		}
 	}
-	
+
 	public static boolean getCursorBooleanValue(Cursor cursor, String columnName) {
 		return getCursorIntValue(cursor, columnName) != 0;
 	}
@@ -88,7 +93,7 @@ public class Utilities {
 		}
 		return 0d;
 	}
-	
+
 	public static int getCursorIntValue(Cursor cursor, String columnName) {
 		// Validate the parameters
 		if (cursor != null && columnName != null) {
@@ -101,7 +106,7 @@ public class Utilities {
 		}
 		return 0;
 	}
-	
+
 	public static long getCursorLongValue(Cursor cursor, String columnName) {
 		// Validate the parameters
 		if (cursor != null && columnName != null) {
@@ -127,7 +132,7 @@ public class Utilities {
 		}
 		return null;
 	}
-	
+
 	public static Uri getCursorUriValue(Cursor cursor, String columnName) {
 		String uriPath = getCursorStringValue(cursor, columnName);
 		if (uriPath != null) {
@@ -135,7 +140,7 @@ public class Utilities {
 		}
 		return null;
 	}
-	
+
 	public static ContentResolver getCR() {
 		Context context = getContext();
 		if (context != null) {
@@ -143,7 +148,7 @@ public class Utilities {
 		}
 		return null;
 	}
-	
+
 	public static SharedPreferences getPreferences() {
 		Context context = getContext();
 		if (context != null) {
@@ -151,7 +156,7 @@ public class Utilities {
 		}
 		return null;
 	}
-	
+
 	public static String getResourceString(int resource) {
 		Context context = getContext();
 		if (context != null) {
@@ -159,7 +164,7 @@ public class Utilities {
 		}
 		return null;
 	}
-	
+
 	public static int getVersionCode() {
 		Context context = getContext();
 		if (context != null) {
@@ -177,7 +182,7 @@ public class Utilities {
 		}
 		return 0;
 	}
-	
+
 	private static <T> Stack<T> getStack(Map<Long, Stack<T>> map, boolean create) {
 		Long currentThreadID = Thread.currentThread().getId();
 		if (map.containsKey(currentThreadID)) {
@@ -189,7 +194,7 @@ public class Utilities {
 		}
 		return null;
 	}
-	
+
 	private static <T> void removeStack(Map<Long, Stack<T>> map) {
 		Long currentThreadID = Thread.currentThread().getId();
 		if (map.containsKey(currentThreadID)) {
@@ -199,7 +204,7 @@ public class Utilities {
 			}
 		}
 	}
-	
+
 	private static <T> T peekIntoStack(Map<Long, Stack<T>> map) {
 		Stack<T> stack = getStack(map, false);
 		if (stack != null && !stack.isEmpty()) {
@@ -207,14 +212,14 @@ public class Utilities {
 		}
 		return null;
 	}
-	
+
 	private static <T> void pushToStack(Map<Long, Stack<T>> map, T item) {
 		Stack<T> stack = getStack(map, true);
 		if (stack != null) {
 			stack.push(item);
 		}
 	}
-	
+
 	private static <T> void popFromStack(Map<Long, Stack<T>> map) {
 		Stack<T> stack = getStack(map, false);
 		if (stack != null && !stack.empty()) {
@@ -224,7 +229,7 @@ public class Utilities {
 			}
 		}
 	}
-	
+
 	public static Context getContext() {
 		Context context = peekIntoStack(contextMap);
 		if (context == null) {
@@ -233,34 +238,34 @@ public class Utilities {
 		}
 		return context;
 	}
-	
+
 	public static void pushContext(Context c) {
 		pushToStack(contextMap, c);
 	}
-	
+
 	public static void popContext() {
 		popFromStack(contextMap);
 	}
-	
+
 	public static void publishProgress(PublishProgress progress) {
 		AsyncTask task = getTask();
 		if (task != null) {
 			task.updateProgress(progress);
 		}
 	}
-	
+
 	public static AsyncTask getTask() {
 		return peekIntoStack(taskMap);
 	}
-	
+
 	public static void pushTask(AsyncTask task) {
 		pushToStack(taskMap, task);
 	}
-	
+
 	public static void popTask() {
 		popFromStack(taskMap);
 	}
-	
+
 	public static Handler getHandler() {
 		if (handler == null) {
 			Looper looper = Looper.getMainLooper();
@@ -272,7 +277,7 @@ public class Utilities {
 		}
 		return handler;
 	}
-	
+
 	public static void dispatchToUIThread(final Context context, final Runnable action) {
 		if (action != null) {
 			getHandler().post(new Runnable() {
@@ -288,7 +293,7 @@ public class Utilities {
 			});
 		}
 	}
-	
+
 	public static void dispatchToBackgroundThread(final Context context, final Runnable action) {
 		if (action != null) {
 			new AsyncTask(context) {
@@ -299,15 +304,15 @@ public class Utilities {
 			}.execute();
 		}
 	}
-	
+
 	public static void query(Uri uri, String[] projection, ICursor cursor) {
 		query(uri, projection, null, null, cursor);
 	}
-	
+
 	public static void query(Uri uri, long id, String[] projection, ICursor cursor) {
 		query(ContentUris.withAppendedId(uri, id), projection, null, null, cursor);
 	}
-	
+
 	public static void query(Uri uri, String[] projection, WhereClause where, SortClause sort, ICursor cursor) {
 		ContentResolver cr = getCR();
 		if (cursor != null && cr != null) {
@@ -321,15 +326,15 @@ public class Utilities {
 			if (sort != null) {
 				sortOrder = sort.toSQL();
 			}
-			
+
 			// Run the query
 			Cursor queryCursor = null;
 			try {
 				queryCursor = cr.query(uri, projection, selection, selectionArgs, sortOrder);
-				
+
 				// Iterator over the results, running the ICursor for each item
 				if (queryCursor != null && queryCursor.moveToFirst()) {
-					while(!cursor.run(queryCursor) && queryCursor.moveToNext());
+					while (!cursor.run(queryCursor) && queryCursor.moveToNext());
 				}
 			} catch (SecurityException e) {
 				Log.e(e);
@@ -341,7 +346,7 @@ public class Utilities {
 			}
 		}
 	}
-	
+
 	public static int resolveAttribute(int attribute) {
 		Context context = Utilities.getContext();
 		if (context != null) {
@@ -354,15 +359,15 @@ public class Utilities {
 		}
 		return 0;
 	}
-	
+
 	public static boolean appendToFile(String filename, String contents) {
 		return writeToFile(filename, contents, Context.MODE_APPEND);
 	}
-	
+
 	public static boolean saveFile(String filename, String contents) {
 		return writeToFile(filename, contents, Context.MODE_PRIVATE);
 	}
-	
+
 	private static boolean writeToFile(String filename, String contents, int mode) {
 		if (!isNullOrEmpty(filename) && contents != null) {
 			FileOutputStream stream = null;
@@ -384,7 +389,7 @@ public class Utilities {
 		}
 		return false;
 	}
-	
+
 	public static String loadFile(String filename) {
 		if (!isNullOrEmpty(filename)) {
 			FileInputStream stream = null;
@@ -405,7 +410,7 @@ public class Utilities {
 		}
 		return null;
 	}
-	
+
 	public static String loadStream(InputStream stream) {
 		InputStreamReader streamReader = null;
 		BufferedReader reader = null;
@@ -435,32 +440,32 @@ public class Utilities {
 		}
 		return null;
 	}
-	
+
 	public static boolean deleteFile(String filename) {
 		if (!isNullOrEmpty(filename)) {
 			return getContext().deleteFile(filename);
 		}
 		return false;
 	}
-	
+
 	public static boolean fileExists(Uri uri) {
 		// Perform null-checking
 		if (uri == null) {
 			return false;
 		}
-		
+
 		// Check if the file straight up exists
 		File file = new File(uri.getPath());
 		if (file.exists()) {
 			return true;
 		}
-		
+
 		// Get the content resolver
 		ContentResolver contentResolver = getCR();
 		if (contentResolver == null) {
 			return false;
 		}
-		
+
 		// Attempt to open the input stream
 		InputStream stream = null;
 		try {
@@ -478,7 +483,7 @@ public class Utilities {
 			}
 		}
 	}
-	
+
 	public static Bitmap loadBitmap(Uri uri) {
 		ContentResolver contentResolver = getCR();
 		if (contentResolver != null && uri != null) {
@@ -500,15 +505,15 @@ public class Utilities {
 		}
 		return null;
 	}
-	
+
 	public static boolean isScreenOn() {
 		return isScreenOn(null);
 	}
-	
+
 	public static boolean isScreenOn(Holder<PowerManager> holder) {
 		Context context = getContext();
 		if (context != null) {
-			PowerManager manager = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
+			PowerManager manager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
 			if (manager != null) {
 				if (holder != null) {
 					holder.value = manager;
@@ -518,7 +523,7 @@ public class Utilities {
 		}
 		return true;
 	}
-	
+
 	public static void turnScreenOn(int ms) {
 		Holder<PowerManager> holder = new Holder<PowerManager>();
 		if (!isScreenOn(holder)) {
@@ -531,51 +536,55 @@ public class Utilities {
 			}
 		}
 	}
-	
+
 	public static int parseInt(String str) {
 		HolderInt value = new HolderInt();
 		tryParseInt(str, value);
 		return value.value;
 	}
-	
+
 	public static boolean tryParseInt(String str, HolderInt holder) {
 		try {
 			holder.value = Integer.parseInt(str);
 			return true;
-		} catch (Exception e) { }
+		} catch (Exception e) {
+		}
 		return false;
 	}
-	
+
 	public static long parseLong(String str) {
 		HolderLong value = new HolderLong();
 		tryParseLong(str, value);
 		return value.value;
 	}
-	
+
 	public static boolean tryParseLong(String str, HolderLong holder) {
 		try {
 			holder.value = Long.parseLong(str);
 			return true;
-		} catch (Exception e) { }
+		} catch (Exception e) {
+		}
 		return false;
 	}
-	
+
 	public static double parseDouble(String str) {
 		HolderDouble value = new HolderDouble();
 		tryParseDouble(str, value);
 		return value.value;
 	}
-	
+
 	public static boolean tryParseDouble(String str, HolderDouble holder) {
 		try {
 			holder.value = Double.parseDouble(str);
 			return true;
-		} catch (Exception e) { }
+		} catch (Exception e) {
+		}
 		return false;
 	}
-	
+
 	/**
 	 * Format the time (in milliseconds) into a readable format.
+	 * 
 	 * @param millis The milliseconds to format.
 	 * @return The time in mm:ss format.
 	 */

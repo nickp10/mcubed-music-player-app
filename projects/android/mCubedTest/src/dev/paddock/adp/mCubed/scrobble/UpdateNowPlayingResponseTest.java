@@ -5,6 +5,7 @@ import dev.paddock.adp.mCubed.ScrobbleResponseUtils;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class UpdateNowPlayingResponseTest extends AndroidTestCase {
+
 	public void testSuccess() throws Exception {
 		UpdateNowPlayingResponse response = ScrobbleResponseUtils.parseResponse(UpdateNowPlayingResponse.class, "UpdateNowPlayingResponseSuccess.xml");
 		assertNotNull(response);
@@ -15,9 +16,19 @@ public class UpdateNowPlayingResponseTest extends AndroidTestCase {
 		assertTrue(Utilities.isNullOrEmpty(response.getIgnoredMessage()));
 	}
 
+	public void testFailInvalidSignature() throws Exception {
+		try {
+			ScrobbleResponseUtils.parseResponse(UpdateNowPlayingResponse.class, "UpdateNowPlayingResponseInvalidSignature.xml");
+			fail("Scrobble exception expected");
+		} catch (ScrobbleException e) {
+			assertEquals("13", e.getErrorCode());
+			assertNotNull(e.getErrorMessage());
+		}
+	}
+
 	public void testFailMissingParameter() throws Exception {
 		try {
-			ScrobbleResponseUtils.parseResponse(MobileSessionResponse.class, "UpdateNowPlayingResponseMissingParameter.xml");
+			ScrobbleResponseUtils.parseResponse(UpdateNowPlayingResponse.class, "UpdateNowPlayingResponseMissingParameter.xml");
 			fail("Scrobble exception expected");
 		} catch (ScrobbleException e) {
 			assertEquals("6", e.getErrorCode());

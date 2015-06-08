@@ -16,7 +16,7 @@ public class ScrobbleKeyValuePairComparator implements Comparator<ScrobbleKeyVal
 		} else {
 			String key1 = pair1.getKey();
 			String key2 = pair2.getKey();
-			return key1.compareToIgnoreCase(key2);
+			return key1.compareTo(key2);
 		}
 	}
 }
