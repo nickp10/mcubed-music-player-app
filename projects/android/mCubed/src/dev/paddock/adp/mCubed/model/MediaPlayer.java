@@ -186,13 +186,18 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 	}
 	
 	private void pauseInternal() {
+		boolean skipPause = false;
 		int state = getCurrentState();
-		if (state != STATE_STARTED || state != STATE_PAUSED) {
+		if (state == STATE_PREPARED || state == STATE_PAUSED) {
+			skipPause = true;
+		} else if (state == STATE_DEFAULT || state == STATE_COMPLETED || state == STATE_STOPPED) {
 			playInternal();
 		}
 		write.lock();
 		try {
-			player.pause();
+			if (!skipPause) {
+				player.pause();
+			}
 			currentState = STATE_PAUSED;
 		} finally {
 			write.unlock();

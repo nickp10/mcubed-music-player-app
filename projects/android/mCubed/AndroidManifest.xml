@@ -25,7 +25,7 @@
 		<activity android:name=".activities.MediaFileDetailsActivity" android:launchMode="singleTop" />
 		<activity android:name=".activities.MediaFileListActivity" android:launchMode="singleTop" />
 		<activity android:name=".activities.NowPlayingActivity" android:launchMode="singleTop" />
-		<activity android:name=".activities.OverlayActivity" android:theme="@style/mCubedTheme.Translucent" android:taskAffinity="" />
+		<activity android:name=".activities.OverlayActivity" android:theme="@style/mCubedTheme.Translucent" android:taskAffinity="" android:excludeFromRecents="true" />
 		<activity android:name=".activities.PreferenceActivity" android:launchMode="singleTop" />
 
 		<service android:name=".services.PlaybackService" android:enabled="true" />
