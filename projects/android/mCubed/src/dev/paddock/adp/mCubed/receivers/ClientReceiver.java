@@ -16,17 +16,17 @@ public class ClientReceiver extends BroadcastReceiver implements IReceiver {
 	private IClientCallback callback;
 	private boolean isAsynchronous;
 	private final List<String> intentActions = new ArrayList<String>();
-	
+
 	public ClientReceiver(IClientCallback callback, boolean isAsynchronous) {
 		this.callback = callback;
 		this.isAsynchronous = isAsynchronous;
 		intentActions.add(Schema.I_MCUBED);
 	}
-	
+
 	public void addAction(String action) {
 		intentActions.add(action);
 	}
-	
+
 	public void removeAction(String action) {
 		intentActions.remove(action);
 	}

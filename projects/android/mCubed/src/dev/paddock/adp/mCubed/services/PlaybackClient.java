@@ -3,13 +3,13 @@ package dev.paddock.adp.mCubed.services;
 import java.io.Serializable;
 import java.util.Locale;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.model.MediaStatus;
 import dev.paddock.adp.mCubed.utilities.Log;
 import dev.paddock.adp.mCubed.utilities.Utilities;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 
 public class PlaybackClient {
 	/**

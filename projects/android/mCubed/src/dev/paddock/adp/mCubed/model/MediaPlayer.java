@@ -29,11 +29,11 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 	private static final int STATE_PAUSED = 3;
 	private static final int STATE_STOPPED = 4;
 	private static final int STATE_COMPLETED = 5;
-	
+
 	// Volume members
 	private static final float DUCK_VOLUME = 0.1f;
 	private static final float FULL_VOLUME = 1.0f;
-	
+
 	// Media player members
 	private static final MediaPlayer instance = new MediaPlayer();
 	private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
@@ -45,7 +45,7 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 	private MediaPlayerState internalState;
 	private MediaFile mediaFile;
 	private MediaStatus status = MediaStatus.Pause;
-	
+
 	// Seek members
 	private final Runnable seekTask = new Runnable() {
 		@Override
@@ -71,16 +71,17 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 	};
 	private final TimerTask seekTimer = new TimerTask(seekTask, 500L);
 	private int seek;
-	
+
 	public static MediaPlayer getInstance() {
 		return instance;
 	}
-	
+
 	/**
 	 * Prevents external instances of a MediaPlayer
 	 */
-	private MediaPlayer() { }
-	
+	private MediaPlayer() {
+	}
+
 	public void open() {
 		write.lock();
 		try {
@@ -103,11 +104,11 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 			write.unlock();
 		}
 	}
-	
+
 	public void close() {
 		close(true);
 	}
-	
+
 	public void close(boolean releaseFile) {
 		seekTimer.stop();
 		write.lock();
@@ -126,7 +127,7 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 		setStatus(MediaStatus.Pause, false);
 		seek = 0;
 	}
-	
+
 	private void setDataSourceInternal(String dataSource) {
 		write.lock();
 		try {
@@ -143,7 +144,7 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 			write.unlock();
 		}
 	}
-	
+
 	private void prepareInternal() {
 		int state = getCurrentState();
 		if (state != STATE_PREPARED) {
@@ -161,11 +162,11 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 			}
 		}
 	}
-	
+
 	public void play() {
 		setStatus(MediaStatus.Play);
 	}
-	
+
 	private void playInternal() {
 		int state = getCurrentState();
 		if (state == STATE_STOPPED) {
@@ -180,11 +181,11 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 		}
 		seekTimer.start(true);
 	}
-	
+
 	public void pause() {
 		setStatus(MediaStatus.Pause);
 	}
-	
+
 	private void pauseInternal() {
 		boolean skipPause = false;
 		int state = getCurrentState();
@@ -204,11 +205,11 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 		}
 		seekTimer.stop(true);
 	}
-	
+
 	public void stop() {
 		setStatus(MediaStatus.Stop);
 	}
-	
+
 	private void stopInternal() {
 		write.lock();
 		try {
@@ -219,7 +220,7 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 		}
 		seekTimer.stop(true);
 	}
-	
+
 	private void syncStatus() {
 		open();
 		if (status == MediaStatus.Play) {
@@ -230,7 +231,7 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 			stopInternal();
 		}
 	}
-	
+
 	private boolean syncMediaFile(MediaFile mediaFile, boolean doClose) {
 		// Close/open the media player for the new file
 		if (mediaFile == null) {
@@ -240,7 +241,7 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 			return false;
 		} else {
 			open();
-			
+
 			// Grab and set the new file location, or close the media player
 			Uri fileLocation = mediaFile.getFileLocation();
 			if (fileLocation == null) {
@@ -255,7 +256,7 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 		}
 		return true;
 	}
-	
+
 	public int getCurrentState() {
 		int state = STATE_DEFAULT;
 		read.lock();
@@ -266,23 +267,23 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 		}
 		return state;
 	}
-	
+
 	public boolean isPlaying() {
 		return getStatus() == MediaStatus.Play;
 	}
-	
+
 	public MediaStatus getStatus() {
 		return status;
 	}
-	
+
 	public boolean isSetStatusLocked() {
 		return statusLockCount > 0;
 	}
-	
+
 	public void setStatus(MediaStatus status) {
 		setStatus(status, true);
 	}
-	
+
 	private void setStatus(MediaStatus status, boolean doSync) {
 		if (status != null) {
 			if (isSetStatusLocked()) {
@@ -301,9 +302,10 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns the current duration of the loaded song in milliseconds.
+	 * 
 	 * @return The current duration of the loaded song in milliseconds.
 	 */
 	public int getDuration() {
@@ -318,37 +320,27 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 			read.unlock();
 		}
 	}
-	
+
 	/**
 	 * Returns the current position in the song in milliseconds.
+	 * 
 	 * @return The current position in the song in milliseconds.
 	 */
 	public int getSeek() {
 		return seek;
 	}
-	
+
 	public boolean isSetSeekLocked() {
 		return seekLockCount > 0;
 	}
-	
+
 	public void setSeek(int ms) {
 		setSeek(ms, false);
 	}
-	
+
 	private void setSeek(int ms, boolean fromAndroidPlayer) {
 		if (fromAndroidPlayer) {
-			if (seek != ms) {
-				// Send property changing
-				NotificationArgs args = new NotificationArgs(this, "Seek", this.seek, ms);
-				PropertyManager.notifyPropertyChanging(args);
-				
-				// Change the property
-				seek = ms;
-				
-				// Send property changed
-				PropertyManager.notifyPropertyChanged(args);
-				PlaybackServer.propertyChanged(0, Schema.PROP_PB_SEEK, seek, Schema.I_MCUBED_SEEK);
-			}
+			updateSeek(ms, true);
 		} else if (!isSetSeekLocked()) {
 			open();
 			if (getCurrentState() == STATE_STOPPED) {
@@ -367,10 +359,33 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 			} finally {
 				read.unlock();
 			}
-			setSeek(seek, true);
+			updateSeek(seek, false);
 		}
 	}
-	
+
+	private void updateSeek(int ms, boolean fromAndroidPlayer) {
+		if (seek != ms) {
+			// Send property changing
+			NotificationArgs args = new NotificationArgs(this, "Seek", this.seek, ms);
+			NotificationArgs specificArgs = null;
+			if (fromAndroidPlayer) {
+				specificArgs = new NotificationArgs(this, "SeekListening", this.seek, ms);
+			} else {
+				specificArgs = new NotificationArgs(this, "SeekUser", this.seek, ms);
+			}
+			PropertyManager.notifyPropertyChanging(args);
+			PropertyManager.notifyPropertyChanging(specificArgs);
+
+			// Change the property
+			seek = ms;
+
+			// Send property changed
+			PropertyManager.notifyPropertyChanged(args);
+			PropertyManager.notifyPropertyChanged(specificArgs);
+			PlaybackServer.propertyChanged(0, Schema.PROP_PB_SEEK, seek, Schema.I_MCUBED_SEEK);
+		}
+	}
+
 	private void adjustVolume(float volume) {
 		write.lock();
 		try {
@@ -381,23 +396,23 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 			write.unlock();
 		}
 	}
-	
+
 	public void adjustVolumeDuck() {
 		adjustVolume(DUCK_VOLUME);
 	}
-	
+
 	public void adjustVolumeFull() {
 		adjustVolume(FULL_VOLUME);
 	}
-	
+
 	public MediaFile getMediaFile() {
 		return mediaFile;
 	}
-	
+
 	public void setMediaFile(MediaFile mediaFile) {
 		setMediaFile(mediaFile, true);
 	}
-	
+
 	private void setMediaFile(MediaFile mediaFile, boolean doClose) {
 		// Ensure the file changed and the location can be loaded
 		if (this.mediaFile != mediaFile) {
@@ -405,20 +420,20 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 			if (this.mediaFile != null) {
 				this.mediaFile.setPlaying(false);
 			}
-			
+
 			// Send property changing
 			NotificationArgs args = new NotificationArgs(this, "MediaFile", this.mediaFile, mediaFile);
 			PropertyManager.notifyPropertyChanging(args);
 			this.mediaFile = mediaFile;
 			long id = 0L;
-			
+
 			// Sync the media player to the new file
 			if (syncMediaFile(mediaFile, doClose)) {
 				this.mediaFile.setPlaying(true);
 				id = this.mediaFile.getID();
 				syncStatus();
 			}
-			
+
 			// Send property changed
 			PropertyManager.notifyPropertyChanged(args);
 			PlaybackServer.propertyChanged(0, Schema.PROP_PB_ID, id);
@@ -426,15 +441,15 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 			setSeek(0);
 		}
 	}
-	
+
 	public MediaPlayerState getMediaPlayerStateWithLocks(boolean acquireSeek, boolean acquireStatus, boolean doPause) {
 		return getMediaPlayerState(acquireSeek, acquireSeek, acquireStatus, acquireStatus, doPause);
 	}
-	
+
 	public MediaPlayerState getMediaPlayerState(boolean acquireSeek, boolean acquireStatus, boolean doPause) {
 		return getMediaPlayerState(acquireSeek, false, acquireStatus, false, doPause);
 	}
-	
+
 	public MediaPlayerState getMediaPlayerState(boolean acquireSeek, boolean lockSeek, boolean acquireStatus, boolean lockStatus, boolean doPause) {
 		int seek = 0;
 		MediaStatus status = null;
@@ -457,7 +472,7 @@ public class MediaPlayer implements OnCompletionListener, OnErrorListener {
 		}
 		return state;
 	}
-	
+
 	public void setMediaPlayerState(MediaPlayerState state) {
 		if (state != null) {
 			if (state.isSeekLockAcquired() && isSetSeekLocked()) {
