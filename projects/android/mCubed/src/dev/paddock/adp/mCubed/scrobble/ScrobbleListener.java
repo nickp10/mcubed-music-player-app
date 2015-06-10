@@ -78,7 +78,7 @@ public class ScrobbleListener implements IListener {
 		if (ScrobbleService.isTurnedOn() && ScrobbleService.isLoggedIn()) {
 			if (file != null && status == MediaStatus.Play) {
 				Utilities.dispatchToBackgroundThread(Utilities.getContext(), new Runnable() {
-					
+
 					@Override
 					public void run() {
 						if (!hasUpdatedNowPlaying) {
@@ -94,8 +94,7 @@ public class ScrobbleListener implements IListener {
 											hasUpdatedNowPlaying = true;
 											Log.i(String.format(Locale.US, "Scrobble: Update now playing request successful [Artist=%s, Title=%s]", response.getArtist(), response.getTrack()));
 										}
-									}
-									catch (ScrobbleException e) {
+									} catch (ScrobbleException e) {
 										Log.e(e);
 									}
 								}
