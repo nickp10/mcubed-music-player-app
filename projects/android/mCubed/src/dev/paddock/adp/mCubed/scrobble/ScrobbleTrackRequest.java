@@ -1,7 +1,10 @@
 package dev.paddock.adp.mCubed.scrobble;
 
+import java.util.Locale;
+
 public class ScrobbleTrackRequest extends ScrobbleRequest<ScrobbleTrackResponse> {
 
+	private final int BATCH_SIZE = 50; // Defined by last.fm
 	private int trackCount;
 
 	public ScrobbleTrackRequest() {
@@ -10,6 +13,10 @@ public class ScrobbleTrackRequest extends ScrobbleRequest<ScrobbleTrackResponse>
 
 	public int getTrackCount() {
 		return trackCount;
+	}
+
+	public boolean isFull() {
+		return trackCount >= BATCH_SIZE;
 	}
 
 	/**
@@ -25,8 +32,8 @@ public class ScrobbleTrackRequest extends ScrobbleRequest<ScrobbleTrackResponse>
 	 * @throws IllegalStateException Thrown if 50 scrobbles already exist in the request.
 	 */
 	public void addTrack(String artist, String albumArtist, String album, String track, int trackNumber, int duration, int timestamp) {
-		if (trackCount >= 50) {
-			throw new IllegalStateException("Cannot add more than 50 tracks per request.");
+		if (isFull()) {
+			throw new IllegalStateException(String.format(Locale.US, "Cannot add more than %d tracks per request.", BATCH_SIZE));
 		}
 		String index = String.format("[%s]", trackCount++);
 		setValue("artist" + index, artist);
