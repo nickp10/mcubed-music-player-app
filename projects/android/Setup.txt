@@ -1,9 +1,0 @@
-1. Open a command prompt and navigate to each Android project
-2. Execute "android update project --path ./" for each project
-3. Import existing projects into a new workspace
-4. Go to Window -> Preferences -> Java -> Build Path -> Classpath Variables
-5. Add a new variable for "ANDROID_RUNTIME_8" with the path to the android.jar (e.g. 
-C:/Program Files (x86)/Android/android-sdk/platforms/android-8/android.jar)
-6. Add a new variable for "MCUBED_BIN" with the path to the mCubed project bin/classes folder (e.g. C:/Users/Nick/Projects/Java/mCubed/bin/classes)
-7. Save and close the preferences
-8. Restart Eclipse
