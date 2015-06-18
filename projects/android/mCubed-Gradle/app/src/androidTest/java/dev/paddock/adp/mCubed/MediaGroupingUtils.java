@@ -1,36 +1,32 @@
 package dev.paddock.adp.mCubed;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.List;
 
-import org.easymock.IAnswer;
-
-import com.google.android.testing.mocking.AndroidMock;
-import com.google.android.testing.mocking.UsesMocks;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import dev.paddock.adp.mCubed.model.MediaFile;
 import dev.paddock.adp.mCubed.model.MediaGroup;
 import dev.paddock.adp.mCubed.model.MediaGrouping;
 
-@UsesMocks(MediaGrouping.class)
 public class MediaGroupingUtils {
 	public static MediaGrouping createMock(MediaGroup group, long id) {
 		String name = group + ":" + id;
-		final MediaGrouping grouping = AndroidMock.createMock(MediaGrouping.class, group, id, name);
-		AndroidMock.expect(grouping.isMediaGroupAll()).andReturn(group == MediaGroup.All).anyTimes();
-		AndroidMock.expect(grouping.getGroup()).andReturn(group).anyTimes();
-		AndroidMock.expect(grouping.getID()).andReturn(id).anyTimes();
-		AndroidMock.expect(grouping.getName()).andReturn(name).anyTimes();
-		AndroidMock.expect(grouping.getMediaFiles()).andAnswer(new IAnswer<List<MediaFile>>() {
+		final MediaGrouping grouping = mock(MediaGrouping.class);
+		when(grouping.isMediaGroupAll()).thenReturn(group == MediaGroup.All);
+		when(grouping.getGroup()).thenReturn(group);
+		when(grouping.getID()).thenReturn(id);
+		when(grouping.getName()).thenReturn(name);
+		when(grouping.getMediaFiles()).thenAnswer(new Answer<List<MediaFile>>() {
 			@Override
-			public List<MediaFile> answer() throws Throwable {
+			public List<MediaFile> answer(InvocationOnMock invocation) throws Throwable {
 				return MediaFileUtils.getMediaFilesForGrouping(grouping);
 			}
-		}).anyTimes();
-		AndroidMock.replay(grouping);
+		});
 		return grouping;
-	}
-	
-	public static void verifyMock(MediaGrouping grouping) {
-		AndroidMock.verify(grouping);
 	}
 }

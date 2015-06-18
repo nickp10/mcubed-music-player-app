@@ -3,17 +3,18 @@ package dev.paddock.adp.mCubed.model;
 import static dev.paddock.adp.mCubed.TestUtils.assertSequenceEmpty;
 import static dev.paddock.adp.mCubed.TestUtils.assertSequenceEquals;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import android.test.AndroidTestCase;
 
-import com.google.android.testing.mocking.AndroidMock;
-import com.google.android.testing.mocking.UsesMocks;
+import org.mockito.Mockito;
 
 import dev.paddock.adp.mCubed.MediaFileUtils;
 
-@UsesMocks(Playlist.class)
 public class PlayModeTest extends AndroidTestCase {
 	private final MediaFile[] mediaFiles = MediaFileUtils.getMocks();
 	private final List<MediaFile> files = new ArrayList<MediaFile>();
@@ -24,16 +25,8 @@ public class PlayModeTest extends AndroidTestCase {
 		super.setUp();
 		MediaFileUtils.verifyArrange();
 		files.clear();
-		playlist = AndroidMock.createMock(Playlist.class, true);
-		AndroidMock.expect(playlist.getFiles()).andReturn(files).anyTimes();
-		AndroidMock.replay(playlist);
-	}
-	
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
-		MediaFileUtils.verifyMocks();
-		AndroidMock.verify(playlist);
+		playlist = mock(Playlist.class);
+		when(playlist.getFiles()).thenReturn(files);
 	}
 	
 	private void addedToPlaylist(PlayMode playMode, MediaFile file) {

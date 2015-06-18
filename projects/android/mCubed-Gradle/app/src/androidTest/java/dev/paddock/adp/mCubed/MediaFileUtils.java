@@ -4,17 +4,18 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNotSame;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.android.testing.mocking.AndroidMock;
-import com.google.android.testing.mocking.UsesMocks;
+import org.mockito.Mockito;
 
 import dev.paddock.adp.mCubed.model.MediaFile;
 import dev.paddock.adp.mCubed.model.MediaGroup;
 import dev.paddock.adp.mCubed.model.MediaGrouping;
 
-@UsesMocks(MediaFile.class)
 public class MediaFileUtils {
 	private static final String[] artists = new String[] { "Eminem", "Eminem/Dr. Dre", "Dr. Dre/Snoop Dogg" };
 	private static final String[] albums = new String[] { "Recovery", "Relapse", "2001" };
@@ -32,17 +33,16 @@ public class MediaFileUtils {
 	}
 	
 	private static MediaFile createMock(int id, int artistID, int albumID, int genreID, String title) {
-		MediaFile file = AndroidMock.createMock(MediaFile.class);
-		AndroidMock.expect(file.fileExists()).andReturn(true).anyTimes();
-		AndroidMock.expect(file.getID()).andReturn((long)id + 1).anyTimes();
-		AndroidMock.expect(file.getAlbum()).andReturn(albums[albumID]).anyTimes();
-		AndroidMock.expect(file.getAlbumID()).andReturn((long)albumID + 1).anyTimes();
-		AndroidMock.expect(file.getArtist()).andReturn(artists[artistID]).anyTimes();
-		AndroidMock.expect(file.getArtistID()).andReturn((long)artistID + 1).anyTimes();
-		AndroidMock.expect(file.getGenre()).andReturn(genres[genreID]).anyTimes();
-		AndroidMock.expect(file.getGenreID()).andReturn((long)genreID + 1).anyTimes();
-		AndroidMock.expect(file.getTitle()).andReturn(title).anyTimes();
-		AndroidMock.replay(file);
+		MediaFile file = mock(MediaFile.class);
+		when(file.fileExists()).thenReturn(true);
+		when(file.getID()).thenReturn((long) id + 1);
+		when(file.getAlbum()).thenReturn(albums[albumID]);
+		when(file.getAlbumID()).thenReturn((long) albumID + 1);
+		when(file.getArtist()).thenReturn(artists[artistID]);
+		when(file.getArtistID()).thenReturn((long) artistID + 1);
+		when(file.getGenre()).thenReturn(genres[genreID]);
+		when(file.getGenreID()).thenReturn((long) genreID + 1);
+		when(file.getTitle()).thenReturn(title);
 		return file;
 	}
 	
@@ -61,12 +61,6 @@ public class MediaFileUtils {
 			verified = 1;
 		} else {
 			assertEquals("A previous verification failed", 1, verified);
-		}
-	}
-	
-	public static void verifyMocks() {
-		for (MediaFile file : mediaFiles) {
-			AndroidMock.verify(file);
 		}
 	}
 	

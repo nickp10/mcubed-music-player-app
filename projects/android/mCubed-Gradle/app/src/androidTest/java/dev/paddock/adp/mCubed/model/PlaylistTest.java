@@ -2,15 +2,12 @@ package dev.paddock.adp.mCubed.model;
 
 import android.test.AndroidTestCase;
 
-import com.google.android.testing.mocking.UsesMocks;
-
 import dev.paddock.adp.mCubed.MediaFileUtils;
 import dev.paddock.adp.mCubed.MediaGroupingUtils;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 import static dev.paddock.adp.mCubed.TestUtils.assertSequenceEmpty;
 import static dev.paddock.adp.mCubed.TestUtils.assertSequenceEquals;
 
-@UsesMocks(MediaGrouping.class)
 public class PlaylistTest extends AndroidTestCase {
 	private final MediaFile[] mediaFiles = MediaFileUtils.getMocks();
 	
@@ -28,7 +25,6 @@ public class PlaylistTest extends AndroidTestCase {
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		MediaFileUtils.verifyMocks();
 		Utilities.popContext();
 	}
 	

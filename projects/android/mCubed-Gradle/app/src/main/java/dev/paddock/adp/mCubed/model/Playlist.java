@@ -24,14 +24,6 @@ public class Playlist {
 	private final PlayMode playMode;
 	private String name;
 	private MediaFile current;
-	
-	/**
-	 * FOR TESTING PURPOSES ONLY!!!
-	 * @param unitTestOnly
-	 */
-	protected Playlist(Boolean unitTestOnly) {
-		playMode = null;
-	}
 
 	public Playlist() {
 		this(Collections.<MediaFile>emptyList());
