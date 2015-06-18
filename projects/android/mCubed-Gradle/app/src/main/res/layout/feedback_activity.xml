@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent"
+	android:layout_width="fill_parent">
+	<ScrollView 
+		android:layout_height="fill_parent"
+		android:layout_width="fill_parent">
+		<LinearLayout
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:orientation="vertical">
+			<TextView
+				style="@android:style/TextAppearance"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:layout_gravity="center_horizontal"
+				android:layout_marginTop="10dp"
+				android:layout_marginBottom="10dp"
+				android:text="@string/feedback_main_title" />
+			<TableLayout
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:layout_marginLeft="10dp"
+				android:layout_marginRight="10dp">
+				<TableRow>
+					<TextView
+						android:layout_height="wrap_content"
+						android:layout_width="wrap_content"
+						android:layout_gravity="center_vertical"
+						android:layout_marginRight="5dp"
+						android:gravity="right"
+						android:text="@string/feedback_email_label" />
+					<EditText
+						android:layout_height="wrap_content"
+						android:layout_width="0dp"
+						android:layout_weight="1"
+						android:inputType="textEmailAddress"
+						android:id="@+id/fa_email_text" />
+				</TableRow>
+				<TableRow>
+					<TextView
+						android:layout_height="wrap_content"
+						android:layout_width="wrap_content"
+						android:layout_gravity="center_vertical"
+						android:layout_marginRight="5dp"
+						android:gravity="right"
+						android:text="@string/feedback_message_label" />
+					<EditText
+						android:layout_height="wrap_content"
+						android:layout_width="0dp"
+						android:layout_weight="1"
+						android:gravity="top"
+						android:inputType="textMultiLine|textLongMessage"
+						android:lines="10"
+						android:id="@+id/fa_message_text" />
+				</TableRow>
+			</TableLayout>
+			<Button
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:layout_gravity="center_horizontal"
+				android:layout_marginTop="10dp"
+				android:text="@string/feedback_submit_button_perform"
+				android:id="@+id/fa_submit_button" />
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:layout_margin="10dp"
+				android:text="@string/feedback_email_notes" />
+		</LinearLayout>
+	</ScrollView>
+	<dev.paddock.adp.mCubed.controls.MountDisplay
+		android:layout_height="fill_parent"
+		android:layout_width="fill_parent"
+		android:id="@+id/fa_mount_display" />
+	<dev.paddock.adp.mCubed.controls.ProgressDisplay
+		android:layout_height="fill_parent"
+		android:layout_width="fill_parent"
+		android:id="@+id/fa_progress_display" />
+</merge>

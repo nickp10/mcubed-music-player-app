@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lfm status="ok">
+	<scrobbles accepted="10" ignored="0">
+		<scrobble>
+			<track corrected="0">Cold Wind Blows</track>
+			<artist corrected="0">Eminem</artist>
+			<album corrected="0">Recovery</album>
+			<albumArtist corrected="0">Eminem</albumArtist>
+			<timestamp>1433805462</timestamp>
+			<ignoredMessage code="0"/>
+		</scrobble>
+		<scrobble>
+			<track corrected="0">Talkin' 2 Myself</track>
+			<artist corrected="0">Eminem</artist>
+			<album corrected="0">Recovery</album>
+			<albumArtist corrected="0">Eminem</albumArtist>
+			<timestamp>1433805462</timestamp>
+			<ignoredMessage code="0"/>
+		</scrobble>
+		<scrobble>
+			<track corrected="0">On Fire</track>
+			<artist corrected="0">Eminem</artist>
+			<album corrected="0">Recovery</album>
+			<albumArtist corrected="0">Eminem</albumArtist>
+			<timestamp>1433805462</timestamp>
+			<ignoredMessage code="0"/>
+		</scrobble>
+		<scrobble>
+			<track corrected="0">Won't Back Down</track>
+			<artist corrected="0">Eminem</artist>
+			<album corrected="0">Recovery</album>
+			<albumArtist corrected="0">Eminem</albumArtist>
+			<timestamp>1433805462</timestamp>
+			<ignoredMessage code="0"/>
+		</scrobble>
+		<scrobble>
+			<track corrected="0">W.T.P.</track>
+			<artist corrected="0">Eminem</artist>
+			<album corrected="0">Recovery</album>
+			<albumArtist corrected="0">Eminem</albumArtist>
+			<timestamp>1433805462</timestamp>
+			<ignoredMessage code="0"/>
+		</scrobble>
+		<scrobble>
+			<track corrected="0">Going Through Changes</track>
+			<artist corrected="0">Eminem</artist>
+			<album corrected="0">Recovery</album>
+			<albumArtist corrected="0">Eminem</albumArtist>
+			<timestamp>1433805462</timestamp>
+			<ignoredMessage code="0"/>
+		</scrobble>
+		<scrobble>
+			<track corrected="0">Not Afraid</track>
+			<artist corrected="0">Eminem</artist>
+			<album corrected="0">Recovery</album>
+			<albumArtist corrected="0">Eminem</albumArtist>
+			<timestamp>1433805462</timestamp>
+			<ignoredMessage code="0"/>
+		</scrobble>
+		<scrobble>
+			<track corrected="0">Seduction</track>
+			<artist corrected="0">Eminem</artist>
+			<album corrected="0">Recovery</album>
+			<albumArtist corrected="0">Eminem</albumArtist>
+			<timestamp>1433805462</timestamp>
+			<ignoredMessage code="0"/>
+		</scrobble>
+		<scrobble>
+			<track corrected="0">No Love</track>
+			<artist corrected="0">Eminem</artist>
+			<album corrected="0">Recovery</album>
+			<albumArtist corrected="0">Eminem</albumArtist>
+			<timestamp>1433805462</timestamp>
+			<ignoredMessage code="0"/>
+		</scrobble>
+		<scrobble>
+			<track corrected="0">Space Bound</track>
+			<artist corrected="0">Eminem</artist>
+			<album corrected="0">Recovery</album>
+			<albumArtist corrected="0">Eminem</albumArtist>
+			<timestamp>1433805463</timestamp>
+			<ignoredMessage code="0"/>
+		</scrobble>
+	</scrobbles>
+</lfm>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent"
+	android:layout_width="fill_parent">
+	<FrameLayout
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent"
+		android:layout_marginLeft="20dp"
+		android:layout_marginRight="20dp"
+		android:layout_gravity="center_vertical">
+		<LinearLayout
+			android:layout_height="fill_parent"
+			android:layout_width="fill_parent"
+			android:background="?attr/overlay_background"
+			android:orientation="vertical">
+			<fragment
+				android:name="dev.paddock.adp.mCubed.controls.NowPlayingView"
+				android:layout_height="0dp"
+				android:layout_width="fill_parent"
+				android:layout_weight="1"
+				android:layout_marginTop="2dp"
+				android:id="@+id/oa_now_playing_view" />
+			<dev.paddock.adp.mCubed.controls.PlayerControls
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:layout_marginBottom="5dp"
+				android:id="@+id/oa_player_controls" />
+		</LinearLayout>
+		<ImageButton
+			style="@style/OverlayActionButton"
+			android:layout_gravity="left"
+			android:contentDescription="@string/button_open_content"
+			android:src="?attr/overlay_open"
+			android:id="@+id/oa_open_button" />
+		<ImageButton
+			style="@style/OverlayActionButton"
+			android:layout_gravity="right"
+			android:contentDescription="@string/button_close_content"
+			android:src="?attr/overlay_exit"
+			android:id="@+id/oa_close_button" />
+	</FrameLayout>
+	<dev.paddock.adp.mCubed.controls.MountDisplay
+		android:layout_height="fill_parent"
+		android:layout_width="fill_parent"
+		android:id="@+id/oa_mount_display" />
+	<dev.paddock.adp.mCubed.controls.ProgressDisplay
+		android:layout_height="fill_parent"
+		android:layout_width="fill_parent"
+		android:id="@+id/oa_progress_display" />
+</merge>

@@ -1,0 +1,117 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent"
+	android:layout_width="fill_parent"
+	android:orientation="vertical">
+	<ImageView
+		android:layout_height="175dp"
+		android:layout_width="175dp"
+		android:layout_gravity="center_horizontal"
+		android:paddingTop="10dp"
+		android:contentDescription="@string/cover_art_content"
+		android:id="@+id/mfdv_cover_image" />
+	<LinearLayout
+		android:layout_height="fill_parent"
+		android:layout_width="fill_parent"
+		android:paddingLeft="10dp"
+		android:paddingRight="10dp"
+		android:baselineAligned="false"
+		android:orientation="horizontal">
+		<LinearLayout
+			android:layout_height="fill_parent"
+			android:layout_width="fill_parent"
+			android:layout_weight="40"
+			android:orientation="vertical">
+			<TextView
+				style="@style/MediaFileDetailLabel"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="@string/mfdv_artist_label" />
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:textIsSelectable="true"
+				android:id="@+id/mfdv_artist_textView" />
+			<TextView
+				style="@style/MediaFileDetailLabel"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:paddingTop="10dp"
+				android:text="@string/mfdv_album_label" />
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:textIsSelectable="true"
+				android:id="@+id/mfdv_album_textView" />
+			<TextView
+				style="@style/MediaFileDetailLabel"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:paddingTop="10dp"
+				android:text="@string/mfdv_title_label" />
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:textIsSelectable="true"
+				android:id="@+id/mfdv_title_textView" />
+		</LinearLayout>
+		<LinearLayout
+			android:layout_height="fill_parent"
+			android:layout_width="fill_parent"
+			android:layout_weight="60"
+			android:layout_gravity="right"
+			android:orientation="vertical">
+			<TextView
+				style="@style/MediaFileDetailLabel"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:layout_gravity="right"
+				android:text="@string/mfdv_genre_label" />
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:layout_gravity="right"
+				android:textIsSelectable="true"
+				android:id="@+id/mfdv_genre_textView" />
+			<TextView
+				style="@style/MediaFileDetailLabel"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:layout_gravity="right"
+				android:paddingTop="10dp"
+				android:text="@string/mfdv_track_label" />
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:layout_gravity="right"
+				android:textIsSelectable="true"
+				android:id="@+id/mfdv_track_textView" />
+			<TextView
+				style="@style/MediaFileDetailLabel"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:layout_gravity="right"
+				android:paddingTop="10dp"
+				android:text="@string/mfdv_year_label" />
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:layout_gravity="right"
+				android:textIsSelectable="true"
+				android:id="@+id/mfdv_year_textView" />
+			<TextView
+				style="@style/MediaFileDetailLabel"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:layout_gravity="right"
+				android:paddingTop="10dp"
+				android:text="@string/mfdv_duration_label" />
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:layout_gravity="right"
+				android:textIsSelectable="true"
+				android:id="@+id/mfdv_duration_textView" />
+		</LinearLayout>
+	</LinearLayout>
+</LinearLayout>
