@@ -473,6 +473,9 @@ public class Utilities {
 			return true;
 		} catch (FileNotFoundException e) {
 			return false;
+		} catch (SecurityException e) {
+			Log.e(e);
+			return false;
 		} finally {
 			if (stream != null) {
 				try {

@@ -69,31 +69,46 @@ public class ScrobbleListener implements IListener {
 	}
 
 	private void onMediaFileChanged(MediaFile oldFile, MediaFile newFile) {
-		if (oldFile != null && hasPlayed(oldFile)) {
-			scrobble(oldFile);
+		Utilities.pushContext(App.getAppContext());
+		try {
+			if (oldFile != null && hasPlayed(oldFile)) {
+				scrobble(oldFile);
+			}
+			if (newFile != null) {
+				int fileDuration = (int) Math.ceil(newFile.getDuration() / 1000d);
+				seekFlags = new boolean[fileDuration];
+			}
+			updateNowPlaying();
+		} finally {
+			Utilities.popContext();
 		}
-		if (newFile != null) {
-			int fileDuration = (int) Math.ceil(newFile.getDuration() / 1000d);
-			seekFlags = new boolean[fileDuration];
-		}
-		updateNowPlaying();
 	}
 
 	private void onSeekChanged(int oldSeek, int newSeek) {
-		boolean[] seekFlags = this.seekFlags;
-		if (seekFlags != null) {
-			int from = (int) Math.floor(oldSeek / 1000d);
-			int to = (int) Math.floor(newSeek / 1000d);
-			for (; from <= to; from++) {
-				if (from < seekFlags.length) {
-					seekFlags[from] = true;
+		Utilities.pushContext(App.getAppContext());
+		try {
+			boolean[] seekFlags = this.seekFlags;
+			if (seekFlags != null) {
+				int from = (int) Math.floor(oldSeek / 1000d);
+				int to = (int) Math.floor(newSeek / 1000d);
+				for (; from <= to; from++) {
+					if (from < seekFlags.length) {
+						seekFlags[from] = true;
+					}
 				}
 			}
+		} finally {
+			Utilities.popContext();
 		}
 	}
 
 	private void onStatusChanged(MediaStatus oldStatus, MediaStatus newStatus) {
-		updateNowPlaying();
+		Utilities.pushContext(App.getAppContext());
+		try {
+			updateNowPlaying();
+		} finally {
+			Utilities.popContext();
+		}
 	}
 
 	private void updateNowPlaying() {

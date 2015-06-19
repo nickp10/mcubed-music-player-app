@@ -23,7 +23,7 @@ import dev.paddock.adp.mCubed.utilities.Utilities;
  * - Change setupDefaults() to set the default value for the bluetooth preference
  */
 public class BluetoothPreferences {
-	private PreferenceActivity preferences;
+	private final PreferenceActivity preferences;
 
 	public BluetoothPreferences(PreferenceActivity preferences) {
 		this.preferences = preferences;
@@ -86,7 +86,7 @@ public class BluetoothPreferences {
 		bluetoothSwitch.setTitle(R.string.pref_bluetooth_switch_title);
 		bluetoothSwitch.setSummary(R.string.pref_bluetooth_switch_summary_off);
 		bluetoothSwitch.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-			
+
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
 				bluetoothSwitch.setEnabled(false);
@@ -105,14 +105,19 @@ public class BluetoothPreferences {
 		defaultPreference.setKey(getDeviceString(preferences, device, R.string.pref_bluetooth_defaults));
 		defaultPreference.setDisableDependentsState(true);
 		defaultPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-			
+
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				// If using the default bluetooth settings, then re-setup the initial values to the defaults.
-				if (defaultPreference.isChecked()) {
-					setupDefaults(device, true);
+				Utilities.pushContext(preferences);
+				try {
+					// If using the default bluetooth settings, then re-setup the initial values to the defaults.
+					if (defaultPreference.isChecked()) {
+						setupDefaults(device, true);
+					}
+					return true;
+				} finally {
+					Utilities.popContext();
 				}
-				return true;
 			}
 		});
 		return defaultPreference;

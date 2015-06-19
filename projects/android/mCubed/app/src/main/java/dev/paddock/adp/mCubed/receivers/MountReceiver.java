@@ -76,7 +76,7 @@ public class MountReceiver extends BroadcastReceiver {
 	
 	private static boolean detectIsScanning() {
 		final List<String> scanning = new ArrayList<String>();
-		Utilities.query(MediaStore.getMediaScannerUri(), new String[] { MediaStore.MEDIA_SCANNER_VOLUME }, new ICursor() {
+		Utilities.query(MediaStore.getMediaScannerUri(), new String[]{MediaStore.MEDIA_SCANNER_VOLUME}, new ICursor() {
 			@Override
 			public boolean run(Cursor cursor) {
 				scanning.add(cursor.getString(0));
@@ -87,22 +87,28 @@ public class MountReceiver extends BroadcastReceiver {
 	}
 	
 	private static boolean loadUnmounted() {
+		boolean result = false;
 		final Context context = Utilities.getContext();
 		String contents = Utilities.loadFile(Schema.FILE_MOUNTS);
 		Utilities.deleteFile(Schema.FILE_MOUNTS);
 		if (!Utilities.isNullOrEmpty(contents)) {
 			String[] mounts = contents.split("\n");
 			if (mounts != null) {
+				result = true;
 				for (int i = 0; i < mounts.length; i++) {
 					Uri mountUri = Uri.parse(mounts[i]);
 					if (Utilities.fileExists(mountUri)) {
-						context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, mountUri));
+						try {
+							context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, mountUri));
+						} catch (SecurityException e) {
+							Log.e(e);
+							result = false;
+						}
 					}
 				}
-				return true;
 			}
 		}
-		return false;
+		return result;
 	}
 	
 	private static void saveUnmounted() {
