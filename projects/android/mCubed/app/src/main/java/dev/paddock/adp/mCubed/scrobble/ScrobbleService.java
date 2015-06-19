@@ -45,7 +45,6 @@ public class ScrobbleService {
 			String responseBody = Utilities.loadStream(responseStream);
 			return ScrobbleResponse.parse(scrobbleRequest.getResponseClass(), responseBody);
 		} catch (ScrobbleException e) {
-			Log.e(e);
 			throw e;
 		} catch (Exception e) {
 			Log.e(e);
