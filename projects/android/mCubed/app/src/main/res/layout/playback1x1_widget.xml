@@ -11,8 +11,8 @@
 		<ImageButton
 			android:layout_height="fill_parent"
 			android:layout_width="fill_parent"
-			android:layout_margin="10dp"
 			android:contentDescription="@string/button_action_content"
+			android:scaleType="fitCenter"
 			android:src="@drawable/widget_play"
 			android:background="@drawable/media_button_background"
 			android:id="@+id/w11_play_button" />
