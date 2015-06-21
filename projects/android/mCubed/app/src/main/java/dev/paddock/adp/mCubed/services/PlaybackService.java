@@ -20,9 +20,10 @@ import dev.paddock.adp.mCubed.R;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.activities.LibraryActivity;
 import dev.paddock.adp.mCubed.activities.OverlayActivity;
+import dev.paddock.adp.mCubed.listeners.AudioFocusListener;
 import dev.paddock.adp.mCubed.listeners.HeadsetListener;
 import dev.paddock.adp.mCubed.listeners.IListener;
-import dev.paddock.adp.mCubed.listeners.MediaAssociateListener;
+import dev.paddock.adp.mCubed.listeners.MediaSessionListener;
 import dev.paddock.adp.mCubed.listeners.MountListener;
 import dev.paddock.adp.mCubed.listeners.PhoneStateListener;
 import dev.paddock.adp.mCubed.model.AudioFocusState;
@@ -36,7 +37,6 @@ import dev.paddock.adp.mCubed.receivers.HeadsetReceiver;
 import dev.paddock.adp.mCubed.receivers.IReceiver;
 import dev.paddock.adp.mCubed.receivers.NotificationReceiver;
 import dev.paddock.adp.mCubed.receivers.PhoneStateReceiver;
-import dev.paddock.adp.mCubed.receivers.RemoteControlReceiver;
 import dev.paddock.adp.mCubed.scrobble.ScrobbleListener;
 import dev.paddock.adp.mCubed.utilities.App;
 import dev.paddock.adp.mCubed.utilities.Log;
@@ -46,7 +46,7 @@ import dev.paddock.adp.mCubed.utilities.Utilities;
 public class PlaybackService extends Service {
 	private Runnable initCallback;
 	private IServerCallback serverCallback;
-	private BroadcastReceiver clientReceiver;
+	private ClientReceiver clientReceiver;
 	private OnSharedPreferenceChangeListener preferenceListener;
 	private final Queue<Intent> queuedIntents = new LinkedList<Intent>();
 	private static final List<BroadcastReceiver> receivers = new ArrayList<BroadcastReceiver>();
@@ -100,7 +100,8 @@ public class PlaybackService extends Service {
 			// Create the various listeners
 			listeners.clear();
 			listeners.add(new MountListener());
-			listeners.add(new MediaAssociateListener());
+			listeners.add(AudioFocusListener.getInstance());
+			listeners.add(MediaSessionListener.getInstance());
 			listeners.add(new HeadsetListener());
 			listeners.add(new PhoneStateListener());
 			listeners.add(new ScrobbleListener());
@@ -289,7 +290,7 @@ public class PlaybackService extends Service {
 		return serverCallback;
 	}
 
-	private BroadcastReceiver getClientReceiver() {
+	private ClientReceiver getClientReceiver() {
 		if (clientReceiver == null) {
 			clientReceiver = new ClientReceiver(new ClientCallback() {
 				@Override
@@ -325,15 +326,21 @@ public class PlaybackService extends Service {
 				@Override
 				public void propertyPlaybackIDChanged(long playbackID) {
 					PlaybackService.this.updateNotification();
-					RemoteControlReceiver.updateCurrentMetadata();
+					MediaSessionListener.getInstance().updateCurrentMetadata();
+				}
+
+				@Override
+				public void propertyPlaybackSeekChanged(int ms) {
+					MediaSessionListener.getInstance().updatePlaybackState();
 				}
 
 				@Override
 				public void propertyPlaybackStatusChanged(MediaStatus playbackStatus) {
 					PlaybackService.this.updateNotification();
-					RemoteControlReceiver.updatePlaybackState();
+					MediaSessionListener.getInstance().updatePlaybackState();
 				}
 			}, false);
+			clientReceiver.addAction(Schema.I_MCUBED_SEEK);
 		}
 		return clientReceiver;
 	}

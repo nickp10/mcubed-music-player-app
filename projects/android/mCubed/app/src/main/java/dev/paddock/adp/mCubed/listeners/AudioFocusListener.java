@@ -1,5 +1,6 @@
-package dev.paddock.adp.mCubed.receivers;
+package dev.paddock.adp.mCubed.listeners;
 
+import android.content.Context;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import dev.paddock.adp.mCubed.Schema;
@@ -10,10 +11,17 @@ import dev.paddock.adp.mCubed.utilities.App;
 import dev.paddock.adp.mCubed.utilities.PropertyManager;
 import dev.paddock.adp.mCubed.utilities.Utilities;
 
-public class AudioFocusReceiver implements OnAudioFocusChangeListener {
-	private static AudioFocusReceiver instance;
+public class AudioFocusListener implements IListener, OnAudioFocusChangeListener {
+	private static final AudioFocusListener instance = new AudioFocusListener();
 	private AudioFocusState audioFocusState = AudioFocusState.NoAudioFocus;
-	
+
+	private AudioFocusListener() {
+	}
+
+	public static AudioFocusListener getInstance() {
+		return instance;
+	}
+
 	@Override
 	public void onAudioFocusChange(int focusChange) {
 		Utilities.pushContext(App.getAppContext());
@@ -39,29 +47,32 @@ public class AudioFocusReceiver implements OnAudioFocusChangeListener {
 			PropertyManager.notifyPropertyChanged(args);
 		}
 	}
-	
-	public static AudioFocusReceiver getAudioFocusReceiver() {
-		return instance;
-	}
-	
-	public static void registerAudioFocus(AudioManager manager) {
-		AudioFocusReceiver audioFocus = getAudioFocusReceiver();
-		if (audioFocus == null || audioFocus.getAudioFocusState() == AudioFocusState.NoAudioFocus || audioFocus.getAudioFocusState() == AudioFocusState.NoAudioFocusTemporary) {
-			audioFocus = audioFocus == null ? new AudioFocusReceiver() : audioFocus;
-			int result = manager.requestAudioFocus(audioFocus, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-			AudioFocusReceiver.instance = audioFocus;
+
+	public void requestAudioFocus(Context context) {
+		AudioManager manager = App.getSystemService(AudioManager.class, context, Context.AUDIO_SERVICE);
+		if (getAudioFocusState() == AudioFocusState.NoAudioFocus || getAudioFocusState() == AudioFocusState.NoAudioFocusTemporary) {
+			int result = manager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 			if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-				audioFocus.setAudioFocusState(AudioFocusState.AudioFocus);
+				this.setAudioFocusState(AudioFocusState.AudioFocus);
 			}
 		}
 	}
-	
-	public static void unregisterAudioFocus(AudioManager manager) {
-		AudioFocusReceiver audioFocus = getAudioFocusReceiver();
-		if (audioFocus != null) {
-			manager.abandonAudioFocus(audioFocus);
-			audioFocus.setAudioFocusState(AudioFocusState.NoAudioFocus);
-			AudioFocusReceiver.instance = null;
+
+	@Override
+	public void register() {
+		Context context = Utilities.getContext();
+		if (context != null) {
+			requestAudioFocus(context);
+		}
+	}
+
+	@Override
+	public void unregister() {
+		Context context = Utilities.getContext();
+		if (context != null) {
+			AudioManager manager = App.getSystemService(AudioManager.class, context, Context.AUDIO_SERVICE);
+			manager.abandonAudioFocus(this);
+			this.setAudioFocusState(AudioFocusState.NoAudioFocus);
 		}
 	}
 }

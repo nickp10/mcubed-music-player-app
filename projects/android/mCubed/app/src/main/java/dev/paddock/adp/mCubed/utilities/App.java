@@ -21,7 +21,7 @@ import dev.paddock.adp.mCubed.model.Playlist;
 import dev.paddock.adp.mCubed.model.Progress;
 import dev.paddock.adp.mCubed.model.TimerTask;
 import dev.paddock.adp.mCubed.preferences.PreviousAction;
-import dev.paddock.adp.mCubed.receivers.AudioFocusReceiver;
+import dev.paddock.adp.mCubed.listeners.AudioFocusListener;
 import dev.paddock.adp.mCubed.receivers.MountReceiver;
 import dev.paddock.adp.mCubed.services.PlaybackServer;
 
@@ -100,7 +100,7 @@ public class App extends Application {
 	}
 	
 	public static AudioFocusState getAudioFocusState() {
-		AudioFocusReceiver audioFocus = AudioFocusReceiver.getAudioFocusReceiver();
+		AudioFocusListener audioFocus = AudioFocusListener.getInstance();
 		return audioFocus == null ? AudioFocusState.NoAudioFocus : audioFocus.getAudioFocusState();
 	}
 	

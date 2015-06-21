@@ -15,7 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.compatibility.ActivityCompat;
-import dev.paddock.adp.mCubed.listeners.MediaAssociateListener;
+import dev.paddock.adp.mCubed.listeners.AudioFocusListener;
 import dev.paddock.adp.mCubed.receivers.ClientReceiver;
 import dev.paddock.adp.mCubed.receivers.IProvideClientReceiver;
 import dev.paddock.adp.mCubed.services.PlaybackClient;
@@ -83,14 +83,7 @@ public class ActivityUtils {
 	}
 
 	public static <E extends Activity & IActivity> void onResume(E activity) {
-		// Start the resume process
-		Utilities.pushContext(activity);
-		try {
-			// Re-associate the media player
-			new MediaAssociateListener().register();
-		} finally {
-			Utilities.popContext();
-		}
+		AudioFocusListener.getInstance().requestAudioFocus(activity);
 	}
 
 	public static <E extends Activity & IActivity> boolean onCreateOptionsMenu(E activity, Menu menu) {

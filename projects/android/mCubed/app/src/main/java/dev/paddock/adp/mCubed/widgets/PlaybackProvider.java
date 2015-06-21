@@ -12,7 +12,7 @@ import android.content.Intent;
 import android.widget.RemoteViews;
 import dev.paddock.adp.mCubed.Schema;
 import dev.paddock.adp.mCubed.activities.ActivityUtils;
-import dev.paddock.adp.mCubed.listeners.MediaAssociateListener;
+import dev.paddock.adp.mCubed.listeners.AudioFocusListener;
 import dev.paddock.adp.mCubed.services.IClientCallback;
 import dev.paddock.adp.mCubed.services.PlaybackClient;
 import dev.paddock.adp.mCubed.utilities.App;
@@ -115,17 +115,17 @@ public abstract class PlaybackProvider extends AppWidgetProvider {
 				}
 
 				// Re-associate the media player
-				new MediaAssociateListener().register();
+				AudioFocusListener.getInstance().requestAudioFocus(context);
 			} else if (Schema.WI_PREV_CLICK.equals(action)) {
 				PlaybackClient.movePlaybackPrev();
 
 				// Re-associate the media player
-				new MediaAssociateListener().register();
+				AudioFocusListener.getInstance().requestAudioFocus(context);
 			} else if (Schema.WI_NEXT_CLICK.equals(action)) {
 				PlaybackClient.movePlaybackNext();
 
 				// Re-associate the media player
-				new MediaAssociateListener().register();
+				AudioFocusListener.getInstance().requestAudioFocus(context);
 			} else if (Schema.WI_OPEN_APP_CLICK.equals(action)) {
 				ActivityUtils.startMainActivity();
 			}
