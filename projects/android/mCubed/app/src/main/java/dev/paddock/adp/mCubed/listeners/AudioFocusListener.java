@@ -49,12 +49,17 @@ public class AudioFocusListener implements IListener, OnAudioFocusChangeListener
 	}
 
 	public void requestAudioFocus(Context context) {
-		AudioManager manager = App.getSystemService(AudioManager.class, context, Context.AUDIO_SERVICE);
-		if (getAudioFocusState() == AudioFocusState.NoAudioFocus || getAudioFocusState() == AudioFocusState.NoAudioFocusTemporary) {
-			int result = manager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-			if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-				this.setAudioFocusState(AudioFocusState.AudioFocus);
+		Utilities.pushContext(context);
+		try {
+			AudioManager manager = App.getSystemService(AudioManager.class, context, Context.AUDIO_SERVICE);
+			if (getAudioFocusState() == AudioFocusState.NoAudioFocus || getAudioFocusState() == AudioFocusState.NoAudioFocusTemporary) {
+				int result = manager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+				if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+					this.setAudioFocusState(AudioFocusState.AudioFocus);
+				}
 			}
+		} finally {
+			Utilities.popContext();
 		}
 	}
 

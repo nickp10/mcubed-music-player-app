@@ -40,7 +40,8 @@ public class Composite {
 	}
 	
 	public boolean isMediaGroupAll() {
-		return getGrouping().isMediaGroupAll();
+		MediaGrouping grouping = getGrouping();
+		return grouping != null && grouping.isMediaGroupAll();
 	}
 	
 	public static boolean equals(Composite first, Composite second) {
