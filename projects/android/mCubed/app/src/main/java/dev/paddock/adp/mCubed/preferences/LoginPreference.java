@@ -72,10 +72,10 @@ public class LoginPreference extends DialogPreference {
 			return; // Already logging in
 		}
 		if (error.getVisibility() == View.VISIBLE) {
-			showFields();
+			showFields(dialog);
 			return;
 		}
-		showProgress();
+		showProgress(dialog);
 		Utilities.dispatchToBackgroundThread(Utilities.getContext(), new Runnable() {
 			@Override
 			public void run() {
@@ -91,7 +91,7 @@ public class LoginPreference extends DialogPreference {
 						if (Utilities.isNullOrEmpty(error)) {
 							dialog.dismiss();
 						} else {
-							showError(error);
+							showError(dialog, error);
 						}
 					}
 				});
@@ -99,26 +99,32 @@ public class LoginPreference extends DialogPreference {
 		});
 	}
 
-	private void showProgress() {
+	private void showProgress(AlertDialog dialog) {
 		username.setVisibility(View.GONE);
 		password.setVisibility(View.GONE);
 		loggingInProgress.setVisibility(View.VISIBLE);
 		error.setVisibility(View.GONE);
+		dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setVisibility(View.GONE);
+		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setVisibility(View.GONE);
 	}
 
-	private void showFields() {
+	private void showFields(AlertDialog dialog) {
 		username.setVisibility(View.VISIBLE);
 		password.setVisibility(View.VISIBLE);
 		loggingInProgress.setVisibility(View.GONE);
 		error.setVisibility(View.GONE);
+		dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setVisibility(View.VISIBLE);
+		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setVisibility(View.VISIBLE);
 	}
 
-	private void showError(String error) {
+	private void showError(AlertDialog dialog, String error) {
 		username.setVisibility(View.GONE);
 		password.setVisibility(View.GONE);
 		loggingInProgress.setVisibility(View.GONE);
 		this.error.setVisibility(View.VISIBLE);
 		this.error.setText(error);
+		dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setVisibility(View.VISIBLE);
+		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setVisibility(View.VISIBLE);
 	}
 
 	public void setLoginAction(Func<Credentials, String> loginAction) {
