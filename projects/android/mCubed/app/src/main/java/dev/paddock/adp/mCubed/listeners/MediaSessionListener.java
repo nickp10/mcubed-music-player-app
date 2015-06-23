@@ -59,8 +59,7 @@ public class MediaSessionListener implements IListener {
 	public void updatePlaybackState() {
 		int state = App.getPlayer().isPlaying() ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED;
 		int ms = App.getPlayer().getSeek();
-		mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
-				.setState(state, ms, 1f)
+		PlaybackStateCompat.Builder bob = new PlaybackStateCompat.Builder()
 				.setActions(
 						PlaybackStateCompat.ACTION_PLAY |
 						PlaybackStateCompat.ACTION_PAUSE |
@@ -68,16 +67,22 @@ public class MediaSessionListener implements IListener {
 						PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
 						PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
 						PlaybackStateCompat.ACTION_STOP
-				)
+				);
+		mediaSession.setPlaybackState(bob
+				.setState(PlaybackStateCompat.STATE_NONE, ms, 1f)
+				.build());
+		mediaSession.setPlaybackState(bob
+				.setState(state, ms, 1f)
 				.build());
 	}
 
 	public void updateCurrentMetadata() {
 		MediaFile media = App.getPlayingMedia();
+		MediaMetadataCompat.Builder bob = new MediaMetadataCompat.Builder();
 		if (media == null) {
-			mediaSession.setMetadata(new MediaMetadataCompat.Builder().build());
+			mediaSession.setMetadata(bob.build());
 		} else {
-			mediaSession.setMetadata(new MediaMetadataCompat.Builder()
+			mediaSession.setMetadata(bob
 					.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, media.getAlbum())
 					.putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, media.getArtist())
 					.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, Utilities.loadBitmap(media.getAlbumArt()))
