@@ -84,22 +84,22 @@ public class ScrobbleListener implements IListener {
 		}
 	}
 
-	private void onSeekChanged(int oldSeek, int newSeek) {
-		Utilities.pushContext(App.getAppContext());
-		try {
-			boolean[] seekFlags = this.seekFlags;
-			if (seekFlags != null) {
-				int from = (int) Math.floor(oldSeek / 1000d);
-				int to = (int) Math.floor(newSeek / 1000d);
-				for (; from <= to; from++) {
-					if (from < seekFlags.length) {
-						seekFlags[from] = true;
+	private void onSeekChanged(final int oldSeek, final int newSeek) {
+		Utilities.dispatchToBackgroundThread(App.getAppContext(), new Runnable() {
+			@Override
+			public void run() {
+				boolean[] seekFlags = ScrobbleListener.this.seekFlags;
+				if (seekFlags != null) {
+					int from = (int) Math.floor(oldSeek / 1000d);
+					int to = (int) Math.floor(newSeek / 1000d);
+					for (; from <= to; from++) {
+						if (from < seekFlags.length) {
+							seekFlags[from] = true;
+						}
 					}
 				}
 			}
-		} finally {
-			Utilities.popContext();
-		}
+		});
 	}
 
 	private void onStatusChanged(MediaStatus oldStatus, MediaStatus newStatus) {

@@ -17,8 +17,9 @@ import dev.paddock.adp.mCubed.utilities.Utilities;
 
 public class MediaSessionListener implements IListener {
 	private final static MediaSessionListener instance = new MediaSessionListener();
-	private MediaSessionCompat mediaSession;
 	private final MediaKeyReceiver keyReceiver = new MediaKeyReceiver();
+	private MediaSessionCompat mediaSession;
+	private int seekSeconds = -1;
 
 	private MediaSessionListener() {
 	}
@@ -56,44 +57,66 @@ public class MediaSessionListener implements IListener {
 		mediaSession.release();
 	}
 
+	public void updatePlaybackSeek() {
+		Utilities.dispatchToBackgroundThread(Utilities.getContext(), new Runnable() {
+			@Override
+			public void run() {
+				int ms = App.getPlayer().getSeek();
+				int seconds = (int) Math.round(ms / 1000d);
+				if (seekSeconds != seconds) {
+					updatePlaybackState();
+				}
+			}
+		});
+	}
+
 	public void updatePlaybackState() {
-		int state = App.getPlayer().isPlaying() ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED;
-		int ms = App.getPlayer().getSeek();
-		PlaybackStateCompat.Builder bob = new PlaybackStateCompat.Builder()
-				.setActions(
-						PlaybackStateCompat.ACTION_PLAY |
-						PlaybackStateCompat.ACTION_PAUSE |
-						PlaybackStateCompat.ACTION_PLAY_PAUSE |
-						PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
-						PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
-						PlaybackStateCompat.ACTION_STOP
-				);
-		mediaSession.setPlaybackState(bob
-				.setState(PlaybackStateCompat.STATE_NONE, ms, 1f)
-				.build());
-		mediaSession.setPlaybackState(bob
-				.setState(state, ms, 1f)
-				.build());
+		Utilities.dispatchToBackgroundThread(Utilities.getContext(), new Runnable() {
+			@Override
+			public void run() {
+				int state = App.getPlayer().isPlaying() ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED;
+				int ms = App.getPlayer().getSeek();
+				seekSeconds = (int) Math.round(ms / 1000d);
+				PlaybackStateCompat.Builder bob = new PlaybackStateCompat.Builder()
+						.setActions(
+								PlaybackStateCompat.ACTION_PLAY |
+								PlaybackStateCompat.ACTION_PAUSE |
+								PlaybackStateCompat.ACTION_PLAY_PAUSE |
+								PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
+								PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+								PlaybackStateCompat.ACTION_STOP
+						);
+				final PlaybackStateCompat pending = bob.setState(PlaybackStateCompat.STATE_NONE, ms, 1f).build();
+				final PlaybackStateCompat actual = bob.setState(state, ms, 1f).build();
+				mediaSession.setPlaybackState(pending);
+				mediaSession.setPlaybackState(actual);
+			}
+		});
 	}
 
 	public void updateCurrentMetadata() {
-		MediaFile media = App.getPlayingMedia();
-		MediaMetadataCompat.Builder bob = new MediaMetadataCompat.Builder();
-		if (media == null) {
-			mediaSession.setMetadata(bob.build());
-		} else {
-			mediaSession.setMetadata(bob
-					.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, media.getAlbum())
-					.putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, media.getArtist())
-					.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, Utilities.loadBitmap(media.getAlbumArt()))
-					.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, media.getArtist())
-					.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, media.getDuration())
-					.putString(MediaMetadataCompat.METADATA_KEY_GENRE, media.getGenre())
-					.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, Long.toString(media.getID()))
-					.putString(MediaMetadataCompat.METADATA_KEY_TITLE, media.getTitle())
-					.putLong(MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER, media.getTrack())
-					.putLong(MediaMetadataCompat.METADATA_KEY_YEAR, media.getYear())
-					.build());
-		}
+		Utilities.dispatchToBackgroundThread(Utilities.getContext(), new Runnable() {
+			@Override
+			public void run() {
+				MediaFile media = App.getPlayingMedia();
+				MediaMetadataCompat.Builder bob = new MediaMetadataCompat.Builder();
+				if (media == null) {
+					mediaSession.setMetadata(bob.build());
+				} else {
+					mediaSession.setMetadata(bob
+							.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, media.getAlbum())
+							.putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, media.getArtist())
+							.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, Utilities.loadBitmap(media.getAlbumArt()))
+							.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, media.getArtist())
+							.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, media.getDuration())
+							.putString(MediaMetadataCompat.METADATA_KEY_GENRE, media.getGenre())
+							.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, Long.toString(media.getID()))
+							.putString(MediaMetadataCompat.METADATA_KEY_TITLE, media.getTitle())
+							.putLong(MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER, media.getTrack())
+							.putLong(MediaMetadataCompat.METADATA_KEY_YEAR, media.getYear())
+							.build());
+				}
+			}
+		});
 	}
 }
