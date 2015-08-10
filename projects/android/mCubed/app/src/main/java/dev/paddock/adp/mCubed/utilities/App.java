@@ -207,24 +207,19 @@ public class App extends Application {
 	 * the current deployed version of the application. This should be implemented only if
 	 * needed to perform a necessary upgrade from one version to the next.
 	 * 
-	 * - From 1 to 2 -> No upgrade is needed.
-	 * - From 2 to 3 -> No upgrade is needed.
-	 * - From 3 to 4 -> No upgrade is needed.
-	 * - From 4 to 5 -> No upgrade is needed.
-	 * - From 5 to 6 -> No upgrade is needed.
-	 * - From 6 to 7 -> No upgrade is needed.
-	 * - From 7 to 8 -> ???.
+	 * - From 1 to 8 -> No upgrade is needed.
+	 * - From 8 to 9 -> ???.
 	 * @param originalVersion The version found in the user's settings.
 	 * @param currentVersion The current version that the user is running.
 	 */
 	private static void upgradeApp(int originalVersion, int currentVersion) {
-		// Upgrade version 1 to version 7.
-		if (originalVersion <= 6) {
-			originalVersion = 7;
+		// Upgrade version 1 to version 8.
+		if (originalVersion <= 7) {
+			originalVersion = 8;
 		}
 		
-		// Update version 7 to version 8.
-		//if (originalVersion == 7) {
+		// Update version 8 to version 9.
+		//if (originalVersion == 8) {
 		//	originalVersion++;
 		//}
 	}

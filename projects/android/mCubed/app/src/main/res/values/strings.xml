@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">mCubed</string>
-	<string name="app_name_version">mCubed 1.04</string>
-	<string name="app_version">1.04</string>
-	<string name="app_web_service">http://mcubed.dyndns.info/mCubedServices/</string>
+	<string name="app_name_version">mCubed 1.05</string>
+	<string name="app_version">1.05</string>
+	<string name="app_web_service">http://mcubed.ddns.net/mCubedServices/</string>
 	<string name="app_widget_1x1">mCubed (1x1)</string>
 	<string name="app_widget_4x1">mCubed (4x1)</string>
 	<string name="about_developer_label">Developer:</string>
 	<string name="about_developer_text">Nick Paddock</string>
 	<string name="about_website_label">Website:</string>
-	<string name="about_website_text">http://mcubed.dyndns.info/</string>
+	<string name="about_website_text">http://mcubed.ddns.net/</string>
 	<string name="about_changelog_label">Change Log:</string>
 	<string name="about_changelog_text"><![CDATA[
+		1.05\n
+		\t- Added scrobble support for Last.fm accounts\n\n
 		1.04\n
 		\t- Added Bluetooth device specific settings\n
 		\t- Fixed SD card permission issue\n

@@ -7,11 +7,9 @@ To create a new release:
   5. Update AndroidManifest.xml so android:versionCode is incremented by 1.
   6. Update AndroidManifest.xml so android:versionName matches the app_version value in strings.xml.
   7. Update strings.xml (in the Test project) so app_version contains the new version.
-  8. Update AndroidManifest.xml (in the Test project) so android:versionCode is incremented by 1.
-  9. Update AndroidManifest.xml (in the Test project) so android:versionName matches the app_version value in strings.xml (in the Test project).
-  10. Update App.java so that the upgradeApp method performs the necessary upgrade from the previous version.
-  11. Run all unit tests through Eclipse and through the "run coverage" script to make sure both work.
-  12. Commit all changes.
-  13. Export mCubed as Android Application.
-  14. Use existing keystore with password (mCubed3Key).
-  15. Save as mCubed.apk, commit it to the Releases directory, and upload to Google Play.
+  8. Update App.java so that the upgradeApp method performs the necessary upgrade from the previous version.
+  9. Run all unit tests.
+  10. Commit all changes.
+  11. Export mCubed as Android Application.
+  12. Use existing keystore with password (mCubed3Key).
+  13. Save as mCubed.apk, commit it to the Releases directory, and upload to Google Play.
