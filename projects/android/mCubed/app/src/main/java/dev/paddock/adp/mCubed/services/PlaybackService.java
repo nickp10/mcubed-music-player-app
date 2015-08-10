@@ -327,11 +327,12 @@ public class PlaybackService extends Service {
 				public void propertyPlaybackIDChanged(long playbackID) {
 					PlaybackService.this.updateNotification();
 					MediaSessionListener.getInstance().updateCurrentMetadata();
+					MediaSessionListener.getInstance().updatePlaybackState();
 				}
 
 				@Override
 				public void propertyPlaybackSeekChanged(int ms) {
-					MediaSessionListener.getInstance().updatePlaybackState();
+					MediaSessionListener.getInstance().updatePlaybackSeek();
 				}
 
 				@Override
