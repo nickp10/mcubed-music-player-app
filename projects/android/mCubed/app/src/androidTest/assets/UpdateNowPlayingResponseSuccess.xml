@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lfm status="ok">
+	<nowplaying>
+		<track corrected="0">Not Afraid</track>
+		<artist corrected="0">Eminem</artist>
+		<album corrected="0">Recovery</album>
+		<albumArtist corrected="0">Eminem</albumArtist>
+		<ignoredMessage code="0"/>
+	</nowplaying>
+</lfm>
